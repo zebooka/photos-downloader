@@ -43,12 +43,19 @@ $dirs = array(
 );
 
 fwrite(STDOUT, 'Adding files...' . PHP_EOL);
-foreach ($dirs as $dir) {
-    $phar->buildFromIterator(
-        new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir)),
-        $baseDir
-    );
-}
+$phar->buildFromIterator(
+    array_reduce(
+        $dirs,
+        function (&$iterator, $dir) {
+            /** @var \AppendIterator $iterator */
+            $iterator->append(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir)));
+            return $iterator;
+        },
+        new \AppendIterator()
+    ),
+    $baseDir
+);
+
 $stub =
     '#!/usr/bin/env php' . PHP_EOL .
     '<?php ' .
