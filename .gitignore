@@ -1,0 +1,4 @@
+/.dev
+/build/*
+/vendor/*
+/vendor-dev/*
