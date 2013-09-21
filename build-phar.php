@@ -38,7 +38,6 @@ $phar = new Phar(
 $dirs = array(
     $baseDir . '/src',
     $baseDir . '/res',
-    $baseDir . '/configure',
     $baseDir . '/vendor',
 );
 
