@@ -1,5 +1,5 @@
 
-all: exiftool composer tests install
+all: exiftool composer test install
 
 exiftool:
 	exiftool -ver
@@ -8,7 +8,7 @@ composer:
 	composer -v install --no-dev && \
 	COMPOSER_VENDOR_DIR="vendor-dev" composer -v install --dev
 
-tests:
+test:
 	./tests/run.sh
 
 install:
