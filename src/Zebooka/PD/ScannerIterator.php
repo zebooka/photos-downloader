@@ -1,6 +1,6 @@
 <?php
 
-namespace Zebooka\Photo;
+namespace Zebooka\PD;
 
 class ScannerIterator implements \IteratorAggregate
 {
