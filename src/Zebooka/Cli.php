@@ -58,6 +58,21 @@ class Cli
         return $result;
     }
 
+    /**
+     * Filter and return only positioned parameters
+     * @param array $params
+     */
+    static public function getPositionedParameters(array $params)
+    {
+        $positioned = array();
+        foreach ($params as $name => $value) {
+            if (is_int($name)) {
+                $positioned[$name] = $value;
+            }
+        }
+        return $positioned;
+    }
+
     static public function humanReadableSize($bytes, $binary = false, $precision = 3, $space = ' ')
     {
         if ($binary) {
