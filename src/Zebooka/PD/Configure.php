@@ -2,7 +2,7 @@
 
 namespace Zebooka\PD;
 
-use Zebooka\Cli;
+use Zebooka\Utils\Cli\Parameters;
 
 /**
  * @property bool $help
@@ -67,22 +67,22 @@ class Configure
     {
         $argv = $this->decodeArgv($argv);
 
-        $this->help = !empty($argv[self::P_HELP]);
-        $this->debug = !empty($argv[self::P_DEBUG]);
-        $this->simulate = !empty($argv[self::P_SIMULATE]);
-        $this->limit = (array_key_exists(self::P_LIMIT, $argv) ? intval($argv[self::P_LIMIT]) : $this->limit);
-        $this->recursive = empty($argv[self::P_NO_RECURSIVE]);
-        $this->from = (array_key_exists(self::P_FROM, $argv) ? $argv[self::P_FROM] : $this->from);
-        $this->to = (array_key_exists(self::P_TO, $argv) ? strval($argv[self::P_TO]) : $this->to);
-        $this->subDirectoriesStructure = empty($argv[self::P_NO_SUBDIRS]);
-        $this->copy = !empty($argv[self::P_COPY]);
-        $this->deleteDuplicates = empty($argv[self::P_NO_DELETE_DUPLICATES]);
-        $this->author = (array_key_exists(self::P_AUTHOR, $argv) ? strval($argv[self::P_AUTHOR]) : $this->author);
-        $this->cameras = $this->splitSpaceSeparated(array_key_exists(self::P_CAMERAS, $argv) ? (array)$argv[self::P_CAMERAS] : $this->cameras);
-        $this->tokensToAdd = $this->splitSpaceSeparated(array_key_exists(self::P_TOKENS_ADD, $argv) ? (array)$argv[self::P_TOKENS_ADD] : $this->tokensToAdd);
-        $this->tokensToDrop = $this->splitSpaceSeparated(array_key_exists(self::P_TOKENS_DROP, $argv) ? (array)$argv[self::P_TOKENS_DROP] : $this->tokensToDrop);
-        $this->tokensDropUnknown = !empty($argv[self::P_TOKENS_DROP_UNKNOWN]);
-        $this->positionedParameters = Cli::getPositionedParameters($argv);
+        $this->help = !empty($argv->{self::P_HELP});
+        $this->debug = !empty($argv->{self::P_DEBUG});
+        $this->simulate = !empty($argv->{self::P_SIMULATE});
+        $this->limit = (array_key_exists(self::P_LIMIT, $argv) ? intval($argv->{self::P_LIMIT}) : $this->limit);
+        $this->recursive = empty($argv->{self::P_NO_RECURSIVE});
+        $this->from = (array_key_exists(self::P_FROM, $argv) ? $argv->{self::P_FROM} : $this->from);
+        $this->to = (array_key_exists(self::P_TO, $argv) ? strval($argv->{self::P_TO}) : $this->to);
+        $this->subDirectoriesStructure = empty($argv->{self::P_NO_SUBDIRS});
+        $this->copy = !empty($argv->{self::P_COPY});
+        $this->deleteDuplicates = empty($argv->{self::P_NO_DELETE_DUPLICATES});
+        $this->author = (array_key_exists(self::P_AUTHOR, $argv) ? strval($argv->{self::P_AUTHOR}) : $this->author);
+        $this->cameras = $this->splitSpaceSeparated(array_key_exists(self::P_CAMERAS, $argv) ? (array)$argv->{self::P_CAMERAS} : $this->cameras);
+        $this->tokensToAdd = $this->splitSpaceSeparated(array_key_exists(self::P_TOKENS_ADD, $argv) ? (array)$argv->{self::P_TOKENS_ADD} : $this->tokensToAdd);
+        $this->tokensToDrop = $this->splitSpaceSeparated(array_key_exists(self::P_TOKENS_DROP, $argv) ? (array)$argv->{self::P_TOKENS_DROP} : $this->tokensToDrop);
+        $this->tokensDropUnknown = !empty($argv->{self::P_TOKENS_DROP_UNKNOWN});
+        $this->positionedParameters = $argv->positionedParameters();
         $this->from = array_unique(array_merge($this->from, array_slice($this->positionedParameters, 1)));
 
         if (empty($this->from)) {
@@ -106,7 +106,7 @@ class Configure
 
     private function decodeArgv(array $argv)
     {
-        return Cli::parseParameters(
+        return new Parameters(
             $argv,
             self::parametersRequiringValues(),
             self::parametersUsableMultipleTimes()

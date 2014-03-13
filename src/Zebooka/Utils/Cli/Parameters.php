@@ -1,17 +1,16 @@
 <?php
 
-namespace Zebooka;
+namespace Zebooka\Utils\Cli;
 
-class Cli
+class Parameters
 {
     /**
-     * Parse incoming parameters like from $_SERVER['argv'] array.
-     * @param array $params Incoming parameters
-     * @param array $reqvals Parameters with required value
+     * @param array $params Incoming parameters ($_SERVER['argv'])
+     * @param array $reqvals Parameters that come with value
      * @param array $multiple Parameters that may come multiple times
-     * @return array
+     * @param array $aliases Aliases in form [$aliasKey => $originalKey]
      */
-    public static function parseParameters(array $params, array $reqvals = array(), array $multiple = array())
+    public function __construct(array $params, array $reqvals = array(), array $multiple = array(), array $aliases = array())
     {
         $result = array();
         reset($params);
@@ -55,21 +54,33 @@ class Cli
                 }
             }
         }
-        return $result;
+        foreach ($result as $pname => $value) {
+            $this->{$pname} = $value;
+        }
     }
 
     /**
      * Filter and return only positioned parameters
      * @param array $params
      */
-    public static function getPositionedParameters(array $params)
+    public function positionedParameters()
     {
         $positioned = array();
-        foreach ($params as $name => $value) {
-            if (is_int($name)) {
+        foreach ($this as $name => $value) {
+            if (is_numeric($name)) {
                 $positioned[$name] = $value;
             }
         }
         return $positioned;
+    }
+
+    /**
+     * Magic getter for not set properties. Always returns null.
+     * @param $property
+     * @return null
+     */
+    public function __get($property)
+    {
+        return null;
     }
 }
