@@ -41,7 +41,7 @@ Standard MIT License — http://opensource.org/licenses/MIT
 
 http://zebooka.com/soft/LICENSE/
 
-Copyright (c) 2013, Anton Bondar.
+Copyright (c) 2014, Anton Bondar.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
