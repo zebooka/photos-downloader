@@ -6,7 +6,7 @@ class ExifTest extends \PHPUnit_Framework_TestCase
 {
     private function resourceDirectory()
     {
-        return __DIR__ . '/../../../res';
+        return __DIR__ . '/../../../res/exif';
     }
 
     public function test_not_existing_file()
