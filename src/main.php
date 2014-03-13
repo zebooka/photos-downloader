@@ -20,6 +20,9 @@ require_once dirname(__DIR__) . '/vendor/autoload.php';
 // setup logger
 $logger = \Zebooka\PD\LoggerFactory::logger();
 
+// translations
+$translator = \Zebooka\PD\TranslatorFactory::translator(__DIR__ . '/../res', setlocale(LC_CTYPE, 0));
+
 // read config
 $config = new \Zebooka\PD\Configure($_SERVER['argv']);
 

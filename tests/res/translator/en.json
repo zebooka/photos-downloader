@@ -1,0 +1,4 @@
+{
+    "test": "This is a test",
+    "anotherTest": "Another test #{0}"
+}
