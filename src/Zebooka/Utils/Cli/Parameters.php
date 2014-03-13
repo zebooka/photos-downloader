@@ -26,20 +26,23 @@ class Parameters
                         list($pname, $value) = explode('=', substr($p, 2), 2);
                     }
                 }
-                $nextparam = current($params);
                 if (array_key_exists($pname, $aliases)) {
+                    // replace alias with original name
                     $pname = $aliases[$pname];
                 }
+                $nextparam = current($params);
                 if ($value === true && in_array($pname, $reqvals)) {
                     if ($nextparam !== false) {
+                        // next param is value
                         list(, $value) = each($params);
                     } else {
+                        // required value for option not found
                         $value = false;
-                    } // required value for option not found
+                    }
                 }
-                if (in_array($pname, $multiple) && isset($result[$pname])) {
-                    if (!is_array($result[$pname])) {
-                        $result[$pname] = array($result[$pname]);
+                if (in_array($pname, $multiple)) {
+                    if (!isset($result[$pname])) {
+                        $result[$pname] = array();
                     }
                     $result[$pname][] = $value;
                 } else {

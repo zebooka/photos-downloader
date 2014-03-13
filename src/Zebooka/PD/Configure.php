@@ -78,9 +78,9 @@ class Configure
         $this->copy = !empty($argv->{self::P_COPY});
         $this->deleteDuplicates = empty($argv->{self::P_NO_DELETE_DUPLICATES});
         $this->author = (array_key_exists(self::P_AUTHOR, $argv) ? strval($argv->{self::P_AUTHOR}) : $this->author);
-        $this->cameras = $this->splitSpaceSeparated(array_key_exists(self::P_CAMERAS, $argv) ? (array)$argv->{self::P_CAMERAS} : $this->cameras);
-        $this->tokensToAdd = $this->splitSpaceSeparated(array_key_exists(self::P_TOKENS_ADD, $argv) ? (array)$argv->{self::P_TOKENS_ADD} : $this->tokensToAdd);
-        $this->tokensToDrop = $this->splitSpaceSeparated(array_key_exists(self::P_TOKENS_DROP, $argv) ? (array)$argv->{self::P_TOKENS_DROP} : $this->tokensToDrop);
+        $this->cameras = $this->splitSpaceSeparated(array_key_exists(self::P_CAMERAS, $argv) ? $argv->{self::P_CAMERAS} : $this->cameras);
+        $this->tokensToAdd = $this->splitSpaceSeparated(array_key_exists(self::P_TOKENS_ADD, $argv) ? $argv->{self::P_TOKENS_ADD} : $this->tokensToAdd);
+        $this->tokensToDrop = $this->splitSpaceSeparated(array_key_exists(self::P_TOKENS_DROP, $argv) ? $argv->{self::P_TOKENS_DROP} : $this->tokensToDrop);
         $this->tokensDropUnknown = !empty($argv->{self::P_TOKENS_DROP_UNKNOWN});
         $this->positionedParameters = $argv->positionedParameters();
         $this->from = array_unique(array_merge($this->from, array_slice($this->positionedParameters, 1)));

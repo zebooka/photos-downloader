@@ -42,4 +42,19 @@ class ParametersTest extends \PHPUnit_Framework_TestCase
         $params = new Parameters(array('-param1'), array('param1'));
         $this->assertFalse($params->param1);
     }
+
+    public function test_multiple_param_always_array()
+    {
+        $params = new Parameters(array('-param1', 'value1'), array('param1'), array('param1'));
+        $this->assertInternalType('array', $params->param1);
+        $this->assertEquals(array('value1'), $params->param1);
+    }
+
+    public function test_multiple_param_without_values()
+    {
+        $params = new Parameters(array('-param1', '-param1'), array(), array('param1'));
+        $this->assertInternalType('array', $params->param1);
+        $this->assertCount(2, $params->param1);
+        $this->assertEquals(array(true, true), $params->param1);
+    }
 }
