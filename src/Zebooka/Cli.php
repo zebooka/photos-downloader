@@ -11,7 +11,7 @@ class Cli
      * @param array $multiple Parameters that may come multiple times
      * @return array
      */
-    static public function parseParameters(array $params, array $reqvals = array(), array $multiple = array())
+    public static function parseParameters(array $params, array $reqvals = array(), array $multiple = array())
     {
         $result = array();
         reset($params);
@@ -62,7 +62,7 @@ class Cli
      * Filter and return only positioned parameters
      * @param array $params
      */
-    static public function getPositionedParameters(array $params)
+    public static function getPositionedParameters(array $params)
     {
         $positioned = array();
         foreach ($params as $name => $value) {
@@ -71,42 +71,5 @@ class Cli
             }
         }
         return $positioned;
-    }
-
-    static public function humanReadableSize($bytes, $binary = false, $precision = 3, $space = ' ')
-    {
-        if ($binary) {
-            $block = 1024;
-            $units = array('B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB');
-        } else {
-            $block = 1000;
-            $units = array('B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
-        }
-        $bytes = max($bytes, 0);
-        $pow = floor(($bytes ? log($bytes) : 0) / log($block));
-        $pow = min($pow, count($units) - 1);
-        $bytes /= pow($block, $pow);
-        return round($bytes, $precision) . $space . $units[$pow];
-    }
-
-    static public function humanReadableTime($time)
-    {
-        $data = array(
-            'day(s)' => intval(($time / 86400)),
-            'hour(s)' => intval(($time / 3600) % 24),
-            'minute(s)' => intval(($time / 60) % 60),
-            'second(s)' => sprintf('%01.2F', ($time % 60) + ($time - intval($time))),
-        );
-        $data['second(s)'] = rtrim(rtrim($data['second(s)'], '0'), '.');
-        $result = array();
-        foreach ($data as $name => $value) {
-            if ($value) {
-                $result[] = $value . ' ' . $name;
-            }
-        }
-        if (!count($result)) {
-            $result[] = 'instantly';
-        }
-        return implode(' ', $result);
     }
 }
