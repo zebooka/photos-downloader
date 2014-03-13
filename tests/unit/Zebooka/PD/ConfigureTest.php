@@ -8,6 +8,8 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             array(
+                Configure::P_LOG_FILE,
+                Configure::P_LOG_LEVEL,
                 Configure::P_LIMIT,
                 Configure::P_FROM,
                 Configure::P_TO,
@@ -53,6 +55,8 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array('add1', 'add2'), $configure->tokensToAdd);
         $this->assertEquals(array('drop3', 'drop4'), $configure->tokensToDrop);
         $this->assertTrue($configure->tokensDropUnknown);
+        $this->assertEquals('/tmp/example.log', $configure->logFile);
+        $this->assertEquals(123, $configure->logLevel);
     }
 
     public function test_configure_failure_without_from()
@@ -102,6 +106,10 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
             '-y',
             'drop3 drop4',
             '-X',
+            '-o',
+            '/tmp/example.log',
+            '-O',
+            '123',
         );
     }
 

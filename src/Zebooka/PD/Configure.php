@@ -21,6 +21,8 @@ use Zebooka\Utils\Cli\Parameters;
  * @property array $tokensToDrop
  * @property bool $tokensDropUnknown
  * @property array $positionedParameters
+ * @property null|string $logFile
+ * @property int $logLevel
  */
 class Configure
 {
@@ -29,6 +31,8 @@ class Configure
 
     const P_HELP = 'h';
     const P_DEBUG = 'E';
+    const P_LOG_FILE = 'o';
+    const P_LOG_LEVEL = 'O';
     const P_SIMULATE = 's';
     const P_LIMIT = 'l';
     const P_NO_RECURSIVE = 'R';
@@ -48,6 +52,8 @@ class Configure
 
     public $help = false;
     public $debug = false;
+    public $logFile = null;
+    public $logLevel = 250;
     public $simulate = false;
     public $limit = false;
     public $recursive = true;
@@ -69,6 +75,8 @@ class Configure
 
         $this->help = !empty($argv->{self::P_HELP});
         $this->debug = !empty($argv->{self::P_DEBUG});
+        $this->logFile = (array_key_exists(self::P_LOG_FILE, $argv) ? strval($argv->{self::P_LOG_FILE}) : $this->logFile);
+        $this->logLevel = (array_key_exists(self::P_LOG_LEVEL, $argv) ? intval($argv->{self::P_LOG_LEVEL}) : $this->logLevel);
         $this->simulate = !empty($argv->{self::P_SIMULATE});
         $this->limit = (array_key_exists(self::P_LIMIT, $argv) ? intval($argv->{self::P_LIMIT}) : $this->limit);
         $this->recursive = empty($argv->{self::P_NO_RECURSIVE});
@@ -116,6 +124,8 @@ class Configure
     public static function parametersRequiringValues()
     {
         return array(
+            self::P_LOG_FILE,
+            self::P_LOG_LEVEL,
             self::P_LIMIT,
             self::P_FROM,
             self::P_TO,
