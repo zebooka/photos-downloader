@@ -1,5 +1,8 @@
 
-all: exiftool composer test install
+all: hooks exiftool composer test install
+
+hooks:
+	test ! -d .git || cp .git-pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
 
 exiftool:
 	exiftool -ver

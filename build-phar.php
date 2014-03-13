@@ -23,25 +23,28 @@ if (!is_dir($buildDir)) {
         exit(1);
     }
 }
+
 $alias = basename($baseDir) . '.phar';
 fwrite(STDOUT, 'Building ' . escapeshellarg($alias) . ' at ' . escapeshellarg($buildFile) . '...' . PHP_EOL);
+
 if (is_file($buildFile)) {
     fwrite(STDOUT, 'Removing old build of ' . escapeshellarg($buildFile) . '...' . PHP_EOL);
     unlink($buildFile);
 }
+
 fwrite(STDOUT, 'Creating new phar...' . PHP_EOL);
 $phar = new Phar(
     $buildFile,
     FilesystemIterator::CURRENT_AS_FILEINFO | FilesystemIterator::KEY_AS_FILENAME,
     $alias
 );
+
+fwrite(STDOUT, 'Adding files...' . PHP_EOL);
 $dirs = array(
     $baseDir . '/src',
     $baseDir . '/res',
     $baseDir . '/vendor',
 );
-
-fwrite(STDOUT, 'Adding files...' . PHP_EOL);
 $phar->buildFromIterator(
     array_reduce(
         $dirs,

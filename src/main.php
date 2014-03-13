@@ -18,7 +18,9 @@ set_exception_handler(
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
 // setup logger
+$logger = \Zebooka\PD\LoggerFactory::logger();
 
 // read config
 $config = new \Zebooka\PD\Configure($_SERVER['argv']);
-var_dump($config);
+
+$logger->addInfo('Hello World.');
