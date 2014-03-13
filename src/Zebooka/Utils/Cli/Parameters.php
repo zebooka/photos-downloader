@@ -27,6 +27,9 @@ class Parameters
                     }
                 }
                 $nextparam = current($params);
+                if (array_key_exists($pname, $aliases)) {
+                    $pname = $aliases[$pname];
+                }
                 if ($value === true && in_array($pname, $reqvals)) {
                     if ($nextparam !== false) {
                         list(, $value) = each($params);
