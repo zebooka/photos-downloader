@@ -84,11 +84,11 @@ class ConfigureView
         $parameterMaxWidth = array_reduce(
             array_keys($parameters),
             function (&$max, $parameter) {
-                return max($max, strlen($parameter));
+                return max($max, mb_strlen($parameter));
             },
             0
         );
-        $descriptionMaxWidth = $this->screenWidth - 2 * strlen($this->indent()) - $parameterMaxWidth;
+        $descriptionMaxWidth = $this->screenWidth - 2 * mb_strlen($this->indent()) - $parameterMaxWidth;
         $keys = $this->wrapAndPadList(array_keys($parameters), $parameterMaxWidth);
         $descriptions = $this->wrapAndPadList(array_values($parameters), $descriptionMaxWidth);
         return $this->mergeTwoPaddedLists(
@@ -103,11 +103,31 @@ class ConfigureView
     {
         return array_map(
             function ($line) use ($width) {
+                $wrapAsArray = function ($string, $width) {
+                    $words = mb_split('\\s', $string);
+                    $result = [];
+                    $line = '';
+                    while (count($words) > 0) {
+                        $word = array_shift($words);
+                        if ('' !== $line && mb_strlen($line) + mb_strlen($word) > $width) {
+                            $result[] = trim($line);
+                            $line = '';
+                        }
+                        $line .= $word . ' ';
+                    }
+                    if ('' !== $line) {
+                        $result[] = trim($line);
+                    }
+                    return $result;
+                };
                 return array_map(
                     function ($subline) use ($width) {
-                        return str_pad($subline, $width, ' ', STR_PAD_RIGHT);
+                        while (mb_strlen($subline) < $width) {
+                            $subline .= ' ';
+                        }
+                        return $subline;
                     },
-                    explode(PHP_EOL, wordwrap($line, $width, PHP_EOL, false))
+                    $wrapAsArray($line, $width)
                 );
             },
             $list
