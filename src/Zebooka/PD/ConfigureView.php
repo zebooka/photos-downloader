@@ -88,7 +88,7 @@ class ConfigureView
             },
             0
         );
-        $descriptionMaxWidth = $this->screenWidth - 2 * mb_strlen($this->indent()) - $parameterMaxWidth;
+        $descriptionMaxWidth = max($parameterMaxWidth, $this->screenWidth - 2 * mb_strlen($this->indent()) - $parameterMaxWidth);
         $keys = $this->wrapAndPadList(array_keys($parameters), $parameterMaxWidth);
         $descriptions = $this->wrapAndPadList(array_values($parameters), $descriptionMaxWidth);
         return $this->mergeTwoPaddedLists(
@@ -149,14 +149,16 @@ class ConfigureView
                     while (count($b) < $lines) {
                         $b[] = $bPadString;
                     }
-                    return implode(
-                        PHP_EOL,
-                        array_map(
-                            function ($a, $b) use ($indent) {
-                                return $indent . $a . $indent . $b;
-                            },
-                            $a,
-                            $b
+                    return rtrim(
+                        implode(
+                            PHP_EOL,
+                            array_map(
+                                function ($a, $b) use ($indent) {
+                                    return $indent . $a . $indent . $b;
+                                },
+                                $a,
+                                $b
+                            )
                         )
                     );
 
