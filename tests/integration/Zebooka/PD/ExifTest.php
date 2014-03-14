@@ -19,7 +19,7 @@ class ExifTest extends \PHPUnit_Framework_TestCase
     public function test_failing_exiftool()
     {
         $filename = $this->resourceDirectory() . '/bad.jpg';
-        $this->setExpectedException('\\RuntimeException', 'Exiftool failed with code #1.');
+        $this->setExpectedException('\\RuntimeException', 'ExifTool failed with code #1.');
         new Exif($filename);
     }
 

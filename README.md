@@ -23,7 +23,7 @@ Requirements
 ------------
 
 You need `composer` to build photos downloader tool.
-You need to install `exiftool` as well. This program is used to read exif from photos.
+You need to install `exiftool` (version ≥ 9.33) as well. This program is used to read exif from photos.
 
 
 Usage
