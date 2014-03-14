@@ -97,6 +97,11 @@ class Configure
         $this->from = array_unique(array_merge($this->from, array_slice($this->positionedParameters, 1)));
     }
 
+    public function executableName()
+    {
+        return (isset($this->positionedParameters[0]) ? $this->positionedParameters[0] : null);
+    }
+
     private function splitSpaceSeparated(array $values)
     {
         $splitted = array();

@@ -32,6 +32,7 @@ $logger->addInfo($translator->translate('appName', array($version)));
 $logger->addInfo($translator->translate('copyrightInfo'));
 
 if ($configure->help) {
-    $logger->addInfo(new \Zebooka\PD\ConfigureView($configure, $translator, \Zebooka\Utils\Cli\Size::getTerminalWidth() ?: 80));
+    $view = new \Zebooka\PD\ConfigureView($configure, $translator, \Zebooka\Utils\Cli\Size::getTerminalWidth() ? : 80);
+    $logger->addInfo($view->render());
     exit(0);
 }

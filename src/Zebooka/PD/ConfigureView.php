@@ -15,7 +15,7 @@ class ConfigureView
         $this->screenWidth = $screenWidth;
     }
 
-    public function __toString()
+    public function render()
     {
         return PHP_EOL . $this->usage() . PHP_EOL . PHP_EOL . $this->parameters() . PHP_EOL;
     }
@@ -32,7 +32,7 @@ class ConfigureView
             $this->indent() . implode(
                 ' ',
                 array(
-                    $this->configure->positionedParameters[0],
+                    $this->configure->executableName(),
                     '[' . $this->translator->translate('usage/parameters') . ']',
                     '-' . Configure::P_FROM,
                     $this->translator->translate('usage/parameterValue/from'),
