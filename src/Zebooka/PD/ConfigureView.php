@@ -105,7 +105,7 @@ class ConfigureView
             function ($line) use ($width) {
                 $wrapAsArray = function ($string, $width) {
                     $words = mb_split('\\s', $string);
-                    $result = [];
+                    $result = array();
                     $line = '';
                     while (count($words) > 0) {
                         $word = array_shift($words);
