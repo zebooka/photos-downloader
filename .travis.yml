@@ -1,0 +1,11 @@
+language: php
+php:
+  - "5.3"
+  - "5.4"
+  - "5.5"
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install libimage-exiftool-perl
+  - exiftool -ver
+install: make composer
+script: ./tests/run.sh
