@@ -59,22 +59,6 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(123, $configure->logLevel);
     }
 
-    public function test_configure_failure_without_from()
-    {
-        $argv = $this->argv();
-        unset($argv[7], $argv[8], $argv[9], $argv[10], $argv[11]);
-        $this->setExpectedException('\\InvalidArgumentException', 'No source paths specified.', Configure::ERROR_NO_FROM);
-        new Configure($argv);
-    }
-
-    public function test_configure_failure_without_to()
-    {
-        $argv = $this->argv();
-        unset($argv[12], $argv[13]);
-        $this->setExpectedException('\\InvalidArgumentException', 'No destination path specified.', Configure::ERROR_NO_TO);
-        new Configure($argv);
-    }
-
     private function argv()
     {
         return array(

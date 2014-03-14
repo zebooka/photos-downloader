@@ -92,15 +92,6 @@ class Configure
         $this->tokensDropUnknown = !empty($argv->{self::P_TOKENS_DROP_UNKNOWN});
         $this->positionedParameters = $argv->positionedParameters();
         $this->from = array_unique(array_merge($this->from, array_slice($this->positionedParameters, 1)));
-
-        if (empty($this->from)) {
-            throw new \InvalidArgumentException('No source paths specified.', self::ERROR_NO_FROM);
-        }
-
-        if (!isset($this->to)) {
-            throw new \InvalidArgumentException('No destination path specified.', self::ERROR_NO_TO);
-        }
-
     }
 
     private function splitSpaceSeparated(array $values)
