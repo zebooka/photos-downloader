@@ -29,3 +29,8 @@ $translator = \Zebooka\PD\TranslatorFactory::translator(__DIR__ . '/../res', set
 $version = trim(file_get_contents(__DIR__ . '/../res/VERSION'));
 $logger->addInfo($translator->translate('appName', array($version)));
 $logger->addInfo($translator->translate('copyrightInfo'));
+
+if ($configure->help) {
+    $logger->addInfo(new \Zebooka\PD\ConfigureView($configure, $translator, 100));
+    exit(0);
+}
