@@ -25,7 +25,7 @@
     "parameters/description/P_FROM": "Download photos from this path. Can be used multiple times. All positioned parameters also parsed like this option.",
     "parameters/description/P_TO": "Upload photos to this path. Use dash '-' to keep photos in place and only rename.",
     "parameters/description/P_NO_SUBDIRS": "Do not create directory structure in to-path.",
-    "parameters/description/P_COPY": "Copy photos instead of moving them. This option is ignore, if source and destination paths are equal.",
+    "parameters/description/P_COPY": "Copy photos instead of moving them. This option is ignored, if source and destination paths (including subdirs) of file are equal.",
     "parameters/description/P_NO_DELETE_DUPLICATES": "Do not delete found duplicates (MD5 sums are compared).",
     "parameters/description/P_AUTHOR": "Set author token to this value. If not specified, then author token is not changed. If empty, then author token is removed.",
     "parameters/description/P_CAMERAS": "Process photos from specified cameras (space/comma separated list; repeatable). Use empty value to process all photos.",
