@@ -71,6 +71,9 @@ class Configure
 
     public function __construct(array $argv)
     {
+        if (1 == count($argv)) {
+            $argv[] = '-' . self::P_HELP;
+        }
         $argv = $this->decodeArgv($argv);
 
         $this->help = !empty($argv->{self::P_HELP});
