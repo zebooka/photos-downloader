@@ -41,8 +41,10 @@ if ($configure->help || 1 === count($_SERVER['argv'])) {
     exit(0);
 }
 
+// processing
+$processor = new \Zebooka\PD\Processor($configure, $logger, $translator);
 foreach (new \Zebooka\PD\ScannerIterator($configure->from) as $photoBunch) {
-    $logger->addNotice($photoBunch);
+    $processor->process($photoBunch);
 }
 
 $logger->addDebug(
