@@ -106,7 +106,7 @@ class Configure
 
     private function decodeArgv(array $argv)
     {
-        return new Parameters(
+        return Parameters::createFromArgv(
             $argv,
             self::parametersRequiringValues(),
             self::parametersUsableMultipleTimes()

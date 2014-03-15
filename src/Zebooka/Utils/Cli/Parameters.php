@@ -4,17 +4,25 @@ namespace Zebooka\Utils\Cli;
 
 class Parameters
 {
+    public function __construct(array $parameters)
+    {
+        foreach ($parameters as $name => $value) {
+            $this->{$name} = $value;
+        }
+    }
+
     /**
-     * @param array $params Incoming parameters ($_SERVER['argv'])
+     * Factory to build from $_SERVER['argv'].
+     * @param array $argv Incoming parameters ($_SERVER['argv'])
      * @param array $reqvals Parameters that come with value
      * @param array $multiple Parameters that may come multiple times
      * @param array $aliases Aliases in form [$aliasKey => $originalKey]
      */
-    public function __construct(array $params, array $reqvals = array(), array $multiple = array(), array $aliases = array())
+    public static function createFromArgv(array $argv, array $reqvals = array(), array $multiple = array(), array $aliases = array())
     {
-        $result = array();
-        reset($params);
-        while (list(, $p) = each($params)) {
+        $parameters = array();
+        reset($argv);
+        while (list(, $p) = each($argv)) {
             if ($p[0] == '-' && $p != '-' && $p != '--') {
                 $pname = substr($p, 1);
                 $value = true;
@@ -30,39 +38,86 @@ class Parameters
                     // replace alias with original name
                     $pname = $aliases[$pname];
                 }
-                $nextparam = current($params);
+                $nextparam = current($argv);
                 if ($value === true && in_array($pname, $reqvals)) {
                     if ($nextparam !== false) {
                         // next param is value
-                        list(, $value) = each($params);
+                        list(, $value) = each($argv);
                     } else {
                         // required value for option not found
                         $value = false;
                     }
                 }
                 if (in_array($pname, $multiple)) {
-                    if (!isset($result[$pname])) {
-                        $result[$pname] = array();
+                    if (!isset($parameters[$pname])) {
+                        $parameters[$pname] = array();
                     }
-                    $result[$pname][] = $value;
+                    $parameters[$pname][] = $value;
                 } else {
-                    $result[$pname] = $value;
+                    $parameters[$pname] = $value;
                 }
             } else {
                 if ($p == '--') {
                     // all next params are not parsed
-                    while (list(, $p) = each($params)) {
-                        $result[] = $p;
+                    while (list(, $p) = each($argv)) {
+                        $parameters[] = $p;
                     }
                 } else {
                     // param doesn't belong to any option
-                    $result[] = $p;
+                    $parameters[] = $p;
                 }
             }
         }
-        foreach ($result as $pname => $value) {
-            $this->{$pname} = $value;
+        return new self($parameters);
+    }
+
+    /**
+     * Build array like $_SERVER['argv'] from current instance.
+     * @param array $reqvals Parameters that come with value
+     * @param array $multiple Parameters that may come multiple times
+     */
+    public function argv(array $reqvals = array(), array $multiple = array(), array $longOptions = array())
+    {
+        $argv = array();
+        $positioned = array();
+        foreach ($this as $name => $value) {
+            if (is_numeric($name)) {
+                $positioned[$name] = $value;
+            } else {
+                if (in_array($name, $longOptions)) {
+                    $dashName = '--' . $name;
+                } else {
+                    $dashName = '-' . $name;
+                }
+                if (!in_array($name, $multiple)) {
+                    $value = array($value);
+                }
+                foreach ($value as $subValue) {
+                    if (false === $subValue || null === $subValue) {
+                        continue;
+                    }
+                    if (in_array($name, $reqvals)) {
+                        $argv[] = $dashName;
+                        $argv[] = escapeshellarg(strval($subValue));
+                    } else {
+                        if ($subValue) {
+                            $argv[] = $dashName;
+                        }
+                    }
+                }
+            }
         }
+        if (isset($positioned[0])) {
+            array_unshift($argv, escapeshellarg(strval($positioned[0])));
+            unset($positioned[0]);
+        }
+        if (count($positioned) > 0) {
+            $argv[] = '--';
+            foreach ($positioned as $value) {
+                $argv[] = escapeshellarg(strval($value));
+            }
+        }
+        return $argv;
     }
 
     /**
