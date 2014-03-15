@@ -35,7 +35,7 @@ $version = trim(file_get_contents(__DIR__ . '/../res/VERSION'));
 $logger->addInfo($translator->translate('appName', array($version)));
 $logger->addInfo($translator->translate('copyrightInfo'));
 
-if ($configure->help) {
+if ($configure->help || 1 === count($_SERVER['argv'])) {
     $view = new \Zebooka\PD\ConfigureView($configure, $translator, \Zebooka\Utils\Cli\Size::getTerminalWidth() ? : 80);
     $logger->addInfo($view->render());
     exit(0);

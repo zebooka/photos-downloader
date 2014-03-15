@@ -58,7 +58,7 @@ class Configure
     public $limit = false;
     public $recursive = true;
     public $from = array();
-    public $to;
+    public $to = self::KEEP_IN_PLACE;
     public $subDirectoriesStructure = true;
     public $copy = false;
     public $deleteDuplicates = true;
@@ -67,13 +67,11 @@ class Configure
     public $tokensToAdd = array();
     public $tokensToDrop = array();
     public $tokensDropUnknown = false;
+    public $executableName;
     public $positionedParameters = array();
 
     public function __construct(array $argv)
     {
-        if (1 == count($argv)) {
-            $argv[] = '-' . self::P_HELP;
-        }
         $argv = $this->decodeArgv($argv);
 
         $this->help = !empty($argv->{self::P_HELP});
@@ -93,13 +91,9 @@ class Configure
         $this->tokensToAdd = $this->splitSpaceSeparated(array_key_exists(self::P_TOKENS_ADD, $argv) ? $argv->{self::P_TOKENS_ADD} : $this->tokensToAdd);
         $this->tokensToDrop = $this->splitSpaceSeparated(array_key_exists(self::P_TOKENS_DROP, $argv) ? $argv->{self::P_TOKENS_DROP} : $this->tokensToDrop);
         $this->tokensDropUnknown = !empty($argv->{self::P_TOKENS_DROP_UNKNOWN});
+        $this->from = array_unique(array_merge($this->from, array_slice($argv->positionedParameters(), 1)));
         $this->positionedParameters = $argv->positionedParameters();
-        $this->from = array_unique(array_merge($this->from, array_slice($this->positionedParameters, 1)));
-    }
-
-    public function executableName()
-    {
-        return (isset($this->positionedParameters[0]) ? $this->positionedParameters[0] : null);
+        $this->executableName = (isset($this->positionedParameters[0]) ? $this->positionedParameters[0] : null);
     }
 
     private function splitSpaceSeparated(array $values)

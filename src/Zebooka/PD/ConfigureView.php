@@ -32,7 +32,7 @@ class ConfigureView
             $this->indent() . implode(
                 ' ',
                 array(
-                    $this->configure->executableName(),
+                    $this->configure->executableName,
                     '[' . $this->translator->translate('usage/parameters') . ']',
                     '-' . Configure::P_FROM,
                     $this->translator->translate('usage/parameterValue/from'),
