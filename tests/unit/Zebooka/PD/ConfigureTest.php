@@ -39,7 +39,6 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
     public function test_configure()
     {
         $configure = new Configure($this->argv());
-        $this->assertArrayHasKey(0, $configure->positionedParameters);
         $this->assertEquals('/example/bin', $configure->executableName);
         $this->assertTrue($configure->help);
         $this->assertEquals(123, $configure->verboseLevel);

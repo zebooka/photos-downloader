@@ -7,6 +7,8 @@ use Zebooka\Utils\Cli\Parameters;
 /**
  * @property bool $help
  * @property bool $verboseLevel
+ * @property null|string $logFile
+ * @property int $logLevel
  * @property bool $simulate
  * @property false|int $limit
  * @property bool $recursive
@@ -20,9 +22,7 @@ use Zebooka\Utils\Cli\Parameters;
  * @property array $tokensToAdd
  * @property array $tokensToDrop
  * @property bool $tokensDropUnknown
- * @property array $positionedParameters
- * @property null|string $logFile
- * @property int $logLevel
+ * @property null|string $executableName
  */
 class Configure
 {
@@ -68,7 +68,6 @@ class Configure
     public $tokensToDrop = array();
     public $tokensDropUnknown = false;
     public $executableName;
-    public $positionedParameters = array();
 
     public function __construct(array $argv)
     {
@@ -92,8 +91,8 @@ class Configure
         $this->tokensToDrop = $this->splitSpaceSeparated(array_key_exists(self::P_TOKENS_DROP, $argv) ? $argv->{self::P_TOKENS_DROP} : $this->tokensToDrop);
         $this->tokensDropUnknown = !empty($argv->{self::P_TOKENS_DROP_UNKNOWN});
         $this->from = array_unique(array_merge($this->from, array_slice($argv->positionedParameters(), 1)));
-        $this->positionedParameters = $argv->positionedParameters();
-        $this->executableName = (isset($this->positionedParameters[0]) ? $this->positionedParameters[0] : null);
+        $positionedParameters = $argv->positionedParameters();
+        $this->executableName = (isset($positionedParameters[0]) ? $positionedParameters[0] : null);
     }
 
     private function splitSpaceSeparated(array $values)
