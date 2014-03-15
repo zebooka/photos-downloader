@@ -3,6 +3,7 @@
     "copyrightInfo": "(c) Copyright 2014, Anton Bondar <anton@zebooka.com> http://zebooka.com/soft/LICENSE/",
     "usage": "USAGE:",
     "parameters": "PARAMETERS:",
+    "currentConfiguration": "CURRENT CONFIGURATION:",
     "usage/parameters": "PARAMETERS",
     "usage/parameterValue/from": "PATH",
     "usage/parameterValue/to": "PATH",

@@ -113,6 +113,38 @@ class Configure
         );
     }
 
+    public function argv()
+    {
+        $parameters = new Parameters($this->encodeParameters());
+        return $parameters->argv(
+            self::parametersRequiringValues(),
+            self::parametersUsableMultipleTimes()
+        );
+    }
+
+    private function encodeParameters()
+    {
+        return array(
+            0 => $this->executableName,
+            self::P_HELP => $this->help,
+            self::P_VERBOSE_LEVEL => $this->verboseLevel,
+            self::P_LOG_FILE => $this->logFile,
+            self::P_LOG_LEVEL => $this->logLevel,
+            self::P_SIMULATE => $this->simulate,
+            self::P_LIMIT => $this->limit,
+            self::P_NO_RECURSIVE => !$this->recursive,
+            self::P_FROM => $this->from,
+            self::P_TO => $this->to,
+            self::P_NO_SUBDIRS => !$this->subDirectoriesStructure,
+            self::P_COPY => $this->copy,
+            self::P_NO_DELETE_DUPLICATES => !$this->deleteDuplicates,
+            self::P_AUTHOR => $this->author,
+            self::P_TOKENS_ADD => $this->tokensToAdd,
+            self::P_TOKENS_DROP => $this->tokensToDrop,
+            self::P_TOKENS_DROP_UNKNOWN => $this->tokensDropUnknown,
+        );
+    }
+
     public static function parametersRequiringValues()
     {
         return array(

@@ -17,7 +17,14 @@ class ConfigureView
 
     public function render()
     {
-        return PHP_EOL . $this->usage() . PHP_EOL . PHP_EOL . $this->parameters() . PHP_EOL;
+        return
+            PHP_EOL .
+            $this->usage() .
+            PHP_EOL . PHP_EOL .
+            $this->parameters() .
+            PHP_EOL . PHP_EOL .
+            $this->currentConfiguration() .
+            PHP_EOL;
     }
 
     private function indent()
@@ -32,7 +39,7 @@ class ConfigureView
             $this->indent() . implode(
                 ' ',
                 array(
-                    $this->configure->executableName,
+                    escapeshellarg($this->configure->executableName),
                     '[' . $this->translator->translate('usage/parameters') . ']',
                     '-' . Configure::P_FROM,
                     $this->translator->translate('usage/parameterValue/from'),
@@ -50,6 +57,13 @@ class ConfigureView
         return
             $this->translator->translate('parameters') . PHP_EOL .
             $this->combineParametersDescriptions($this->extractParametersWithDescriptions());
+    }
+
+    private function currentConfiguration()
+    {
+        return
+            $this->translator->translate('currentConfiguration') . PHP_EOL .
+            $this->indent() . implode(' ', $this->configure->argv());
     }
 
     private function extractParametersWithDescriptions()

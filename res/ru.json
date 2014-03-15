@@ -3,6 +3,7 @@
     "copyrightInfo": "(c) 2014, Антон Бондарь <anton@zebooka.com> http://zebooka.com/soft/LICENSE/",
     "usage": "ИСПОЛЬЗОВАНИЕ:",
     "parameters": "ПАРАМЕТРЫ:",
+    "currentConfiguration": "ТЕКУЩАЯ КОНФИГУРАЦИЯ:",
     "usage/parameters": "ПАРАМЕТРЫ",
     "usage/parameterValue/from": "ПУТЬ",
     "usage/parameterValue/to": "ПУТЬ",
