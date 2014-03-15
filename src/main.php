@@ -41,6 +41,10 @@ if ($configure->help) {
     exit(0);
 }
 
+foreach (new \Zebooka\PD\ScannerIterator($configure->from) as $photoBunch) {
+    $logger->addNotice($photoBunch);
+}
+
 $logger->addDebug(
     $translator->translate(
         'peakMemoryUsage',

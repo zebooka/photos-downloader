@@ -2,70 +2,50 @@
 
 namespace Zebooka\PD;
 
-class ScannerIterator implements \IteratorAggregate
+class ScannerIterator implements \Iterator
 {
-    private $iterator;
+    private $originalSourcePaths;
+    /**
+     * @var Scanner
+     */
+    private $scanner;
+    private $key;
+    private $value;
 
-    public function __construct(\Traversable $iterator)
+    public function __construct(array $sourcePaths)
     {
-        $this->iterator = $iterator;
+        $this->originalSourcePaths = $sourcePaths;
+        $this->rewind();
     }
 
-    private function scan()
+    public function rewind()
     {
-        $regexp = self::supportedExtensionsRegExp();
-        $basepaths = array();
-        foreach ($this->iterator as $path) {
-            if (preg_match($regexp, $path, $matches)) {
-                $basepaths[substr($path, 0, strlen($path) - strlen($matches[1]))] = true;
-            }
-        }
-
-        return array_keys($basepaths);
+        $this->scanner = new Scanner($this->originalSourcePaths);
+        $this->key = 0;
+        $this->value = $this->scanner->searchForNextFile();
     }
 
-    public function getIterator()
+    public function valid()
     {
-        return new \ArrayIterator($this->scan());
+        return (false !== $this->value);
     }
 
-    static public function supportedExtensions()
+    /**
+     * @return false|PhotoBunch
+     */
+    public function current()
     {
-        return array(
-            '3fr', // Hasselblad
-            'arw', // Sony
-            'bay', // Casio
-            'cr2', // Canon
-            'crw', // Canon
-            'dcr', // Kodak
-            'dng', // Adobe & Leica & Pentax
-            'erf', // Epson
-            'jpeg',
-            'jpg',
-            'kdc', // Kodak
-            'mef', // Mamiya
-            'mrw', // Minolta
-            'nef', // Nikon
-            'nrw', // Nikon
-            'orf', // Olympus
-            'pef', // Pentax
-            'ptx', // Pentax
-            'r3d', // Red One
-            'raf', // Fujifilm
-            'raw', // Leica & Panasonic
-            'rw2', // Panasonic
-            'rwl', // Leica
-            'sr2', // Sony
-            'srf', // Sony
-            'srw', // Samsung
-            'tif',
-            'tiff',
-            'x3f', // Sigma
-        );
+        return $this->value;
     }
 
-    static private function supportedExtensionsRegExp()
+    public function key()
     {
-        return '/(\.(' . implode('|', array_map('preg_quote', self::supportedExtensions())) . '))$/i';
+        return $this->key;
+    }
+
+    public function next()
+    {
+        $this->key++;
+        $this->value = $this->scanner->searchForNextFile();
     }
 }
