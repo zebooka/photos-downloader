@@ -6,7 +6,7 @@ use Zebooka\Utils\Cli\Parameters;
 
 /**
  * @property bool $help
- * @property bool $debug
+ * @property bool $verboseLevel
  * @property bool $simulate
  * @property false|int $limit
  * @property bool $recursive
@@ -30,7 +30,7 @@ class Configure
     const KEEP_IN_PLACE = '-';
 
     const P_HELP = 'h';
-    const P_DEBUG = 'E';
+    const P_VERBOSE_LEVEL = 'E';
     const P_LOG_FILE = 'o';
     const P_LOG_LEVEL = 'O';
     const P_SIMULATE = 's';
@@ -51,7 +51,7 @@ class Configure
     const ERROR_NO_TO = 2;
 
     public $help = false;
-    public $debug = false;
+    public $verboseLevel = 100;
     public $logFile = null;
     public $logLevel = 250;
     public $simulate = false;
@@ -77,7 +77,7 @@ class Configure
         $argv = $this->decodeArgv($argv);
 
         $this->help = !empty($argv->{self::P_HELP});
-        $this->debug = !empty($argv->{self::P_DEBUG});
+        $this->verboseLevel = (array_key_exists(self::P_VERBOSE_LEVEL, $argv) ? intval($argv->{self::P_VERBOSE_LEVEL}) : $this->verboseLevel);
         $this->logFile = (array_key_exists(self::P_LOG_FILE, $argv) ? strval($argv->{self::P_LOG_FILE}) : $this->logFile);
         $this->logLevel = (array_key_exists(self::P_LOG_LEVEL, $argv) ? intval($argv->{self::P_LOG_LEVEL}) : $this->logLevel);
         $this->simulate = !empty($argv->{self::P_SIMULATE});
@@ -123,6 +123,7 @@ class Configure
     public static function parametersRequiringValues()
     {
         return array(
+            self::P_VERBOSE_LEVEL,
             self::P_LOG_FILE,
             self::P_LOG_LEVEL,
             self::P_LIMIT,

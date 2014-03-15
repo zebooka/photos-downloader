@@ -11,7 +11,7 @@ class LoggerFactory
     public static function logger(Configure $configure)
     {
         $id = substr(md5(date('r') . '_' . rand(0, 1000000000)), 0, 5);
-        $ttyHandler = new StreamHandler('php://stderr', $configure->debug ? Logger::DEBUG : Logger::INFO);
+        $ttyHandler = new StreamHandler('php://stderr', $configure->verboseLevel);
         $ttyHandler->setFormatter(new LineFormatter("%message%\n"));
         $monolog = new Logger($id);
         $monolog->pushHandler($ttyHandler);

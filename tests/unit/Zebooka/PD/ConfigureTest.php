@@ -8,6 +8,7 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             array(
+                Configure::P_VERBOSE_LEVEL,
                 Configure::P_LOG_FILE,
                 Configure::P_LOG_LEVEL,
                 Configure::P_LIMIT,
@@ -41,7 +42,7 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayHasKey(0, $configure->positionedParameters);
         $this->assertEquals('/example/bin', $configure->positionedParameters[0]);
         $this->assertTrue($configure->help);
-        $this->assertTrue($configure->debug);
+        $this->assertEquals(123, $configure->verboseLevel);
         $this->assertTrue($configure->simulate);
         $this->assertEquals(42, $configure->limit);
         $this->assertFalse($configure->recursive);
@@ -56,7 +57,7 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array('drop3', 'drop4'), $configure->tokensToDrop);
         $this->assertTrue($configure->tokensDropUnknown);
         $this->assertEquals('/tmp/example.log', $configure->logFile);
-        $this->assertEquals(123, $configure->logLevel);
+        $this->assertEquals(321, $configure->logLevel);
     }
 
     private function argv()
@@ -65,6 +66,7 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
             '/example/bin',
             '-h',
             '-E',
+            '123',
             '-s',
             '-l',
             '42',
@@ -93,7 +95,7 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
             '-o',
             '/tmp/example.log',
             '-O',
-            '123',
+            '321',
         );
     }
 

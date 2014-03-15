@@ -32,5 +32,6 @@
     "parameters/description/P_TOKENS_ADD": "Add these tokens to new filenames (space/comma separated list; repeatable).",
     "parameters/description/P_TOKENS_DROP": "Drop these tokens from new filenames (space/comma separated list; repeatable).",
     "parameters/description/P_TOKENS_DROP_UNKNOWN": "Drop all unknown tokens.",
+    "peakMemoryUsage": "Peak memory usage: {0}",
     "end": "The End!"
 }

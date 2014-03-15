@@ -9,7 +9,11 @@ set_error_handler(
 );
 set_exception_handler(
     function (\Exception $e) {
-        error_log($e);
+        if (isset($GLOBALS['logger']) && $GLOBALS['logger'] instanceof \Monolog\Logger) {
+            $GLOBALS['logger']->addCritical($e);
+        } else {
+            error_log($e);
+        }
         exit(1);
     }
 );
@@ -36,3 +40,10 @@ if ($configure->help) {
     $logger->addInfo($view->render());
     exit(0);
 }
+
+$logger->addDebug(
+    $translator->translate(
+        'peakMemoryUsage',
+        array(\Zebooka\Utils\Size::humanReadableSize(memory_get_peak_usage(true)))
+    )
+);
