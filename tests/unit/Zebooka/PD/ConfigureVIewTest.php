@@ -6,13 +6,13 @@ class ConfigureViewTest extends \PHPUnit_Framework_TestCase
 {
     public function test_rendering()
     {
-        $configure = \Mockery::mock(get_class(new Configure(array())))
+        $configure = \Mockery::mock('\\Zebooka\\PD\\Configure')
             ->shouldReceive('executableName')
             ->withNoArgs()
             ->once()
             ->andReturn('unique-executable-name')
             ->getMock();
-        $translator = \Mockery::mock(get_class(new Translator(array(), 'en')))
+        $translator = \Mockery::mock('\\Zebooka\\PD\\Translator')
             ->shouldReceive('translate')
             ->atLeast()
             ->once()
