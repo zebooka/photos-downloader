@@ -15,7 +15,6 @@ class ScannerIterator implements \Iterator
     public function __construct(array $sourcePaths)
     {
         $this->originalSourcePaths = $sourcePaths;
-        $this->rewind();
     }
 
     public function rewind()

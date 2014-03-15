@@ -11,13 +11,13 @@ class ScannerTest extends \PHPUnit_Framework_TestCase
 
     public function test_searchForNextFile()
     {
-        $scanner = new Scanner(array($this->resourceDirectory()));
+        $scanner = new Scanner(array($this->resourceDirectory().'/0.jpg', $this->resourceDirectory()));
         $i = 0;
         while ($photoBunch = $scanner->searchForNextFile()) {
             $i++;
             $this->assertInstanceOf('\\Zebooka\\PD\\PhotoBunch', $photoBunch);
         }
-        $this->assertEquals(4, $i);
+        $this->assertEquals(5, $i);
     }
 
     public function test_supportedExtensions()
