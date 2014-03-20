@@ -38,7 +38,8 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
 
     public function test_configure()
     {
-        $configure = new Configure($this->argv());
+        $knownData = array('authors' => array('unique-authors'), 'tokens' => array('unique-tokens'));
+        $configure = new Configure($this->argv(), $knownData);
         $this->assertEquals('/example/bin', $configure->executableName);
         $this->assertTrue($configure->help);
         $this->assertEquals(123, $configure->verboseLevel);
@@ -57,6 +58,8 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($configure->tokensDropUnknown);
         $this->assertEquals('/tmp/example.log', $configure->logFile);
         $this->assertEquals(321, $configure->logLevel);
+        $this->assertEquals(array('unique-authors'), $configure->knownAuthors());
+        $this->assertEquals(array('unique-tokens'), $configure->knownTokens());
     }
 
     private function argv()

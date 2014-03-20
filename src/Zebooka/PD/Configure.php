@@ -69,7 +69,10 @@ class Configure
     public $tokensDropUnknown = false;
     public $executableName;
 
-    public function __construct(array $argv)
+    private $knownAuthors = array();
+    private $knownTokens = array();
+
+    public function __construct(array $argv, array $tokens)
     {
         $argv = $this->decodeArgv($argv);
 
@@ -93,6 +96,9 @@ class Configure
         $this->from = array_unique(array_merge($this->from, array_slice($argv->positionedParameters(), 1)));
         $positionedParameters = $argv->positionedParameters();
         $this->executableName = (isset($positionedParameters[0]) ? $positionedParameters[0] : null);
+
+        $this->knownAuthors = (isset($tokens['authors']) && is_array($tokens['authors']) ? $tokens['authors'] : $this->knownAuthors);
+        $this->knownTokens = (isset($tokens['tokens']) && is_array($tokens['tokens']) ? $tokens['tokens'] : $this->knownTokens);
     }
 
     private function splitSpaceSeparated(array $values)
@@ -120,6 +126,22 @@ class Configure
             self::parametersRequiringValues(),
             self::parametersUsableMultipleTimes()
         );
+    }
+
+    /**
+     * @return string[]
+     */
+    public function knownAuthors()
+    {
+        return $this->knownAuthors;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function knownTokens()
+    {
+        return $this->knownTokens;
     }
 
     private function encodeParameters()

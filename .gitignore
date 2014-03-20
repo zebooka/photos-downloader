@@ -1,5 +1,3 @@
-/.dev
 /build/*
-/src/configure.php
 /vendor/*
 /vendor-dev/*

@@ -23,7 +23,10 @@ mb_internal_encoding('UTF-8');
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
 // read configure
-$configure = new \Zebooka\PD\Configure($_SERVER['argv']);
+$configure = new \Zebooka\PD\Configure(
+    $_SERVER['argv'],
+    json_decode(file_get_contents(__DIR__ . '/../res/tokens.json'), true)
+);
 
 // setup logger
 $logger = \Zebooka\PD\LoggerFactory::logger($configure);
