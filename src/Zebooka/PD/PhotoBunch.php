@@ -39,6 +39,11 @@ class PhotoBunch
         return basename($this->bunchId);
     }
 
+    public function bunchId()
+    {
+        return $this->bunchId;
+    }
+
     /**
      * @return string[]
      */
