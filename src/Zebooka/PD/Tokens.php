@@ -4,9 +4,6 @@ namespace Zebooka\PD;
 
 /**
  * @property string $prefix
- * @property int $timestamp
- * @property string $date
- * @property string $time
  * @property int $shot
  * @property string $author
  * @property string $camera
@@ -16,8 +13,12 @@ class Tokens
 {
     const SEPARATOR = '_';
     const DATE_FORMAT = 'ymd';
-    const TIME_FORMAT = 'his';
+    const TIME_FORMAT = 'His';
     const ERROR_NO_DATE_TIME = 1;
+
+    private $timestamp = null;
+    private $date = null;
+    private $time = null;
 
     /**
      * @param string|null $prefix
