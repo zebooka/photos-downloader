@@ -1,6 +1,6 @@
 <?php
 
-namespace Zebooka\PD;
+namespace Zebooka\Translator;
 
 class TranslatorFactoryTest extends \PHPUnit_Framework_TestCase
 {

@@ -2,6 +2,8 @@
 
 namespace Zebooka\PD;
 
+use Zebooka\Translator\Translator;
+
 class ConfigureView
 {
     private $configure;

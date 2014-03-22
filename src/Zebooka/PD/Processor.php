@@ -3,6 +3,7 @@
 namespace Zebooka\PD;
 
 use Monolog\Logger;
+use Zebooka\Translator\Translator;
 
 class Processor
 {

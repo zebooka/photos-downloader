@@ -3,6 +3,7 @@
 namespace Zebooka\PD;
 
 use Monolog\Logger;
+use Zebooka\Translator\Translator;
 
 class ProcessorTest extends \PHPUnit_Framework_TestCase
 {
@@ -95,7 +96,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
      */
     private function translator()
     {
-        return \Mockery::mock('\\Zebooka\\PD\\Translator')
+        return \Mockery::mock('\\Zebooka\\Translator\\Translator')
             ->shouldIgnoreMissing();
     }
 

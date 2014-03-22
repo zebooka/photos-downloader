@@ -11,7 +11,7 @@ class ConfigureViewTest extends \PHPUnit_Framework_TestCase
             ->once()
             ->andReturn(array('unique-usage-example', '123'))
             ->getMock();
-        $translator = \Mockery::mock('\\Zebooka\\PD\\Translator')
+        $translator = \Mockery::mock('\\Zebooka\\Translator\\Translator')
             ->shouldReceive('translate')
             ->atLeast()
             ->once()

@@ -32,7 +32,7 @@ $configure = new \Zebooka\PD\Configure(
 $logger = \Zebooka\PD\LoggerFactory::logger($configure);
 
 // translations
-$translator = \Zebooka\PD\TranslatorFactory::translator(__DIR__ . '/../res', setlocale(LC_CTYPE, 0));
+$translator = \Zebooka\Translator\TranslatorFactory::translator(__DIR__ . '/../res', setlocale(LC_CTYPE, 0));
 
 $version = trim(file_get_contents(__DIR__ . '/../res/VERSION'));
 $logger->addInfo($translator->translate('appName', array($version)));
