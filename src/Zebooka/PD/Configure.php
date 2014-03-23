@@ -70,9 +70,10 @@ class Configure
     public $executableName;
 
     private $knownAuthors = array();
+    private $knownCameras = array();
     private $knownTokens = array();
 
-    public function __construct(array $argv, array $tokens)
+    public function __construct(array $argv, array $knownLists)
     {
         $argv = $this->decodeArgv($argv);
 
@@ -97,8 +98,9 @@ class Configure
         $positionedParameters = $argv->positionedParameters();
         $this->executableName = (isset($positionedParameters[0]) ? $positionedParameters[0] : null);
 
-        $this->knownAuthors = (isset($tokens['authors']) && is_array($tokens['authors']) ? $tokens['authors'] : $this->knownAuthors);
-        $this->knownTokens = (isset($tokens['tokens']) && is_array($tokens['tokens']) ? $tokens['tokens'] : $this->knownTokens);
+        $this->knownAuthors = (isset($knownLists['authors']) && is_array($knownLists['authors']) ? $knownLists['authors'] : $this->knownAuthors);
+        $this->knownCameras = (isset($knownLists['cameras']) && is_array($knownLists['cameras']) ? $knownLists['cameras'] : $this->knownCameras);
+        $this->knownTokens = (isset($knownLists['tokens']) && is_array($knownLists['tokens']) ? $knownLists['tokens'] : $this->knownTokens);
     }
 
     private function splitSpaceSeparated(array $values)
@@ -134,6 +136,14 @@ class Configure
     public function knownAuthors()
     {
         return $this->knownAuthors;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function knownCameras()
+    {
+        return $this->knownCameras;
     }
 
     /**

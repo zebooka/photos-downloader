@@ -38,7 +38,11 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
 
     public function test_configure()
     {
-        $knownData = array('authors' => array('unique-authors'), 'tokens' => array('unique-tokens'));
+        $knownData = array(
+            'authors' => array('unique-author-1', 'unique-author-2'),
+            'cameras' => array('unique-camera-1', 'unique-camera-2', 'unique-camera-3'),
+            'tokens' => array('unique-token-1', 'unique-token-2', 'unique-token-3', 'unique-token-4'),
+        );
         $configure = new Configure($this->argv(), $knownData);
         $this->assertEquals('/example/bin', $configure->executableName);
         $this->assertTrue($configure->help);
@@ -58,8 +62,9 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($configure->tokensDropUnknown);
         $this->assertEquals('/tmp/example.log', $configure->logFile);
         $this->assertEquals(321, $configure->logLevel);
-        $this->assertEquals(array('unique-authors'), $configure->knownAuthors());
-        $this->assertEquals(array('unique-tokens'), $configure->knownTokens());
+        $this->assertEquals($knownData['authors'], $configure->knownAuthors());
+        $this->assertEquals($knownData['cameras'], $configure->knownCameras());
+        $this->assertEquals($knownData['tokens'], $configure->knownTokens());
     }
 
     private function argv()
