@@ -39,9 +39,11 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
     /**
      * @return Configure
      */
-    private function configure()
+    private function configure(array $cameras = array())
     {
-        return \Mockery::mock('\\Zebooka\\PD\\Configure');
+        $configure = \Mockery::mock('\\Zebooka\\PD\\Configure');
+        $configure->cameras = $cameras;
+        return $configure;
     }
 
     /**
@@ -67,6 +69,17 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
             ->with($tokens)
             ->once()
             ->andReturn($newBunchId)
+            ->getMock();
+    }
+
+    /**
+     * @return Assembler
+     */
+    private function assemblerNeverCalled()
+    {
+        return \Mockery::mock('\\Zebooka\\PD\\Assembler')
+            ->shouldReceive('assemble')
+            ->never()
             ->getMock();
     }
 
@@ -113,8 +126,25 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
             $this->translator()
         );
 
-        $processor->process($photoBunch);
+        $this->assertTrue($processor->process($photoBunch));
         $this->assertEquals(12, $processor->bytesTransferred());
+    }
+
+    public function test_process_stops_if_camera_not_in_list()
+    {
+        $photoBunch = $this->photoBunch();
+        $tokens = $this->tokens();
+        $processor = new Processor(
+            $this->configure(array('camera-1', 'camera-2')),
+            $this->tokenizer($photoBunch, $tokens),
+            $this->assemblerNeverCalled(),
+            $this->executor(),
+            $this->logger(),
+            $this->translator()
+        );
+
+        $this->assertFalse($processor->process($photoBunch));
+        $this->assertEquals(0, $processor->bytesTransferred());
     }
 
     public function test_process_stops_if_new_bunchId_is_false()
@@ -130,7 +160,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
             $this->translator()
         );
 
-        $processor->process($photoBunch);
+        $this->assertFalse($processor->process($photoBunch));
         $this->assertEquals(0, $processor->bytesTransferred());
     }
 
@@ -147,7 +177,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
             $this->translator()
         );
 
-        $processor->process($photoBunch);
+        $this->assertFalse($processor->process($photoBunch));
         $this->assertEquals(0, $processor->bytesTransferred());
     }
 }

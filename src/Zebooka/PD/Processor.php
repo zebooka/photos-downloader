@@ -34,7 +34,7 @@ class Processor
     public function process(PhotoBunch $photoBunch)
     {
         $this->logger->addNotice($this->translator->translate('originalPhotoBunchPath', array($photoBunch)));
-        $tokens = $this->tokenizer->tokenize($photoBunch);
+        $tokens = $this->tokenizer->tokenize($photoBunch); // TODO: try-catch
         if ($this->configure->cameras && !in_array($tokens->camera, $this->configure->cameras)) {
             $this->logger->addNotice(
                 $this->translator->translate(
@@ -44,7 +44,7 @@ class Processor
             );
             return false;
         }
-        $newBunchId = $this->assembler->assemble($tokens);
+        $newBunchId = $this->assembler->assemble($tokens); // TODO: try-catch
         if (false === $newBunchId) {
             $this->logger->addNotice($this->translator->translate('error/unableToAssembleTokens', array($photoBunch)));
             return false;
@@ -67,7 +67,7 @@ class Processor
             } else {
                 if (0 !== $this->executor->execute($cmd)) {
                     $this->logger->addError($this->translator->translate('error/unableToCreateDestinationDir', array($dir)));
-                    return; // we fail to create destination dir and move/copy will also fail
+                    return false; // we fail to create destination dir and move/copy will also fail
                 } else {
                     $this->logger->addNotice($this->translator->translate('createdDestinationDir', array($dir)));
                 }
