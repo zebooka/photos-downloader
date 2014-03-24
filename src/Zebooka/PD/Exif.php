@@ -10,6 +10,7 @@ namespace Zebooka\PD;
  * @property string $Make
  * @property string $Model
  * @property string $DateTimeOriginal
+ * @property string $Software
  */
 class Exif
 {

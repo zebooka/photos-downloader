@@ -31,6 +31,9 @@ class ExifTest extends \PHPUnit_Framework_TestCase
         $this->assertObjectHasAttribute('FileName', $exif);
         $this->assertObjectHasAttribute('FileModifyDate', $exif);
         $this->assertObjectHasAttribute('MIMEType', $exif);
+        $this->assertObjectHasAttribute('Make', $exif);
+        $this->assertObjectHasAttribute('Model', $exif);
         $this->assertObjectHasAttribute('DateTimeOriginal', $exif);
+        $this->assertObjectHasAttribute('Software', $exif);
     }
 }
