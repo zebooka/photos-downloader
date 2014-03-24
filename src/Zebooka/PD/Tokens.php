@@ -77,4 +77,13 @@ class Tokens
     {
         return (isset($this->timestamp) ? date(self::TIME_FORMAT, $this->timestamp) : $this->time);
     }
+
+    public function increaseShot()
+    {
+        if (null === $this->shot) {
+            $this->shot = 2;
+        } else {
+            $this->shot++;
+        }
+    }
 }
