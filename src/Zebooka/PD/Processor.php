@@ -35,10 +35,19 @@ class Processor
     {
         $this->logger->addNotice($this->translator->translate('originalPhotoBunchPath', array($photoBunch)));
         $tokens = $this->tokenizer->tokenize($photoBunch);
+        if ($this->configure->cameras && !in_array($tokens->camera, $this->configure->cameras)) {
+            $this->logger->addNotice(
+                $this->translator->translate(
+                    'skippedBecauseCameraNotInList',
+                    array($tokens->camera, $photoBunch)
+                )
+            );
+            return false;
+        }
         $newBunchId = $this->assembler->assemble($tokens);
         if (false === $newBunchId) {
             $this->logger->addNotice($this->translator->translate('error/unableToAssembleTokens', array($photoBunch)));
-            return;
+            return false;
         }
         if ($photoBunch->bunchId() === $newBunchId) {
             $this->logger->addNotice(
@@ -47,7 +56,7 @@ class Processor
                     array(count($photoBunch->extensions()), $photoBunch)
                 )
             );
-            return;
+            return false;
         }
         $dir = dirname($newBunchId);
         // create dir if needed
@@ -86,6 +95,7 @@ class Processor
                 }
             }
         }
+        return true;
     }
 
     public function bytesTransferred()

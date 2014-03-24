@@ -53,11 +53,24 @@ $processor = new \Zebooka\PD\Processor(
     $logger,
     $translator
 );
+$i = 0;
 foreach (new \Zebooka\PD\ScannerIterator($configure->from) as $photoBunch) {
     $processor->process($photoBunch);
+    $i++;
+    if ($configure->limit && $i >= $configure->limit) {
+        $logger->addInfo($translator->translate('processedPhotosLimitWasReached', array($configure->limit)));
+        break;
+    }
 }
 
-$logger->addDebug(
+$logger->addInfo($translator->translate('xPhotosProcessed', array($i)));
+$logger->addInfo(
+    $translator->translate(
+        'xBytesProcessed',
+        array(\Zebooka\Utils\Size::humanReadableSize($processor->bytesTransferred()))
+    )
+);
+$logger->addInfo(
     $translator->translate(
         'peakMemoryUsage',
         array(\Zebooka\Utils\Size::humanReadableSize(memory_get_peak_usage(true)))

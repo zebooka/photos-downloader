@@ -37,10 +37,13 @@
     "parameters/value/P_TOKENS_DROP": "ТЕГИ",
     "parameters/value/P_VERBOSE_LEVEL": "УРОВЕНЬ",
     "peakMemoryUsage": "Пиковое использование памяти: {0}",
-    "skippedBecauseSourceEqualsDestination": " --> {0, select, 1 {файл пропущен (новое имя совпадает со старым)} other {файлы пропущены (новые имена совпадают со старыми)}}",
+    "processedPhotosLimitWasReached": "Достигнут предел обрабатываемых фото (ограничение в {0} фото).",
+    "skippedBecauseSourceEqualsDestination": " --> {0, select, =1 {файл пропущен (новое имя совпадает со старым)} other {файлы пропущены (новые имена совпадают со старыми)}}",
     "usage": "ИСПОЛЬЗОВАНИЕ:",
     "usage/parameters": "ПАРАМЕТРЫ",
     "usage/parameterValue/from": "ПУТЬ",
     "usage/parameterValue/to": "ПУТЬ",
+    "xBytesProcessed": "Обработано {0}.",
+    "xPhotosProcessed": "Обработано {0, plural, one {# фотография} many {# фотографий} other {# фотографии}}.",
     "z": "The End!"
 }

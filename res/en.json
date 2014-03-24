@@ -2,7 +2,6 @@
     "appName": "PHOTOS DOWNLOADER 3 | version: {0} |",
     "copyrightInfo": "(c) Copyright 2014, Anton Bondar <anton@zebooka.com> http://zebooka.com/soft/LICENSE/",
     "createdDestinationDir": "Created directory ''{0}}''.",
-    "skippedBecauseSourceEqualsDestination": " --> skipped (source == destination)",
     "currentConfiguration": "CURRENT CONFIGURATION:",
     "error/unableToAssembleTokens": "Unable to assemble tokens into new filename.",
     "error/unableToCreateDestinationDir": "Unable to create destination directory ''{0}''.",
@@ -38,9 +37,13 @@
     "parameters/value/P_TOKENS_DROP": "TOKENS",
     "parameters/value/P_VERBOSE_LEVEL": "LEVEL",
     "peakMemoryUsage": "Peak memory usage: {0}",
+    "processedPhotosLimitWasReached": "Processed photos limit was reached ({0, plural, one {# photo} other {# photos}} limit).",
+    "skippedBecauseSourceEqualsDestination": " --> skipped (source == destination)",
     "usage": "USAGE:",
     "usage/parameters": "PARAMETERS",
     "usage/parameterValue/from": "PATH",
     "usage/parameterValue/to": "PATH",
+    "xBytesProcessed": "{0} processed.",
+    "xPhotosProcessed": "{0, plural, one {# photo} other {# photos}} processed.",
     "z": "The End!"
 }
