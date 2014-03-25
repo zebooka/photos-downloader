@@ -23,9 +23,16 @@ class Tokenizer
             )
         );
         $prefix = $this->extractPrefix($tokens);
+        // TODO: implement option to convert DCIM token into shot number
         list($datetime, $shot) = $this->extractDateTimeShot($tokens);
         $author = $this->extractAuthor($tokens);
         $camera = $this->extractCamera($tokens);
+        if ($this->configure->tokensDropUnknown) {
+            $tokens = array_intersect($tokens, $this->configure->knownTokens());
+        }
+        $tokens = array_diff($tokens, $this->configure->tokensToDrop);
+        $tokens = array_merge($tokens, $this->configure->tokensToAdd);
+        $tokens = array_values($tokens);
         return new Tokens($datetime, $tokens, $author, $camera, $prefix, $shot);
     }
 

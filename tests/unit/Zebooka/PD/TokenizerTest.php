@@ -17,6 +17,10 @@ class TokenizerTest extends \PHPUnit_Framework_TestCase
             ->shouldReceive('knownCameras')
             ->withNoArgs()
             ->andReturn(array('k100d', 'lx5', '5s'))
+            ->getMock()
+            ->shouldReceive('knownTokens')
+            ->withNoArgs()
+            ->andReturn(array('hello', 'old', 'world'))
             ->getMock();
     }
 
@@ -35,8 +39,12 @@ class TokenizerTest extends \PHPUnit_Framework_TestCase
 
     public function test_tokenize()
     {
-        $tokenizer = new Tokenizer($this->configure());
-        $tokens = $tokenizer->tokenize($this->photoBunch('S_BOA_hello_070417_210000,2_k100d_world'));
+        $configure = $this->configure();
+        $configure->tokensToAdd = array('new');
+        $configure->tokensToDrop = array('old');
+        $configure->tokensDropUnknown = true;
+        $tokenizer = new Tokenizer($configure);
+        $tokens = $tokenizer->tokenize($this->photoBunch('S_BOA_hello_070417_210000,2_k100d_old_world_old_unknown'));
         $this->assertInstanceOf('\\Zebooka\\PD\\Tokens', $tokens);
         $this->assertEquals('070417', $tokens->date());
         $this->assertEquals('210000', $tokens->time());
@@ -44,7 +52,7 @@ class TokenizerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('BOA', $tokens->author);
         $this->assertEquals('S', $tokens->prefix);
         $this->assertEquals('k100d', $tokens->camera);
-        $this->assertEquals(array('hello', 'world'), $tokens->tokens);
+        $this->assertEquals(array('hello', 'world', 'new'), $tokens->tokens);
     }
 
     public function test_tokenize_dcim_photo()
