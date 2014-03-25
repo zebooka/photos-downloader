@@ -1,4 +1,4 @@
 #!/bin/sh
 
-echo "$(date '+%Y/%m/%d %H:%M:%S')" > res/VERSION
+echo "$(date '+%Y/%m/%d %H:%M:%S %z')" > res/VERSION
 git add res/VERSION
