@@ -25,6 +25,9 @@ class Tokenizer
         $prefix = $this->extractPrefix($tokens);
         // TODO: implement option to convert DCIM token into shot number
         list($datetime, $shot) = $this->extractDateTimeShot($tokens);
+        if (null === $datetime) {
+            throw new TokenizerException('Unable to detect date/time.', TokenizerException::NO_DATE_TIME_DETECTED);
+        }
         $author = $this->extractAuthor($tokens);
         $camera = $this->extractCamera($tokens);
         if ($this->configure->tokensDropUnknown) {

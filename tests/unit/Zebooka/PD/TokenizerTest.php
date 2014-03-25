@@ -55,19 +55,34 @@ class TokenizerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array('hello', 'world', 'new'), $tokens->tokens);
     }
 
-    public function test_tokenize_dcim_photo()
+    public function test_tokenize_skips_empty_tokens()
     {
-        $this->setExpectedException(
-            '\\InvalidArgumentException',
-            'Date/time parameter is invalid.',
-            Tokens::ERROR_NO_DATE_TIME
-        ); // TODO: for now this is throwing, because there is no ExifAnalyzer.
-        $tokenizer = new Tokenizer($this->configure());
-        $tokens = $tokenizer->tokenize($this->photoBunch('IMGP1234'));
+        $configure = $this->configure();
+        $tokenizer = new Tokenizer($configure);
+        $tokens = $tokenizer->tokenize($this->photoBunch('070417_210000,3____5s___hello'));
         $this->assertInstanceOf('\\Zebooka\\PD\\Tokens', $tokens);
         $this->assertEquals('070417', $tokens->date());
         $this->assertEquals('210000', $tokens->time());
-        $this->assertEquals(array('IMGP1234'), $tokens->tokens);
+        $this->assertEquals('3', $tokens->shot);
+        $this->assertNull($tokens->author);
+        $this->assertNull($tokens->prefix);
+        $this->assertEquals('5s', $tokens->camera);
+        $this->assertEquals(array('hello'), $tokens->tokens);
+    }
+
+    public function test_tokenize_dcim_photo()
+    {
+        $this->setExpectedException(
+            '\\Zebooka\\PD\\TokenizerException',
+            'Unable to detect date/time.',
+            TokenizerException::NO_DATE_TIME_DETECTED
+        ); // TODO: for now this is throwing, because there is no ExifAnalyzer.
+        $tokenizer = new Tokenizer($this->configure());
+        $tokens = $tokenizer->tokenize($this->photoBunch('IMGP1234'));
+//        $this->assertInstanceOf('\\Zebooka\\PD\\Tokens', $tokens);
+//        $this->assertEquals('070417', $tokens->date());
+//        $this->assertEquals('210000', $tokens->time());
+//        $this->assertEquals(array('IMGP1234'), $tokens->tokens);
     }
 
     public function test_tokenize_lengthy_date()

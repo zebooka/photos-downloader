@@ -60,6 +60,19 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @return Tokenizer
+     */
+    private function tokenizerException(PhotoBunch $photoBunch, $code)
+    {
+        return \Mockery::mock('\\Zebooka\\PD\\Tokenizer')
+            ->shouldReceive('tokenize')
+            ->with($photoBunch)
+            ->once()
+            ->andThrow(new TokenizerException('', $code))
+            ->getMock();
+    }
+
+    /**
      * @return Assembler
      */
     private function assembler(Tokens $tokens, $newBunchId)
@@ -69,6 +82,19 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
             ->with($tokens)
             ->once()
             ->andReturn($newBunchId)
+            ->getMock();
+    }
+
+    /**
+     * @return Assembler
+     */
+    private function assemblerException(Tokens $tokens, $code)
+    {
+        return \Mockery::mock('\\Zebooka\\PD\\Assembler')
+            ->shouldReceive('assemble')
+            ->with($tokens)
+            ->once()
+            ->andThrow(new AssemblerException('', $code))
             ->getMock();
     }
 
@@ -130,6 +156,23 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(12, $processor->bytesTransferred());
     }
 
+    public function test_process_stops_if_tokenize_fails()
+    {
+        $photoBunch = $this->photoBunch();
+        $tokens = $this->tokens();
+        $processor = new Processor(
+            $this->configure(),
+            $this->tokenizerException($photoBunch, TokenizerException::NO_DATE_TIME_DETECTED),
+            $this->assemblerNeverCalled(),
+            $this->executor(),
+            $this->logger(),
+            $this->translator()
+        );
+
+        $this->assertFalse($processor->process($photoBunch));
+        $this->assertEquals(0, $processor->bytesTransferred());
+    }
+
     public function test_process_stops_if_camera_not_in_list()
     {
         $photoBunch = $this->photoBunch();
@@ -147,14 +190,14 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(0, $processor->bytesTransferred());
     }
 
-    public function test_process_stops_if_new_bunchId_is_false()
+    public function test_process_stops_if_assemble_exception()
     {
         $photoBunch = $this->photoBunch();
         $tokens = $this->tokens();
         $processor = new Processor(
             $this->configure(),
             $this->tokenizer($photoBunch, $tokens),
-            $this->assembler($tokens, false),
+            $this->assemblerException($tokens, AssemblerException::TEST),
             $this->executor(),
             $this->logger(),
             $this->translator()

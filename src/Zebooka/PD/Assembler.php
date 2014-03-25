@@ -13,6 +13,6 @@ class Assembler
 
     public function assemble(Tokens $tokens)
     {
-        return false;
+        throw new AssemblerException('Test', AssemblerException::TEST);
     }
 }

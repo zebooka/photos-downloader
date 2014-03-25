@@ -34,7 +34,21 @@ class Processor
     public function process(PhotoBunch $photoBunch)
     {
         $this->logger->addNotice($this->translator->translate('originalPhotoBunchPath', array($photoBunch)));
-        $tokens = $this->tokenizer->tokenize($photoBunch); // TODO: try-catch
+
+        // tokenize
+        try {
+            $tokens = $this->tokenizer->tokenize($photoBunch);
+        } catch (TokenizerException $e) {
+            if (TokenizerException::NO_DATE_TIME_DETECTED == $e->getCode()) {
+                $tokenizeErrorMessage = $this->translator->translate('error/tokenize/datetime');
+            } else {
+                $tokenizeErrorMessage = $this->translator->translate('error/tokenize/unknown');
+            }
+            $this->logger->addError($tokenizeErrorMessage);
+            return false;
+        }
+
+        // skip cameras
         if ($this->configure->cameras && !in_array($tokens->camera, $this->configure->cameras)) {
             $this->logger->addNotice(
                 $this->translator->translate(
@@ -44,11 +58,16 @@ class Processor
             );
             return false;
         }
-        $newBunchId = $this->assembler->assemble($tokens); // TODO: try-catch
-        if (false === $newBunchId) {
-            $this->logger->addNotice($this->translator->translate('error/unableToAssembleTokens', array($photoBunch)));
+
+        // assemble
+        try {
+            $newBunchId = $this->assembler->assemble($tokens);
+        } catch (AssemblerException $e) {
+            $this->logger->addError($this->translator->translate('error/unableToAssembleTokens', array($photoBunch)));
             return false;
         }
+
+        // skip not changed
         if ($photoBunch->bunchId() === $newBunchId) {
             $this->logger->addNotice(
                 $this->translator->translate(
@@ -58,8 +77,9 @@ class Processor
             );
             return false;
         }
-        $dir = dirname($newBunchId);
+
         // create dir if needed
+        $dir = dirname($newBunchId);
         if (!is_dir($dir)) {
             $cmd = 'mkdir -p ' . escapeshellarg($dir);
             if ($this->configure->simulate) {
@@ -73,6 +93,7 @@ class Processor
                 }
             }
         }
+
         // move/copy files
         foreach ($photoBunch->extensions() as $extension) {
             $from = $photoBunch->bunchId() . '.' . $extension;
@@ -95,6 +116,7 @@ class Processor
                 }
             }
         }
+
         return true;
     }
 

@@ -3,6 +3,8 @@
     "copyrightInfo": "(c) 2014, Антон Бондарь <anton@zebooka.com> http://zebooka.com/soft/LICENSE/",
     "createdDestinationDir": "Создана директория ''{0}}''.",
     "currentConfiguration": "ТЕКУЩАЯ КОНФИГУРАЦИЯ:",
+    "error/tokenize/datetime": "Не удалось определить теги — ошибка определения даты/времени.",
+    "error/tokenize/unknown": "Не удалось определить теги — неизвестная ошибка.",
     "error/unableToAssembleTokens": "Не удалось собрать теги в новое имя файла.",
     "error/unableToCreateDestinationDir": "Не удалось создать директорию назначения ''{0}''.",
     "error/unableToMoveOrCopy": "Не удалось {0, select, 0 {переместить} other {скопировать}} файл из ''{1}'' в ''{2}''.",
