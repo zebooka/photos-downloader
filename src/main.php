@@ -54,7 +54,7 @@ $processor = new \Zebooka\PD\Processor(
     $translator
 );
 $i = 0;
-foreach (new \Zebooka\PD\ScannerIterator($configure->from) as $photoBunch) {
+foreach (new \Zebooka\PD\ScannerIterator($configure->from, $configure->recursive) as $photoBunch) {
     $processor->process($photoBunch);
     $i++;
     if ($configure->limit && $i >= $configure->limit) {

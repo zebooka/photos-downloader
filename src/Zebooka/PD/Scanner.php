@@ -7,9 +7,11 @@ class Scanner
     private $files = array();
     private $dirs = array();
     private $stdin;
+    private $recursive;
 
-    public function __construct(array $sourcePaths)
+    public function __construct(array $sourcePaths, $recursive)
     {
+        $this->recursive = $recursive;
         $sourcePaths = array_unique($sourcePaths);
         foreach ($sourcePaths as $sourcePath) {
             if (Configure::PATHS_FROM_STDIN === $sourcePath) {
@@ -78,7 +80,7 @@ class Scanner
             /** @var \DirectoryIterator $path */
             if ($path->isDot()) {
                 continue;
-            } elseif ($path->isDir()) {
+            } elseif ($path->isDir() && $this->recursive) {
                 $dirs[] = $path->getPathname();
             } elseif ($path->isFile()) {
                 $basename = $path->getBasename('.' . $path->getExtension());

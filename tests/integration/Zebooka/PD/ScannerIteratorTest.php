@@ -9,9 +9,9 @@ class ScannerIteratorTest extends \PHPUnit_Framework_TestCase
         return __DIR__ . '/../../../res/scanner';
     }
 
-    public function test_iteration()
+    public function test_recursive_iteration()
     {
-        $scannerIterator = new ScannerIterator(array($this->resourceDirectory()));
+        $scannerIterator = new ScannerIterator(array($this->resourceDirectory()), true);
         $this->assertInstanceOf('\\Traversable', $scannerIterator);
         $i = 0;
         foreach ($scannerIterator as $photoBunch) {
@@ -26,5 +26,24 @@ class ScannerIteratorTest extends \PHPUnit_Framework_TestCase
             $this->assertInstanceOf('\\Zebooka\\PD\\PhotoBunch', $photoBunch);
         }
         $this->assertEquals(4, $i);
+    }
+
+    public function test_not_recursive_iteration()
+    {
+        $scannerIterator = new ScannerIterator(array($this->resourceDirectory()), false);
+        $this->assertInstanceOf('\\Traversable', $scannerIterator);
+        $i = 0;
+        foreach ($scannerIterator as $photoBunch) {
+            $i++;
+            $this->assertInstanceOf('\\Zebooka\\PD\\PhotoBunch', $photoBunch);
+        }
+        $this->assertEquals(1, $i);
+        // we can restart iteration
+        $i = 0;
+        foreach ($scannerIterator as $photoBunch) {
+            $i++;
+            $this->assertInstanceOf('\\Zebooka\\PD\\PhotoBunch', $photoBunch);
+        }
+        $this->assertEquals(1, $i);
     }
 }

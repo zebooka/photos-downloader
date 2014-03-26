@@ -11,15 +11,17 @@ class ScannerIterator implements \Iterator
     private $scanner;
     private $key;
     private $value;
+    private $recursive;
 
-    public function __construct(array $sourcePaths)
+    public function __construct(array $sourcePaths, $recursive)
     {
         $this->originalSourcePaths = $sourcePaths;
+        $this->recursive = $recursive;
     }
 
     public function rewind()
     {
-        $this->scanner = new Scanner($this->originalSourcePaths);
+        $this->scanner = new Scanner($this->originalSourcePaths, $this->recursive);
         $this->key = 0;
         $this->value = $this->scanner->searchForNextFile();
     }
