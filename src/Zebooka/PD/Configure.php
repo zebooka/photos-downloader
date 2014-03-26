@@ -10,7 +10,7 @@ use Zebooka\Utils\Cli\Parameters;
  * @property null|string $logFile
  * @property int $logLevel
  * @property bool $simulate
- * @property false|int $limit
+ * @property int $limit
  * @property bool $recursive
  * @property array $from
  * @property string $to
@@ -22,6 +22,7 @@ use Zebooka\Utils\Cli\Parameters;
  * @property array $tokensToAdd
  * @property array $tokensToDrop
  * @property bool $tokensDropUnknown
+ * @property bool $compareExifs
  * @property null|string $executableName
  */
 class Configure
@@ -46,16 +47,14 @@ class Configure
     const P_TOKENS_ADD = 'x';
     const P_TOKENS_DROP = 'y';
     const P_TOKENS_DROP_UNKNOWN = 'Y';
-
-    const ERROR_NO_FROM = 1;
-    const ERROR_NO_TO = 2;
+    const P_NO_COMPARE_EXIFS = 'B';
 
     public $help = false;
     public $verboseLevel = 100;
     public $logFile = null;
     public $logLevel = 250;
     public $simulate = false;
-    public $limit = false;
+    public $limit = 0;
     public $recursive = true;
     public $from = array();
     public $to = self::KEEP_IN_PLACE;
@@ -67,6 +66,7 @@ class Configure
     public $tokensToAdd = array();
     public $tokensToDrop = array();
     public $tokensDropUnknown = false;
+    public $compareExifs = true;
     public $executableName;
 
     private $knownAuthors = array();
@@ -94,6 +94,7 @@ class Configure
         $this->tokensToAdd = $this->splitSpaceSeparated(array_key_exists(self::P_TOKENS_ADD, $argv) ? $argv->{self::P_TOKENS_ADD} : $this->tokensToAdd);
         $this->tokensToDrop = $this->splitSpaceSeparated(array_key_exists(self::P_TOKENS_DROP, $argv) ? $argv->{self::P_TOKENS_DROP} : $this->tokensToDrop);
         $this->tokensDropUnknown = !empty($argv->{self::P_TOKENS_DROP_UNKNOWN});
+        $this->compareExifs = empty($argv->{self::P_NO_COMPARE_EXIFS});
         $this->from = array_unique(array_merge($this->from, array_slice($argv->positionedParameters(), 1)));
         $positionedParameters = $argv->positionedParameters();
         $this->executableName = (isset($positionedParameters[0]) ? $positionedParameters[0] : null);
@@ -174,6 +175,7 @@ class Configure
             self::P_TOKENS_ADD => $this->tokensToAdd,
             self::P_TOKENS_DROP => $this->tokensToDrop,
             self::P_TOKENS_DROP_UNKNOWN => $this->tokensDropUnknown,
+            self::P_NO_COMPARE_EXIFS => !$this->compareExifs,
         );
     }
 

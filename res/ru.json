@@ -19,6 +19,7 @@
     "parameters/description/P_LIMIT": "Ограничить число обрабатываемых файлов.",
     "parameters/description/P_LOG_FILE": "Писать логи в указанный файл.",
     "parameters/description/P_LOG_LEVEL": "Уровень подробности логов для лог-файла (от 100 до 600; см. документацию библиотеки Monolog).",
+    "parameters/description/P_NO_COMPARE_EXIFS": "Не сравнивать Exif'ы у фотографий в наборе.",
     "parameters/description/P_NO_DELETE_DUPLICATES": "Не удалять найденные дубликаты (сравниваются MD5 хэши).",
     "parameters/description/P_NO_RECURSIVE": "Не обрабатывать пути для скачивания рекурсивно.",
     "parameters/description/P_NO_SUBDIRS": "Не создавать структуру поддиреторий в директории назначения.",

@@ -20,6 +20,7 @@
     "parameters/description/P_LIMIT": "Limit amount of processed files by value.",
     "parameters/description/P_LOG_FILE": "Write logs to this file.",
     "parameters/description/P_LOG_LEVEL": "Log level for log file (from 100 to 600; see Monolog logger documentation).",
+    "parameters/description/P_NO_COMPARE_EXIFS": "Do not compare Exifs for photos in bunch.",
     "parameters/description/P_NO_DELETE_DUPLICATES": "Do not delete found duplicates (MD5 sums are compared).",
     "parameters/description/P_NO_RECURSIVE": "No recursive from-paths scanning.",
     "parameters/description/P_NO_SUBDIRS": "Do not create directory structure in to-path.",

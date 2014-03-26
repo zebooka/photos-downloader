@@ -60,11 +60,39 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array('add1', 'add2'), $configure->tokensToAdd);
         $this->assertEquals(array('drop3', 'drop4'), $configure->tokensToDrop);
         $this->assertTrue($configure->tokensDropUnknown);
+        $this->assertFalse($configure->compareExifs);
         $this->assertEquals('/tmp/example.log', $configure->logFile);
         $this->assertEquals(321, $configure->logLevel);
         $this->assertEquals($knownData['authors'], $configure->knownAuthors());
         $this->assertEquals($knownData['cameras'], $configure->knownCameras());
         $this->assertEquals($knownData['tokens'], $configure->knownTokens());
+    }
+
+    public function test_empty_configure()
+    {
+        $configure = new Configure(array(), array());
+        $this->assertNull($configure->executableName);
+        $this->assertFalse($configure->help);
+        $this->assertEquals(100, $configure->verboseLevel);
+        $this->assertFalse($configure->simulate);
+        $this->assertEquals(0, $configure->limit);
+        $this->assertTrue($configure->recursive);
+        $this->assertEquals(array(), $configure->from);
+        $this->assertEquals('-', $configure->to);
+        $this->assertTrue($configure->subDirectoriesStructure);
+        $this->assertFalse($configure->copy);
+        $this->assertTrue($configure->deleteDuplicates);
+        $this->assertNull($configure->author);
+        $this->assertEquals(array(), $configure->cameras);
+        $this->assertEquals(array(), $configure->tokensToAdd);
+        $this->assertEquals(array(), $configure->tokensToDrop);
+        $this->assertFalse($configure->tokensDropUnknown);
+        $this->assertTrue($configure->compareExifs);
+        $this->assertNull($configure->logFile);
+        $this->assertEquals(250, $configure->logLevel);
+        $this->assertEquals(array(), $configure->knownAuthors());
+        $this->assertEquals(array(), $configure->knownCameras());
+        $this->assertEquals(array(), $configure->knownTokens());
     }
 
     private function argv()
@@ -103,6 +131,7 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
             '/tmp/example.log',
             '-O',
             '321',
+            '-B',
         );
     }
 
