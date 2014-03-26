@@ -98,7 +98,7 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
             'add1 add2',
             '-y',
             'drop3 drop4',
-            '-X',
+            '-Y',
             '-o',
             '/tmp/example.log',
             '-O',

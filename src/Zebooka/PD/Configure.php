@@ -45,7 +45,7 @@ class Configure
     const P_CAMERAS = 'd';
     const P_TOKENS_ADD = 'x';
     const P_TOKENS_DROP = 'y';
-    const P_TOKENS_DROP_UNKNOWN = 'X';
+    const P_TOKENS_DROP_UNKNOWN = 'Y';
 
     const ERROR_NO_FROM = 1;
     const ERROR_NO_TO = 2;
