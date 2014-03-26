@@ -59,4 +59,22 @@ class PhotoBunch
     {
         return array_intersect(Scanner::supportedExtensions(), $this->extensions);
     }
+
+    /**
+     * @return Exif[]
+     */
+    public function exifs()
+    {
+        $extensions = $this->photoExtensions();
+        $bunchId = $this->bunchId();
+        return array_combine(
+            $extensions,
+            array_map(
+                function ($extension) use ($bunchId) {
+                    return new Exif($bunchId . '.' . $extension);
+                },
+                $extensions
+            )
+        );
+    }
 }

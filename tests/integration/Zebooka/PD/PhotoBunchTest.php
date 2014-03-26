@@ -4,6 +4,11 @@ namespace Zebooka\PD;
 
 class PhotoBunchTest extends \PHPUnit_Framework_TestCase
 {
+    private function resourceDirectory()
+    {
+        return __DIR__ . '/../../../res/exif';
+    }
+
     public function test_creation()
     {
         foreach (Scanner::supportedExtensions() as $photoExtension) {
@@ -67,5 +72,15 @@ class PhotoBunchTest extends \PHPUnit_Framework_TestCase
             PhotoBunch::ERROR_NO_PHOTO_EXTENSIONS
         );
         new PhotoBunch('unique-bunchId', array('unsupported-extension-1', 'unsupported-extension-2'));
+    }
+
+    public function test_exifs()
+    {
+        $photoBunch = new PhotoBunch($this->resourceDirectory() . '/cubie', array('jpg', 'xmp', 'txt'));
+        $exifs = $photoBunch->exifs();
+        $this->assertInternalType('array', $exifs);
+        $this->assertCount(1, $exifs);
+        $this->assertArrayHasKey('jpg', $exifs);
+        $this->assertInstanceOf('\\Zebooka\\PD\\Exif', $exifs['jpg']);
     }
 }
