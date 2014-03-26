@@ -31,18 +31,109 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
             ->getMock();
     }
 
-    public function test_camera_detection()
+    public function test_detection()
     {
+        $datetime = '2007-04-17 16:00:00';
         foreach ($this->camerasExifsProperties() as $exifProperiesAndCamera) {
             list ($camera, $exifProperies) = $exifProperiesAndCamera;
+            /** @var Exif $exif */
             $exif = \Mockery::mock('\\Zebooka\\PD\\Exif');
+            $exif->DateTimeOriginal = $datetime;
             foreach ($exifProperies as $property => $value) {
                 $exif->{$property} = $value;
             }
             $analyzer = new ExifAnalyzer($this->configure());
-            list(, $detectedCamera) = $analyzer->extractDateTimeCamera($this->photoBunch(array($exif)));
+            list($detectedDateTime, $detectedCamera) = $analyzer->extractDateTimeCamera($this->photoBunch(array($exif)));
+            $this->assertEquals(strtotime($datetime), $detectedDateTime);
             $this->assertEquals($camera, $detectedCamera);
         }
+    }
+
+    public function test_failure_different_datetimes()
+    {
+        /** @var Exif $exif1 */
+        $exif1 = \Mockery::mock('\\Zebooka\\PD\\Exif');
+        $exif1->DateTimeOriginal = '2007-04-17 16:00:00';
+        /** @var Exif $exif2 */
+        $exif2 = \Mockery::mock('\\Zebooka\\PD\\Exif');
+        $exif2->DateTimeOriginal = '2007-04-21 23:00:00';
+        $exifs = array($exif1, $exif2);
+        $analyzer = new ExifAnalyzer($this->configure());
+        $this->setExpectedException(
+            '\\Zebooka\\PD\\ExifAnalyzerException',
+            'Photos have 2 unique date/time values.',
+            ExifAnalyzerException::DIFFERENT_DATES
+        );
+        $analyzer->extractDateTimeCamera($this->photoBunch($exifs));
+    }
+
+    public function test_failure_different_cameras()
+    {
+        /** @var Exif $exif1 */
+        $exif1 = \Mockery::mock('\\Zebooka\\PD\\Exif');
+        $exif1->Model = 'HTC Desire S';
+        /** @var Exif $exif2 */
+        $exif2 = \Mockery::mock('\\Zebooka\\PD\\Exif');
+        $exif2->Model = 'NIKON D700';
+        $exifs = array($exif1, $exif2);
+        $analyzer = new ExifAnalyzer($this->configure());
+        $this->setExpectedException(
+            '\\Zebooka\\PD\\ExifAnalyzerException',
+            'Photos have 2 unique detected cameras.',
+            ExifAnalyzerException::DIFFERENT_CAMERAS
+        );
+        $analyzer->extractDateTimeCamera($this->photoBunch($exifs));
+    }
+
+    public function test_no_failure_when_d700_and_d700x()
+    {
+        foreach (array('a', 'b', 'c', 'd') as $customSettingsBank) {
+            /** @var Exif $exif1 */
+            $exif1 = \Mockery::mock('\\Zebooka\\PD\\Exif');
+            $exif1->Model = 'NIKON D700';
+            /** @var Exif $exif2 */
+            $exif2 = \Mockery::mock('\\Zebooka\\PD\\Exif');
+            $exif2->Model = 'NIKON D700';
+            $exif2->CustomSettingsBank = $customSettingsBank;
+            $exifs = array($exif1, $exif2);
+            $analyzer = new ExifAnalyzer($this->configure());
+            list (, $camera) = $analyzer->extractDateTimeCamera($this->photoBunch($exifs));
+            $this->assertEquals('d700' . $customSettingsBank, $camera);
+        }
+    }
+
+    public function test_no_failure_when_compareExifs_is_false()
+    {
+        $configure = $this->configure();
+        $configure->compareExifs = false;
+        /** @var Exif $exif1 */
+        $exif1 = \Mockery::mock('\\Zebooka\\PD\\Exif');
+        $exif1->DateTimeOriginal = '2007-04-17 16:00:00';
+        $exif1->Model = 'HTC Desire S';
+        /** @var Exif $exif2 */
+        $exif2 = \Mockery::mock('\\Zebooka\\PD\\Exif');
+        $exif2->DateTimeOriginal = '2007-04-21 23:00:00';
+        $exif2->Model = 'NIKON D700';
+        $exifs = array($exif1, $exif2);
+        $analyzer = new ExifAnalyzer($configure);
+        list ($detectedDateTime, $detectedCamera) = $analyzer->extractDateTimeCamera($this->photoBunch($exifs));
+        $this->assertEquals(strtotime('2007-04-17 16:00:00'), $detectedDateTime);
+        $this->assertEquals('htc', $detectedCamera);
+    }
+
+    public function test_no_failure_when_detected_thing_is_null()
+    {
+        /** @var Exif $exif1 */
+        $exif1 = \Mockery::mock('\\Zebooka\\PD\\Exif');
+        /** @var Exif $exif2 */
+        $exif2 = \Mockery::mock('\\Zebooka\\PD\\Exif');
+        $exif2->DateTimeOriginal = '2007-04-21 23:00:00';
+        $exif2->Model = 'NIKON D700';
+        $exifs = array($exif1, $exif2);
+        $analyzer = new ExifAnalyzer($this->configure());
+        list ($detectedDateTime, $detectedCamera) = $analyzer->extractDateTimeCamera($this->photoBunch($exifs));
+        $this->assertEquals(strtotime('2007-04-21 23:00:00'), $detectedDateTime);
+        $this->assertEquals('d700', $detectedCamera);
     }
 
     private function camerasExifsProperties()
@@ -51,6 +142,8 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
             array('htc', array('Make' => 'HTC', 'Model' => 'Desire S')),
             array('htc', array('Model' => 'HTC Desire S')),
             array('htc', array('Model' => 'HTC Saga')),
+            array('5s', array('Make' => 'Apple', 'Model' => 'iPhone 5s')),
+            array('5c', array('Make' => 'Apple', 'Model' => 'iPhone 5c')),
             array('d700', array('Model' => 'NIKON D700')),
             array('d700a', array('Model' => 'NIKON D700', 'CustomSettingsBank' => 'a')),
             array('d700b', array('Model' => 'NIKON D700', 'CustomSettingsBank' => 'b')),
@@ -60,6 +153,7 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
             array('k10z', array('InternalSerialNumber' => '4123986')),
             array('k10g', array('InternalSerialNumber' => '8041881')),
             array('ds', array('InternalSerialNumber' => '6011443')),
+            array('f5500', array('Make' => 'FUJIFILM', 'Model' => 'FinePix S5500')),
         );
     }
 }
