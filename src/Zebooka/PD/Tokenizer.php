@@ -5,15 +5,17 @@ namespace Zebooka\PD;
 class Tokenizer
 {
     private $configure;
+    private $exifAnalyzer;
 
-    public function  __construct(Configure $configure)
+    public function  __construct(Configure $configure, ExifAnalyzer $exifAnalyzer)
     {
-        // TODO: add ExifAnalyzer - to compare exifs and get date/time/shot/camera from it
         $this->configure = $configure;
+        $this->exifAnalyzer = $exifAnalyzer;
     }
 
     public function tokenize(PhotoBunch $photoBunch)
     {
+        list($exifDateTime, $exifCamera) = $this->exifAnalyzer->extractDateTimeCamera($photoBunch);
         $tokens = array_values(
             array_filter(
                 explode(Tokens::SEPARATOR, $photoBunch->basename()),
@@ -24,12 +26,12 @@ class Tokenizer
         );
         $prefix = $this->extractPrefix($tokens);
         // TODO: implement option to convert DCIM token into shot number
-        list($datetime, $shot) = $this->extractDateTimeShot($tokens);
+        list($datetime, $shot) = $this->extractDateTimeShot($tokens, $exifDateTime);
         if (null === $datetime) {
             throw new TokenizerException('Unable to detect date/time.', TokenizerException::NO_DATE_TIME_DETECTED);
         }
         $author = $this->extractAuthor($tokens);
-        $camera = $this->extractCamera($tokens);
+        $camera = $this->extractCamera($tokens, $exifCamera);
         if ($this->configure->tokensDropUnknown) {
             $tokens = array_intersect($tokens, $this->configure->knownTokens());
         }
@@ -68,10 +70,9 @@ class Tokenizer
         return $author;
     }
 
-    private function extractCamera(array &$tokens)
+    private function extractCamera(array &$tokens, $exifCamera)
     {
-        $camera = null;
-        // TODO: detect from Exif
+        $camera = ($exifCamera ? : null);
         foreach ($tokens as $index => $token) {
             if (in_array($token, $this->configure->knownCameras())) {
                 unset($tokens[$index]);
@@ -83,9 +84,10 @@ class Tokenizer
         return $camera;
     }
 
-    private function extractDateTimeShot(array &$tokens)
+    private function extractDateTimeShot(array &$tokens, $exifDateTime)
     {
-        $datetime = $shot = null;
+        $datetime = ($exifDateTime ? : null);
+        $shot = null;
         // TODO: detect date/time/shot from Exif
         foreach ($tokens as $index => $token) {
             if (preg_match('/^[0-9Y]{2}[0-9M]{2}[0-9D]{2}$/', $token)) {

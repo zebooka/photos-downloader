@@ -42,7 +42,17 @@ class Processor
             if (TokenizerException::NO_DATE_TIME_DETECTED == $e->getCode()) {
                 $tokenizeErrorMessage = $this->translator->translate('error/tokenize/datetime');
             } else {
-                $tokenizeErrorMessage = $this->translator->translate('error/tokenize/unknown');
+                throw $e;
+            }
+            $this->logger->addError($tokenizeErrorMessage);
+            return false;
+        } catch (ExifAnalyzerException $e) {
+            if (ExifAnalyzerException::DIFFERENT_DATES == $e->getCode()) {
+                $tokenizeErrorMessage = $this->translator->translate('error/exifAnalyzer/differentDates');
+            } elseif (ExifAnalyzerException::DIFFERENT_CAMERAS == $e->getCode()) {
+                $tokenizeErrorMessage = $this->translator->translate('error/exifAnalyzer/differentCameras');
+            } else {
+                throw $e;
             }
             $this->logger->addError($tokenizeErrorMessage);
             return false;
@@ -61,7 +71,7 @@ class Processor
 
         // assemble
         try {
-            $newBunchId = $this->assembler->assemble($tokens);
+            $newBunchId = $this->assembler->assemble($tokens); // TODO: implement some md5 hashes compare
         } catch (AssemblerException $e) {
             $this->logger->addError($this->translator->translate('error/unableToAssembleTokens', array($photoBunch)));
             return false;

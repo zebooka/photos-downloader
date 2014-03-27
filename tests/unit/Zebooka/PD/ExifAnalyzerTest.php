@@ -153,6 +153,8 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
             array('k10z', array('InternalSerialNumber' => '4123986')),
             array('k10g', array('InternalSerialNumber' => '8041881')),
             array('ds', array('InternalSerialNumber' => '6011443')),
+            array('k100d', array('InternalSerialNumber' => '6374615')),
+            array('k100ds', array('InternalSerialNumber' => '6609148')),
             array('f5500', array('Make' => 'FUJIFILM', 'Model' => 'FinePix S5500')),
         );
     }

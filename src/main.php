@@ -47,7 +47,7 @@ if ($configure->help || 1 === count($_SERVER['argv'])) {
 // processing
 $processor = new \Zebooka\PD\Processor(
     $configure,
-    new \Zebooka\PD\Tokenizer($configure),
+    new \Zebooka\PD\Tokenizer($configure, new \Zebooka\PD\ExifAnalyzer($configure)),
     new \Zebooka\PD\Assembler($configure),
     new \Zebooka\PD\Executor(),
     $logger,

@@ -25,6 +25,19 @@ class TokenizerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @return ExifAnalyzer
+     */
+    private function exifAnalyzer(PhotoBunch $photoBunch, $datetime, $camera)
+    {
+        return \Mockery::mock('\\Zebooka\\PD\\ExifAnalyzer')
+            ->shouldReceive('extractDateTimeCamera')
+            ->with($photoBunch)
+            ->once()
+            ->andReturn(array($datetime, $camera))
+            ->getMock();
+    }
+
+    /**
      * @return PhotoBunch
      */
     private function photoBunch($basename)
@@ -43,8 +56,9 @@ class TokenizerTest extends \PHPUnit_Framework_TestCase
         $configure->tokensToAdd = array('new');
         $configure->tokensToDrop = array('old');
         $configure->tokensDropUnknown = true;
-        $tokenizer = new Tokenizer($configure);
-        $tokens = $tokenizer->tokenize($this->photoBunch('S_BOA_hello_070417_210000,2_k100d_old_world_old_unknown'));
+        $photoBunch = $this->photoBunch('S_BOA_hello_070417_210000,2_k100d_old_world_old_unknown');
+        $tokenizer = new Tokenizer($configure, $this->exifAnalyzer($photoBunch, null, null));
+        $tokens = $tokenizer->tokenize($photoBunch);
         $this->assertInstanceOf('\\Zebooka\\PD\\Tokens', $tokens);
         $this->assertEquals('070417', $tokens->date());
         $this->assertEquals('210000', $tokens->time());
@@ -58,8 +72,9 @@ class TokenizerTest extends \PHPUnit_Framework_TestCase
     public function test_tokenize_skips_empty_tokens()
     {
         $configure = $this->configure();
-        $tokenizer = new Tokenizer($configure);
-        $tokens = $tokenizer->tokenize($this->photoBunch('070417_210000,3____5s___hello'));
+        $photoBunch = $this->photoBunch('070417_210000,3____5s___hello');
+        $tokenizer = new Tokenizer($configure, $this->exifAnalyzer($photoBunch, null, null));
+        $tokens = $tokenizer->tokenize($photoBunch);
         $this->assertInstanceOf('\\Zebooka\\PD\\Tokens', $tokens);
         $this->assertEquals('070417', $tokens->date());
         $this->assertEquals('210000', $tokens->time());
@@ -77,8 +92,9 @@ class TokenizerTest extends \PHPUnit_Framework_TestCase
             'Unable to detect date/time.',
             TokenizerException::NO_DATE_TIME_DETECTED
         ); // TODO: for now this is throwing, because there is no ExifAnalyzer.
-        $tokenizer = new Tokenizer($this->configure());
-        $tokens = $tokenizer->tokenize($this->photoBunch('IMGP1234'));
+        $photoBunch = $this->photoBunch('IMGP1234');
+        $tokenizer = new Tokenizer($this->configure(), $this->exifAnalyzer($photoBunch, null, null));
+        $tokens = $tokenizer->tokenize($photoBunch);
 //        $this->assertInstanceOf('\\Zebooka\\PD\\Tokens', $tokens);
 //        $this->assertEquals('070417', $tokens->date());
 //        $this->assertEquals('210000', $tokens->time());
@@ -87,8 +103,9 @@ class TokenizerTest extends \PHPUnit_Framework_TestCase
 
     public function test_tokenize_lengthy_date()
     {
-        $tokenizer = new Tokenizer($this->configure());
-        $tokens = $tokenizer->tokenize($this->photoBunch('2007-04-17-21.00.00'));
+        $photoBunch = $this->photoBunch('2007-04-17-21.00.00');
+        $tokenizer = new Tokenizer($this->configure(), $this->exifAnalyzer($photoBunch, null, null));
+        $tokens = $tokenizer->tokenize($photoBunch);
         $this->assertInstanceOf('\\Zebooka\\PD\\Tokens', $tokens);
         $this->assertEquals('070417', $tokens->date());
         $this->assertEquals('210000', $tokens->time());
@@ -96,8 +113,9 @@ class TokenizerTest extends \PHPUnit_Framework_TestCase
 
     public function test_tokenize_lengthy_separated_date()
     {
-        $tokenizer = new Tokenizer($this->configure());
-        $tokens = $tokenizer->tokenize($this->photoBunch('2007-04-17_21-00-00'));
+        $photoBunch = $this->photoBunch('2007-04-17_21-00-00');
+        $tokenizer = new Tokenizer($this->configure(), $this->exifAnalyzer($photoBunch, null, null));
+        $tokens = $tokenizer->tokenize($photoBunch);
         $this->assertInstanceOf('\\Zebooka\\PD\\Tokens', $tokens);
         $this->assertEquals('070417', $tokens->date());
         $this->assertEquals('210000', $tokens->time());

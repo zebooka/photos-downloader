@@ -70,6 +70,10 @@ class ExifAnalyzer
             return 'k10g';
         } elseif ('6011443' == $exif->InternalSerialNumber) {
             return 'ds';
+        } elseif ('6374615' == $exif->InternalSerialNumber) {
+            return 'k100d';
+        } elseif ('6609148' == $exif->InternalSerialNumber) {
+            return 'k100ds';
         } elseif ('FUJIFILM' == $exif->Make && 'FinePix S5500' == $exif->Model) {
             return 'f5500';
         } else {
