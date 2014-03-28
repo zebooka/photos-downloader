@@ -87,18 +87,14 @@ class TokenizerTest extends \PHPUnit_Framework_TestCase
 
     public function test_tokenize_dcim_photo()
     {
-        $this->setExpectedException(
-            '\\Zebooka\\PD\\TokenizerException',
-            'Unable to detect date/time.',
-            TokenizerException::NO_DATE_TIME_DETECTED
-        ); // TODO: for now this is throwing, because there is no ExifAnalyzer.
         $photoBunch = $this->photoBunch('IMGP1234');
-        $tokenizer = new Tokenizer($this->configure(), $this->exifAnalyzer($photoBunch, null, null));
+        $tokenizer = new Tokenizer($this->configure(), $this->exifAnalyzer($photoBunch, strtotime('2007-04-17 21:00:00'), 'unique-camera'));
         $tokens = $tokenizer->tokenize($photoBunch);
-//        $this->assertInstanceOf('\\Zebooka\\PD\\Tokens', $tokens);
-//        $this->assertEquals('070417', $tokens->date());
-//        $this->assertEquals('210000', $tokens->time());
-//        $this->assertEquals(array('IMGP1234'), $tokens->tokens);
+        $this->assertInstanceOf('\\Zebooka\\PD\\Tokens', $tokens);
+        $this->assertEquals('070417', $tokens->date());
+        $this->assertEquals('210000', $tokens->time());
+        $this->assertEquals('unique-camera', $tokens->camera);
+        $this->assertEquals(array('IMGP1234'), $tokens->tokens);
     }
 
     public function test_tokenize_lengthy_date()
@@ -120,4 +116,27 @@ class TokenizerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('070417', $tokens->date());
         $this->assertEquals('210000', $tokens->time());
     }
+
+    public function test_tokenize_unknown_date()
+    {
+        $photoBunch = $this->photoBunch('200YM4DD_H1M2S3');
+        $tokenizer = new Tokenizer($this->configure(), $this->exifAnalyzer($photoBunch, null, null));
+        $tokens = $tokenizer->tokenize($photoBunch);
+        $this->assertInstanceOf('\\Zebooka\\PD\\Tokens', $tokens);
+        $this->assertEquals('200YM4DD', $tokens->date());
+        $this->assertEquals('H1M2S3', $tokens->time());
+    }
+
+    public function test_tokenize_incorrect_date()
+    {
+        $this->setExpectedException(
+            '\\Zebooka\\PD\\TokenizerException',
+            'Unable to detect date/time.',
+            TokenizerException::NO_DATE_TIME_DETECTED
+        );
+        $photoBunch = $this->photoBunch('0YM4DD_H1M2S3');
+        $tokenizer = new Tokenizer($this->configure(), $this->exifAnalyzer($photoBunch, null, null));
+        $tokenizer->tokenize($photoBunch);
+    }
+
 }
