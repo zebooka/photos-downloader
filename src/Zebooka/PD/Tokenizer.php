@@ -92,7 +92,9 @@ class Tokenizer
             if (preg_match('/^([0-9]{2}[0-9]{2}[0-9]{2}|[0-9Y]{4}[0-9M]{2}[0-9D]{2})$/', $token)) {
                 $datetime = array($token);
                 unset($tokens[$index]);
-                if (isset($tokens[$index + 1]) && preg_match('/^([0-9H]{2}[0-9M]{2}[0-9S]{2})(?:,([0-9]+))?$/', $tokens[$index + 1], $matches)) {
+                if (isset($tokens[$index + 1])
+                    && preg_match('/^([0-9H]{2}[0-9M]{2}[0-9S]{2})(?:' . Tokens::TIME_SHOT_SEPARATOR . '([0-9]+))?$/', $tokens[$index + 1], $matches)
+                ) {
                     $datetime[] = $matches[1];
                     if (isset($matches[2]) && '' !== $matches[2]) {
                         $shot = $matches[2];

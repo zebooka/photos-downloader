@@ -12,6 +12,7 @@ namespace Zebooka\PD;
 class Tokens
 {
     const SEPARATOR = '_';
+    const TIME_SHOT_SEPARATOR = ',';
     const DATE_FORMAT = 'ymd';
     const TIME_FORMAT = 'His';
     const ERROR_NO_DATE_TIME = 1;
