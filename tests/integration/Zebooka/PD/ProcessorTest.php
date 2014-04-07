@@ -75,11 +75,11 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
     /**
      * @return Assembler
      */
-    private function assembler(Tokens $tokens, $newBunchId)
+    private function assembler(Tokens $tokens, PhotoBunch $photoBunch, $newBunchId)
     {
         return \Mockery::mock('\\Zebooka\\PD\\Assembler')
             ->shouldReceive('assemble')
-            ->with($tokens)
+            ->with($tokens, $photoBunch)
             ->once()
             ->andReturn($newBunchId)
             ->getMock();
@@ -88,11 +88,11 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
     /**
      * @return Assembler
      */
-    private function assemblerException(Tokens $tokens, $code)
+    private function assemblerException(Tokens $tokens, PhotoBunch $photoBunch, $code)
     {
         return \Mockery::mock('\\Zebooka\\PD\\Assembler')
             ->shouldReceive('assemble')
-            ->with($tokens)
+            ->with($tokens, $photoBunch)
             ->once()
             ->andThrow(new AssemblerException('', $code))
             ->getMock();
@@ -146,7 +146,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $processor = new Processor(
             $this->configure(),
             $this->tokenizer($photoBunch, $tokens),
-            $this->assembler($tokens, $this->resourceDirectory() . DIRECTORY_SEPARATOR . 'new-unique-bunchId'),
+            $this->assembler($tokens, $photoBunch, $this->resourceDirectory() . DIRECTORY_SEPARATOR . 'new-unique-bunchId'),
             $this->executor(),
             $this->logger(),
             $this->translator()
@@ -197,7 +197,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $processor = new Processor(
             $this->configure(),
             $this->tokenizer($photoBunch, $tokens),
-            $this->assemblerException($tokens, AssemblerException::TEST),
+            $this->assemblerException($tokens, $photoBunch, AssemblerException::TEST),
             $this->executor(),
             $this->logger(),
             $this->translator()
@@ -214,7 +214,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $processor = new Processor(
             $this->configure(),
             $this->tokenizer($photoBunch, $tokens),
-            $this->assembler($tokens, 'unique-bunchId'),
+            $this->assembler($tokens, $photoBunch, 'unique-bunchId'),
             $this->executor(),
             $this->logger(),
             $this->translator()

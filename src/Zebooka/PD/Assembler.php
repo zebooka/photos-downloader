@@ -11,7 +11,7 @@ class Assembler
         $this->configure = $configure;
     }
 
-    public function assemble(Tokens $tokens)
+    public function assemble(Tokens $tokens, PhotoBunch $photoBunch)
     {
         throw new AssemblerException('Test', AssemblerException::TEST);
     }

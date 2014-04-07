@@ -71,7 +71,8 @@ class Processor
 
         // assemble
         try {
-            $newBunchId = $this->assembler->assemble($tokens); // TODO: implement some md5 hashes compare
+            // TODO: simulate problem — no files are placed -> wrong shot numbers
+            $newBunchId = $this->assembler->assemble($tokens, $photoBunch); // TODO: implement some md5 hashes compare
         } catch (AssemblerException $e) {
             $this->logger->addError($this->translator->translate('error/unableToAssembleTokens', array($photoBunch)));
             return false;

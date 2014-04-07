@@ -88,7 +88,6 @@ class Tokenizer
     {
         $datetime = ($exifDateTime ? : null);
         $shot = null;
-        // TODO: detect date/time/shot from Exif
         foreach ($tokens as $index => $token) {
             if (preg_match('/^([0-9]{2}[0-9]{2}[0-9]{2}|[0-9Y]{4}[0-9M]{2}[0-9D]{2})$/', $token)) {
                 $datetime = array($token);
@@ -117,7 +116,6 @@ class Tokenizer
                 break;
             }
             // TODO: implement special flag to take shot number from DCIM/IMGP1234 basename
-
         }
         $tokens = array_values($tokens);
         return array($datetime, $shot);
