@@ -79,6 +79,11 @@ class Tokens
         return (isset($this->timestamp) ? date(self::TIME_FORMAT, $this->timestamp) : $this->time);
     }
 
+    public function timestamp()
+    {
+        return (isset($this->timestamp) ? $this->timestamp : null);
+    }
+
     public function increaseShot()
     {
         if (null === $this->shot) {
