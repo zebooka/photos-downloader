@@ -62,23 +62,21 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 
-Algorythm (to be verified and modified; uncomplete)
+Algorythm
 ---------
 
-1. Search for photos recursively (if -R options specified — non-recursively) in specified directories.
-2. Split photo file name into tokens by underscore "_" symbol.
-3. Check if first token is one letter string. If so — remember it as prefix and remove from tokens.
-4. Drop all empty tokens.
-5. Search for camera name in tokens. If multiple cameras found in tokens, then issue a warning and use first one. Remove all found cameras from tokes.
-6. Read exif.
-7. If camera was not found from tokens, then detect camera by exif.
-8. Get author from tokens.
-9. If -a author is specified and author found from tokens are not the same, then skip that photo. If -a author is specified and there is no author found from tokens, and detected camera does not belong to that author, then skip that photo. If -a author is specified and there is no author found from tokens, and detected camera does belong to that author or camera not detected, then continue processing that photo. If -A author is specified, then set author as specified and process photo anyway.
-13. If camera is not film (digital or not detected), then get date and time of photo from exif. If camera is film or date/time of photo not found in exif, then search for it in tokens. Next token after date (YYYYMMDD) is "time,shot" token (number,number). If camera is digital and date/time get from exif, then search for "time,shot" token (HHMMSS,number). If time is taken form token, then it is not forced to be in HHMMSS format — it is actually just some number for uniqueness. The next number after comma (in "time,shot" token) is considered as shot number and can be increased, if there is another photo with same name.
-14. Get all known tokens (raw converters and post processings).
-15. If photo file name is ABCD1234a and one of parent directories in DCIM, then drop all other tokens. Also drop other tokens if -X option specified.
-16. Specify upload directory. If -D option specified, then use -t PATH option as upload directory, if not — append path calculated by following algorythm. If date is fully known and camera is unknown or digital, then upload directory is YYYY/MM_month/DD/. If date not fully known or film camera, then upload directory is YYYY/. Fully known date means that all symbols in YYYYMMDD are digital, while not fully known date means that some of them can be Y, or M, or D.
-17. Combine new photo filename as "prefix_date_time,shot_author_knownTokens_otherTokens.extension". 
-18. Check if there are photos with such basename in upload directory. If there are, then increase shot number and repeat check.
-19. Move all photos with same basename and different extensions to upload diretory with combined filename.
-20. Continue with next photo.
+1. Create two heaps — one for directories list, one for files list.
+2. If one of from paths was dash "-" and both heaps are empty, then read line from STDIN and add this file/directory to its heap.
+3. If files heap is empty, then take directory from directories heap and scan it. Add files/directories to their heaps. Do this until file heap is empty or no more directories left in their hep. If no-recursive option is set, then found directories are not added to their heap. Also directories are added to the beginning of their heap.
+4. Take file (or photo bunch) from files heap and process it. Photo bunch is a set of files with same basename, but different extensions. They are processed simultaneously and moved/copied at once.
+5. Guess camera and date/time from file exif. If these parameters differ for photos in photo bunch, then issue a warning and skip this photo bunch (unless special -B flag is set).
+6. Analyze basename of file (photo bunch) and guess date/time, shot, author, camera, known tokens, other tokens from it.
+7. Overwrite exif detected camera and date/time by ones detected from basename.
+8. Drop and add known/other tokens according to configured parameters.
+9. Assemble destination directory. Can be either same directory if files are kept in place, specified directory or specified directory with Year/Month subdirectories structure.
+10. Assemble new basename for file (photo bunch) and check if it is already taken in destination directory.
+11. If there are some files with assembled basename in destination directory, verify their hashes with processed ones.
+12. If there are no files with same extensions in destination directory and in processed photo bunch, then consider basename as taken.
+13. If at least one of files have different hashes, then consider basename as taken.
+14. If basename considered taken, then increase shot number and repeat procedure (from step 10).
+15. Move/copy file (photo bunch).
