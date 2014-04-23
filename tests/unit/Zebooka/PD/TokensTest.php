@@ -25,6 +25,8 @@ class TokensTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(123, $tokens->shot);
         $tokens->increaseShot();
         $this->assertEquals(124, $tokens->shot);
+        $this->assertEquals('2007/04', $tokens->assembleDirectory());
+        $this->assertEquals('unique-prefix_070417_210000,124_unique-author_unique-camera_unique-token-1_unique-token-2', $tokens->assembleBasename());
     }
 
     public function test_creation_with_less_arguments()
@@ -39,6 +41,8 @@ class TokensTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($tokens->camera);
         $this->assertNull($tokens->prefix);
         $this->assertNull($tokens->shot);
+        $this->assertEquals('2007/04', $tokens->assembleDirectory());
+        $this->assertEquals('070417_210000', $tokens->assembleBasename());
     }
 
     public function test_creation_with_different_datetime_argument()
@@ -49,6 +53,8 @@ class TokensTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('070417', $tokens->date());
         $this->assertEquals('210000', $tokens->time());
         $this->assertEquals($timestamp, $tokens->timestamp());
+        $this->assertEquals('2007/04', $tokens->assembleDirectory());
+        $this->assertEquals('070417_210000', $tokens->assembleBasename());
 
         // strtotime
         $timestr = '2007-04-17 16:00:00';
@@ -56,18 +62,24 @@ class TokensTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('070417', $tokens->date());
         $this->assertEquals('160000', $tokens->time());
         $this->assertEquals(strtotime($timestr), $tokens->timestamp());
+        $this->assertEquals('2007/04', $tokens->assembleDirectory());
+        $this->assertEquals('070417_160000', $tokens->assembleBasename());
 
         // array of date
         $tokens = new Tokens(array('unique-date'));
         $this->assertEquals('unique-date', $tokens->date());
         $this->assertNull($tokens->time());
         $this->assertNull($tokens->timestamp());
+        $this->assertEquals(null, $tokens->assembleDirectory());
+        $this->assertEquals('unique-date', $tokens->assembleBasename());
 
         // array of date and time
         $tokens = new Tokens(array('unique-date', 'unique-time'));
         $this->assertEquals('unique-date', $tokens->date());
         $this->assertEquals('unique-time', $tokens->time());
         $this->assertNull($tokens->timestamp());
+        $this->assertEquals(null, $tokens->assembleDirectory());
+        $this->assertEquals('unique-date_unique-time', $tokens->assembleBasename());
 
         // DateTime class
         $datetime = new \DateTime('2007-04-17 16:00:00');
@@ -75,6 +87,8 @@ class TokensTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('070417', $tokens->date());
         $this->assertEquals('160000', $tokens->time());
         $this->assertEquals($datetime->getTimestamp(), $tokens->timestamp());
+        $this->assertEquals('2007/04', $tokens->assembleDirectory());
+        $this->assertEquals('070417_160000', $tokens->assembleBasename());
     }
 
     public function test_failure_with_unsupported_date_time_value_type()

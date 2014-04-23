@@ -92,4 +92,45 @@ class Tokens
             $this->shot++;
         }
     }
+
+    public function assembleBasename()
+    {
+        $filterNull = function ($v) {
+            return (null !== $v && '' !== $v);
+        };
+        $timeShot = implode(
+            self::TIME_SHOT_SEPARATOR,
+            array_filter(array($this->time(), $this->shot), $filterNull)
+        );
+        $basename = implode(
+            self::SEPARATOR,
+            array_filter(
+                array(
+                    $this->prefix,
+                    $this->date(),
+                    $timeShot,
+                    $this->author,
+                    $this->camera,
+                    implode(self::SEPARATOR, $this->tokens ?: array()),
+                ),
+                $filterNull
+            )
+        );
+        return $basename;
+    }
+
+    public function assembleDirectory()
+    {
+        $dir = null;
+        if (null !== $this->timestamp()) {
+            $dir = date('Y', $this->timestamp()) . DIRECTORY_SEPARATOR . date('m', $this->timestamp());
+        } elseif ($date = $this->date()) {
+            if (preg_match('/^([0-9]{2})([0-9]{2})[0-9D]{2}$/i', $date, $matches)) {
+                $dir = (2000 + intval(ltrim($matches[1], '0'))) . DIRECTORY_SEPARATOR . $matches[2];
+            } elseif (preg_match('/^([0-9Y]{4})([0-9M]{2})[0-9D]{2}$/i', $date, $matches)) {
+                $dir = $matches[1] . DIRECTORY_SEPARATOR . $matches[2];
+            }
+        }
+        return $dir;
+    }
 }
