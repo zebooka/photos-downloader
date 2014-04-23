@@ -81,10 +81,7 @@ class Processor
         // skip not changed
         if ($photoBunch->bunchId() === $newBunchId) {
             $this->logger->addNotice(
-                $this->translator->translate(
-                    'skippedBecauseSourceEqualsDestination',
-                    array(count($photoBunch->extensions()), $photoBunch)
-                )
+                $this->translator->translate('skippedBecauseSourceEqualsDestination', array(count($photoBunch->extensions()), $photoBunch))
             );
             return false;
         }

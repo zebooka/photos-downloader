@@ -42,7 +42,7 @@
     "parameters/value/P_VERBOSE_LEVEL": "УРОВЕНЬ",
     "peakMemoryUsage": "Пиковое использование памяти: {0}",
     "processedPhotosLimitWasReached": "Достигнут предел обрабатываемых фото (ограничение в {0} фото).",
-    "skippedBecauseSourceEqualsDestination": " --> {0, select, =1 {файл пропущен (новое имя совпадает со старым)} other {файлы пропущены (новые имена совпадают со старыми)}}",
+    "skippedBecauseSourceEqualsDestination": " --> {0, select, 1 {файл пропущен (новое имя совпадает со старым)} other {файлы пропущены (новые имена совпадают со старыми)}}",
     "usage": "ИСПОЛЬЗОВАНИЕ:",
     "usage/parameters": "ПАРАМЕТРЫ",
     "usage/parameterValue/from": "ПУТЬ",

@@ -7,7 +7,7 @@ class Executor
     public function execute($cmd)
     {
         $code = 0;
-        passthru($code, $code);
+        passthru($cmd, $code);
         return $code;
     }
 }
