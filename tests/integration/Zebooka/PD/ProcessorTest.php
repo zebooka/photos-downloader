@@ -153,7 +153,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->assertTrue($processor->process($photoBunch));
-        $this->assertEquals(12, $processor->bytesTransferred());
+        $this->assertEquals(0, $processor->bytesProcessed()); // no bytes transfered as files are "deleted", need better test.
     }
 
     public function test_process_stops_if_tokenize_fails()
@@ -170,7 +170,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->assertFalse($processor->process($photoBunch));
-        $this->assertEquals(0, $processor->bytesTransferred());
+        $this->assertEquals(0, $processor->bytesProcessed());
     }
 
     public function test_process_stops_if_camera_not_in_list()
@@ -187,7 +187,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->assertFalse($processor->process($photoBunch));
-        $this->assertEquals(0, $processor->bytesTransferred());
+        $this->assertEquals(0, $processor->bytesProcessed());
     }
 
     public function test_process_stops_if_assemble_exception()
@@ -204,7 +204,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->assertFalse($processor->process($photoBunch));
-        $this->assertEquals(0, $processor->bytesTransferred());
+        $this->assertEquals(0, $processor->bytesProcessed());
     }
 
     public function test_process_stops_if_new_bunchId_is_same_as_old()
@@ -221,6 +221,6 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->assertFalse($processor->process($photoBunch));
-        $this->assertEquals(0, $processor->bytesTransferred());
+        $this->assertEquals(0, $processor->bytesProcessed());
     }
 }

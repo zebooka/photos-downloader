@@ -13,7 +13,7 @@ class Processor
     private $executor;
     private $logger;
     private $translator;
-    private $bytesTransferred = 0;
+    private $bytesProcessed = 0;
 
     public function __construct(
         Configure $configure,
@@ -71,8 +71,7 @@ class Processor
 
         // assemble
         try {
-            // TODO: simulate problem — no files are placed -> wrong shot numbers
-            $newBunchId = $this->assembler->assemble($tokens, $photoBunch); // TODO: implement some md5 hashes compare
+            $newBunchId = $this->assembler->assemble($tokens, $photoBunch);
         } catch (AssemblerException $e) {
             $this->logger->addError($this->translator->translate('error/unableToAssembleTokens', array($photoBunch)));
             return false;
@@ -106,21 +105,34 @@ class Processor
         foreach ($photoBunch->extensions() as $extension) {
             $from = $photoBunch->bunchId() . '.' . $extension;
             $to = $newBunchId . '.' . $extension;
-            $cmd = (dirname($from) !== $dir && $this->configure->copy ? 'cp' : 'mv') .
-                ' ' . escapeshellarg($from) . ' ' . escapeshellarg($to);
+            $fileTransfered = false;
+            if (is_file($to) && $this->configure->deleteDuplicates && !$this->configure->copy) {
+                $cmd = 'rm ' . escapeshellarg($from);
+                $errorMessage = $this->translator->translate('error/unableToDelete', array($from));
+            } elseif (is_file($to) && (!$this->configure->deleteDuplicates || $this->configure->copy)) {
+                $this->logger->addNotice($this->translator->translate('skippedBecauseTargetAlreadyExists', array($extension)));
+                continue;
+            } elseif ($this->configure->copy) {
+                $cmd = 'cp ' . escapeshellarg($from) . ' ' . escapeshellarg($to);
+                $errorMessage = $this->translator->translate('error/unableToCopy', array($from, $to));
+                $fileTransfered = true;
+            } else {
+                $cmd = 'mv ' . escapeshellarg($from) . ' ' . escapeshellarg($to);
+                $errorMessage = $this->translator->translate('error/unableToMove', array($from, $to));
+                $fileTransfered = true;
+            }
             if ($this->configure->simulate) {
                 fwrite(STDOUT, $cmd . PHP_EOL);
             } else {
                 if (0 !== $this->executor->execute($cmd)) {
-                    $this->logger->addError(
-                        $this->translator->translate(
-                            'error/unableToMoveOrCopy',
-                            array(intval($this->configure->copy), $from, $to)
-                        )
-                    );
+                    $this->logger->addError($errorMessage);
                 } else {
-                    $this->logger->addNotice($this->translator->translate('newFilePath', array($to)));
-                    $this->bytesTransferred += filesize($to);
+                    if ($fileTransfered) {
+                        $this->logger->addNotice($this->translator->translate('newFilePath', array($to)));
+                        if (is_file($to)) {
+                            $this->bytesProcessed += filesize($to);
+                        }
+                    }
                 }
             }
         }
@@ -128,8 +140,8 @@ class Processor
         return true;
     }
 
-    public function bytesTransferred()
+    public function bytesProcessed()
     {
-        return intval($this->bytesTransferred);
+        return intval($this->bytesProcessed);
     }
 }

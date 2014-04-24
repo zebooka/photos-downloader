@@ -67,7 +67,7 @@ $logger->addInfo($translator->translate('xPhotosProcessed', array($i)));
 $logger->addInfo(
     $translator->translate(
         'xBytesProcessed',
-        array(\Zebooka\Utils\Size::humanReadableSize($processor->bytesTransferred()))
+        array(\Zebooka\Utils\Size::humanReadableSize($processor->bytesProcessed()))
     )
 );
 $logger->addInfo(
