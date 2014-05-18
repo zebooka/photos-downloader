@@ -1,7 +1,7 @@
 {
     "appName": "PHOTOS DOWNLOADER 3 | version: {0} |",
     "copyrightInfo": "(c) Copyright 2014, Anton Bondar <anton@zebooka.com> http://zebooka.com/soft/LICENSE/",
-    "createdDestinationDir": "Created directory ''{0}}''.",
+    "createdDestinationDir": "Created directory ''{0}''.",
     "currentConfiguration": "CURRENT CONFIGURATION:",
     "error/exifAnalyzer/differentCameras": "Unable to process, because photos have different cameras in Exif profiles.",
     "error/exifAnalyzer/differentDates": "Unable to process, because photos have different timestamps in Exif profiles.",

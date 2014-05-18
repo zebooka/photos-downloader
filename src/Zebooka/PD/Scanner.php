@@ -107,6 +107,17 @@ class Scanner
 
     public static function supportedExtensions()
     {
+        $extensions = self::realSupportedExtensions();
+        $result = array();
+        foreach ($extensions as $extension) {
+            $result[] = $extension;
+            $result[] = strtoupper($extension);
+        }
+        return $result;
+    }
+
+    public static function realSupportedExtensions()
+    {
         return array(
             '3fr', // Hasselblad
             'arw', // Sony
