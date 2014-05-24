@@ -15,7 +15,7 @@ class Tokenizer
 
     public function tokenize(PhotoBunch $photoBunch)
     {
-        list($exifDateTime, $exifCamera) = $this->exifAnalyzer->extractDateTimeCamera($photoBunch);
+        list($exifDateTime, $exifCamera, $exifTokens) = $this->exifAnalyzer->extractDateTimeCameraTokens($photoBunch);
         $tokens = array_values(
             array_filter(
                 explode(Tokens::SEPARATOR, $photoBunch->basename()),
@@ -25,7 +25,6 @@ class Tokenizer
             )
         );
         $prefix = $this->extractPrefix($tokens);
-        // TODO: implement option to convert DCIM token into shot number
         list($datetime, $shot) = $this->extractDateTimeShot($tokens, $exifDateTime);
         if (null === $datetime) {
             throw new TokenizerException('Unable to detect date/time.', TokenizerException::NO_DATE_TIME_DETECTED);
@@ -35,6 +34,7 @@ class Tokenizer
         if ($this->configure->tokensDropUnknown) {
             $tokens = array_intersect($tokens, $this->configure->knownTokens());
         }
+        $tokens = array_merge($tokens, $exifTokens);
         $tokens = array_diff($tokens, $this->configure->tokensToDrop);
         $tokens = array_merge($tokens, $this->configure->tokensToAdd);
         $tokens = array_values($tokens);

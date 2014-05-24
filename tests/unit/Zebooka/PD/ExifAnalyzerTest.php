@@ -43,10 +43,28 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
                 $exif->{$property} = $value;
             }
             $analyzer = new ExifAnalyzer($this->configure());
-            list($detectedDateTime, $detectedCamera) = $analyzer->extractDateTimeCamera($this->photoBunch(array($exif)));
+            list($detectedDateTime, $detectedCamera) = $analyzer->extractDateTimeCameraTokens($this->photoBunch(array($exif)));
             $this->assertEquals(strtotime($datetime), $detectedDateTime);
             $this->assertEquals($camera, $detectedCamera);
         }
+    }
+
+    public function test_tokens_detection()
+    {
+        $datetime = '2007-04-17 16:00:00';
+        $camera = '5s';
+        $exifProperies = array('Make' => 'Apple', 'Model' => 'iPhone 5s', 'Software' => 'Instagram');
+        /** @var Exif $exif */
+        $exif = \Mockery::mock('\\Zebooka\\PD\\Exif');
+        $exif->DateTimeOriginal = $datetime;
+        foreach ($exifProperies as $property => $value) {
+            $exif->{$property} = $value;
+        }
+        $analyzer = new ExifAnalyzer($this->configure());
+        list($detectedDateTime, $detectedCamera, $detectedTokens) = $analyzer->extractDateTimeCameraTokens($this->photoBunch(array($exif)));
+        $this->assertEquals(strtotime($datetime), $detectedDateTime);
+        $this->assertEquals($camera, $detectedCamera);
+        $this->assertContains('instagram', $detectedTokens);
     }
 
     public function test_failure_different_datetimes()
@@ -64,7 +82,7 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
             'Photos have 2 unique date/time values.',
             ExifAnalyzerException::DIFFERENT_DATES
         );
-        $analyzer->extractDateTimeCamera($this->photoBunch($exifs));
+        $analyzer->extractDateTimeCameraTokens($this->photoBunch($exifs));
     }
 
     public function test_failure_different_cameras()
@@ -82,7 +100,7 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
             'Photos have 2 unique detected cameras.',
             ExifAnalyzerException::DIFFERENT_CAMERAS
         );
-        $analyzer->extractDateTimeCamera($this->photoBunch($exifs));
+        $analyzer->extractDateTimeCameraTokens($this->photoBunch($exifs));
     }
 
     public function test_no_failure_when_d700_and_d700x()
@@ -97,7 +115,7 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
             $exif2->CustomSettingsBank = $customSettingsBank;
             $exifs = array($exif1, $exif2);
             $analyzer = new ExifAnalyzer($this->configure());
-            list (, $camera) = $analyzer->extractDateTimeCamera($this->photoBunch($exifs));
+            list (, $camera) = $analyzer->extractDateTimeCameraTokens($this->photoBunch($exifs));
             $this->assertEquals('d700' . $customSettingsBank, $camera);
         }
     }
@@ -116,7 +134,7 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
         $exif2->Model = 'NIKON D700';
         $exifs = array($exif1, $exif2);
         $analyzer = new ExifAnalyzer($configure);
-        list ($detectedDateTime, $detectedCamera) = $analyzer->extractDateTimeCamera($this->photoBunch($exifs));
+        list ($detectedDateTime, $detectedCamera) = $analyzer->extractDateTimeCameraTokens($this->photoBunch($exifs));
         $this->assertEquals(strtotime('2007-04-17 16:00:00'), $detectedDateTime);
         $this->assertEquals('htc', $detectedCamera);
     }
@@ -131,7 +149,7 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
         $exif2->Model = 'NIKON D700';
         $exifs = array($exif1, $exif2);
         $analyzer = new ExifAnalyzer($this->configure());
-        list ($detectedDateTime, $detectedCamera) = $analyzer->extractDateTimeCamera($this->photoBunch($exifs));
+        list ($detectedDateTime, $detectedCamera) = $analyzer->extractDateTimeCameraTokens($this->photoBunch($exifs));
         $this->assertEquals(strtotime('2007-04-21 23:00:00'), $detectedDateTime);
         $this->assertEquals('d700', $detectedCamera);
     }

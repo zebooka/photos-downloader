@@ -11,9 +11,9 @@ class ExifAnalyzer
         $this->configure = $configure;
     }
 
-    public function extractDateTimeCamera(PhotoBunch $photoBunch)
+    public function extractDateTimeCameraTokens(PhotoBunch $photoBunch)
     {
-        $datetimes = $cameras = array();
+        $datetimes = $cameras = $tokens = array();
         foreach ($photoBunch->exifs() as $extension => $exif) {
             if ($exif->DateTimeOriginal) {
                 $datetimes[$extension] = strtotime($exif->DateTimeOriginal);
@@ -21,6 +21,7 @@ class ExifAnalyzer
             if (null !== ($camera = $this->detectCamera($exif))) {
                 $cameras[$extension] = $camera;
             }
+            $tokens = array_merge($tokens, $this->detectTokens($exif));
         }
         $datetimes = array_unique($datetimes);
         if ($this->configure->compareExifs && count($datetimes) > 1) {
@@ -43,10 +44,12 @@ class ExifAnalyzer
                 ExifAnalyzerException::DIFFERENT_CAMERAS
             );
         }
+        $tokens = array_unique($tokens);
 
         return array(
             $datetimes ? reset($datetimes) : null,
-            $cameras ? reset($cameras) : null
+            $cameras ? reset($cameras) : null,
+            $tokens,
         );
     }
 
@@ -80,5 +83,14 @@ class ExifAnalyzer
             // TODO: search for k100d, k100ds exifs for detection
             return null;
         }
+    }
+
+    private function detectTokens(Exif $exif)
+    {
+        $tags = array();
+        if ('Instagram' == $exif->Software) {
+            $tags[] = 'instagram';
+        }
+        return array_unique($tags);
     }
 }
