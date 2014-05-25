@@ -19,13 +19,16 @@ class Assembler
 
     public function assemble(Tokens $tokens, PhotoBunch $photoBunch)
     {
+        if (Configure::KEEP_IN_PLACE !== $this->configure->to) {
+            $to = (file_exists($this->configure->to) ? realpath($this->configure->to) : $this->configure->to);
+        }
         while (true) {
             if (Configure::KEEP_IN_PLACE === $this->configure->to) {
                 $newBunchId = $photoBunch->directory() . DIRECTORY_SEPARATOR . $tokens->assembleBasename();
             } elseif ($this->configure->subDirectoriesStructure && $dir = $tokens->assembleDirectory()) {
-                $newBunchId = $this->configure->to . DIRECTORY_SEPARATOR . $dir . DIRECTORY_SEPARATOR . $tokens->assembleBasename();
+                $newBunchId = $to . DIRECTORY_SEPARATOR . $dir . DIRECTORY_SEPARATOR . $tokens->assembleBasename();
             } else {
-                $newBunchId = $this->configure->to . DIRECTORY_SEPARATOR . $tokens->assembleBasename();
+                $newBunchId = $to . DIRECTORY_SEPARATOR . $tokens->assembleBasename();
             }
             if (!$this->bunchTaken($newBunchId, $photoBunch)) {
                 break;

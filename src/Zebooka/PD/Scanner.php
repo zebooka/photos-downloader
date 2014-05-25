@@ -17,9 +17,9 @@ class Scanner
             if (Configure::PATHS_FROM_STDIN === $sourcePath) {
                 $this->stdin = fopen('php://stdin', 'r');
             } elseif (is_dir($sourcePath)) {
-                $this->dirs[] = $sourcePath;
+                $this->dirs[] = realpath($sourcePath);
             } elseif (is_file($sourcePath)) {
-                $this->addPathAsPhotoBunch($sourcePath);
+                $this->addPathAsPhotoBunch(realpath($sourcePath));
             }
         }
     }

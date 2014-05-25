@@ -6,7 +6,7 @@ class AssemblerTest extends \PHPUnit_Framework_TestCase
 {
     private function resourceDirectory()
     {
-        return __DIR__ . '/../../../res/assembler';
+        return realpath(__DIR__ . '/../../../res/assembler');
     }
 
     private function configure($to = Configure::KEEP_IN_PLACE, $subDirectoriesStructure = true, $simulate = false)
