@@ -37,7 +37,7 @@ class Tokenizer
         $tokens = array_merge($tokens, $exifTokens);
         $tokens = array_diff($tokens, $this->configure->tokensToDrop);
         $tokens = array_merge($tokens, $this->configure->tokensToAdd);
-        $tokens = array_values($tokens);
+        $tokens = array_values(array_unique($tokens));
         return new Tokens($datetime, $tokens, $author, $camera, $prefix, $shot);
     }
 
@@ -86,7 +86,7 @@ class Tokenizer
 
     private function extractDateTimeShot(array &$tokens, $exifDateTime)
     {
-        $datetime = ($exifDateTime ? : null);
+        $datetime = (null !== $exifDateTime ? $exifDateTime : null);
         $shot = null;
         foreach ($tokens as $index => $token) {
             if (preg_match('/^([0-9]{2}[0-9]{2}[0-9]{2}|[0-9Y]{4}[0-9M]{2}[0-9D]{2})$/', $token)) {
@@ -117,7 +117,6 @@ class Tokenizer
                 unset($tokens[$index + 1]);
                 break;
             }
-            // TODO: implement special flag to take shot number from DCIM/IMGP1234 basename
         }
         $tokens = array_values($tokens);
         return array($datetime, $shot);

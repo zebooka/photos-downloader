@@ -139,4 +139,25 @@ class TokenizerTest extends \PHPUnit_Framework_TestCase
         $tokenizer->tokenize($photoBunch);
     }
 
+    public function test_tokenize_with_unix_epoch()
+    {
+        $photoBunch = $this->photoBunch('hello_world');
+        $exifAnalyzer = $this->exifAnalyzer($photoBunch, 0, null);
+        $tokenizer = new Tokenizer($this->configure(), $exifAnalyzer);
+        $tokens = $tokenizer->tokenize($photoBunch);
+        $this->assertInstanceOf('\\Zebooka\\PD\\Tokens', $tokens);
+        $this->assertEquals(0, $tokens->timestamp());
+    }
+
+    public function test_tokenize_repeated_tokens()
+    {
+        $photoBunch = $this->photoBunch('hello_hello_hello_hello_hello_hello');
+        $exifAnalyzer = $this->exifAnalyzer($photoBunch, 0, null, array('world', 'world', 'world'));
+        $tokenizer = new Tokenizer($this->configure(), $exifAnalyzer);
+        $tokens = $tokenizer->tokenize($photoBunch);
+        $this->assertInstanceOf('\\Zebooka\\PD\\Tokens', $tokens);
+        $this->assertContains('hello', $tokens->tokens);
+        $this->assertContains('world', $tokens->tokens);
+        $this->assertCount(2, $tokens->tokens);
+    }
 }
