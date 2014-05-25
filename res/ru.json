@@ -11,6 +11,7 @@
     "error/unableToCopy": "Не удалось скопировать файл из ''{0}'' в ''{1}''.",
     "error/unableToMove": "Не удалось переместить файл из ''{0}'' в ''{1}''.",
     "error/unableToDelete": "Не удалось удалить файл ''{0}''.",
+    "fileDuplicateWasRemoved": " --> файл .{0} удален как дубликат",
     "newFilePath": " --> {0}",
     "originalPhotoBunchPath": "{0}",
     "parameters": "ПАРАМЕТРЫ:",

@@ -12,6 +12,7 @@
     "error/unableToMove": "Unable to move file from ''{0}'' to ''{1}''.",
     "error/unableToDelete": "Unable to delete file ''{0}''.",
     "error/unknown": "Unknown error.",
+    "fileDuplicateWasRemoved": " --> file .{0} removed as duplicate",
     "newFilePath": " --> {0}",
     "originalPhotoBunchPath": "{0}",
     "parameters": "PARAMETERS:",

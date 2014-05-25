@@ -105,10 +105,11 @@ class Processor
         foreach ($photoBunch->extensions() as $extension) {
             $from = $photoBunch->bunchId() . '.' . $extension;
             $to = $newBunchId . '.' . $extension;
-            $fileTransfered = false;
+            $fileTransfered = $fileRemoved = false;
             if (is_file($to) && $this->configure->deleteDuplicates && !$this->configure->copy) {
                 $cmd = 'rm ' . escapeshellarg($from);
                 $errorMessage = $this->translator->translate('error/unableToDelete', array($from));
+                $fileRemoved = true;
             } elseif (is_file($to) && (!$this->configure->deleteDuplicates || $this->configure->copy)) {
                 $this->logger->addNotice($this->translator->translate('skippedBecauseTargetAlreadyExists', array($extension)));
                 continue;
@@ -132,6 +133,8 @@ class Processor
                         if (is_file($to)) {
                             $this->bytesProcessed += filesize($to);
                         }
+                    } elseif ($fileRemoved) {
+                        $this->logger->addNotice($this->translator->translate('fileDuplicateWasRemoved', array($extension)));
                     }
                 }
             }
