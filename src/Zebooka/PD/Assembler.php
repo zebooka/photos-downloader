@@ -52,6 +52,7 @@ class Assembler
             return false;
         }
 
+        // TODO: this may lead to unforeseen consequences when FS is case insensitive and we have .JPG and .jpg files
         $intersect = array_intersect($foundExtensions, $photoBunch->extensions());
         // if intersect is empty - return true
         if (!$intersect) {

@@ -99,24 +99,29 @@ class Scanner
             array_unshift($this->dirs, array_pop($dirs));
         }
         foreach ($files as $bunchId => $extensions) {
-            if (count(array_intersect($extensions, self::supportedExtensions())) > 0) {
+            if (count(self::filterSupportedExtensions($extensions)) > 0) {
                 $this->files[] = new PhotoBunch($bunchId, $extensions);
             }
         }
     }
 
-    public static function supportedExtensions()
+    public static function filterSupportedExtensions(array $extensions)
     {
-        $extensions = self::realSupportedExtensions();
-        $result = array();
-        foreach ($extensions as $extension) {
-            $result[] = $extension;
-            $result[] = strtoupper($extension);
-        }
-        return $result;
+        $extensions = array_map(
+            function ($extension) {
+                return preg_quote($extension, '/');
+            },
+            $extensions
+        );
+        return array_filter(
+            Scanner::supportedExtensions(),
+            function ($extension) use ($extensions) {
+                return preg_match('/^(' . implode('|', $extensions) . ')$/i', $extension);
+            }
+        );
     }
 
-    public static function realSupportedExtensions()
+    public static function supportedExtensions()
     {
         return array(
             '3fr', // Hasselblad

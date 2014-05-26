@@ -57,7 +57,7 @@ class PhotoBunch
      */
     public function photoExtensions()
     {
-        return array_intersect(Scanner::supportedExtensions(), $this->extensions);
+        return Scanner::filterSupportedExtensions($this->extensions);
     }
 
     /**
