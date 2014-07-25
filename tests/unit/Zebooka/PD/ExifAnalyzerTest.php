@@ -162,6 +162,8 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
             array('htc', array('Model' => 'HTC Saga')),
             array('5s', array('Make' => 'Apple', 'Model' => 'iPhone 5s')),
             array('5c', array('Make' => 'Apple', 'Model' => 'iPhone 5c')),
+            array('4s', array('Make' => 'Apple', 'Model' => 'iPhone 4s')),
+            array('mini', array('Make' => 'Apple', 'Model' => 'iPad mini')),
             array('d700', array('Model' => 'NIKON D700')),
             array('d700a', array('Model' => 'NIKON D700', 'CustomSettingsBank' => 'a')),
             array('d700b', array('Model' => 'NIKON D700', 'CustomSettingsBank' => 'b')),

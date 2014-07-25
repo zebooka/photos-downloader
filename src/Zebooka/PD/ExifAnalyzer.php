@@ -63,6 +63,10 @@ class ExifAnalyzer
             return '5s';
         } elseif ('Apple' == $exif->Make && 'iPhone 5c' == $exif->Model) {
             return '5c';
+        } elseif ('Apple' == $exif->Make && 'iPhone 4s' == $exif->Model) {
+            return '4s';
+        } elseif ('Apple' == $exif->Make && 'iPad mini' == $exif->Model) {
+            return 'mini';
         } elseif ('NIKON D700' == $exif->Model) {
             return 'd700' . ($exif->CustomSettingsBank ? : '');
         } elseif ('(F17) 2010:08:25 no. 0366' == $exif->InternalSerialNumber) {
