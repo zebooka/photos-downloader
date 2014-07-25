@@ -52,25 +52,47 @@ class Assembler
             return false;
         }
 
-        // TODO: this may lead to unforeseen consequences when FS is case insensitive and we have .JPG and .jpg files
-        $intersect = array_intersect($foundExtensions, $photoBunch->extensions());
+        // we will always compare all files having same lowercased extensions
+        $intersect = array_intersect(
+            array_map('mb_strtolower', $foundExtensions),
+            array_map('mb_strtolower', $photoBunch->extensions())
+        );
         // if intersect is empty - return true
         if (!$intersect) {
             return true;
         }
 
+        $foundExtensionsIndex = array_reduce(
+            $foundExtensions,
+            function ($extensions, $extension) {
+                $lowercaseExtension = mb_strtolower($extension);
+                if (!isset($extensions[$lowercaseExtension])) {
+                    $extensions[$lowercaseExtension] = array();
+                }
+                $extensions[$lowercaseExtension][] = $extension;
+                return $extensions;
+            },
+            array()
+        );
+
         // if intersect is of same files (hashes), return false
-        foreach ($intersect as $extension) {
-            $newFile = $newBunchId . '.' . $extension;
+        foreach ($photoBunch->extensions() as $extension) {
+            $lowercaseExtension = mb_strtolower($extension);
+            if (!in_array($lowercaseExtension, $intersect)) {
+                continue;
+            }
             $oldFile = $photoBunch->bunchId() . '.' . $extension;
-            if (file_exists($newFile) && !is_file($newFile)) {
-                return true;
-            } elseif (is_file($newFile) && !$this->hashinator->equal($newFile, $oldFile)) {
-                return true;
-            } elseif (!file_exists($newFile) && isset($this->simulated[$newBunchId])
-                && !$this->hashinator->equal($this->simulated[$newBunchId]->bunchId() . '.' . $extension, $oldFile)
-            ) {
-                return true;
+            foreach ($foundExtensionsIndex[$lowercaseExtension] as $foundExtension) {
+                $newFile = $newBunchId . '.' . $foundExtension;
+                if (file_exists($newFile) && !is_file($newFile)) {
+                    return true;
+                } elseif (is_file($newFile) && !$this->hashinator->equal($newFile, $oldFile)) {
+                    return true;
+                } elseif (!file_exists($newFile) && isset($this->simulated[$newBunchId])
+                    && !$this->hashinator->equal($this->simulated[$newBunchId]->bunchId() . '.' . $foundExtension, $oldFile)
+                ) {
+                    return true;
+                }
             }
         }
 

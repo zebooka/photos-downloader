@@ -104,7 +104,8 @@ class Processor
         // move/copy files
         foreach ($photoBunch->extensions() as $extension) {
             $from = $photoBunch->bunchId() . '.' . $extension;
-            $to = $newBunchId . '.' . $extension;
+            // QUESTION: should we lowercase only photo extensions + known ones (xmp, txt) ?
+            $to = $newBunchId . '.' . mb_strtolower($extension);
             $fileTransfered = $fileRemoved = false;
             if (is_file($to) && $this->configure->deleteDuplicates && !$this->configure->copy) {
                 $cmd = 'rm ' . escapeshellarg($from);

@@ -24,7 +24,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
             ->getMock()
             ->shouldReceive('extensions')
             ->withNoArgs()
-            ->andReturn(array('ext', 'ext2'))
+            ->andReturn(array('ext', 'EXT2'))
             ->getMock();
     }
 

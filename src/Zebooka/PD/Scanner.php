@@ -34,7 +34,7 @@ class Scanner
     private function addPathAsPhotoBunch($sourcePath)
     {
         $path = new \SplFileInfo($sourcePath);
-        if (!in_array($path->getExtension(), self::supportedExtensions())) {
+        if (!in_array(mb_strtolower($path->getExtension()), self::supportedExtensions())) {
             return;
         }
         $basename = $path->getBasename('.' . $path->getExtension());

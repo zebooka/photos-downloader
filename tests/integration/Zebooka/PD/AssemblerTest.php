@@ -130,7 +130,7 @@ class AssemblerTest extends \PHPUnit_Framework_TestCase
     {
         $hashinator = $this->hashinator()
             ->shouldReceive('equal')
-            ->with($this->resourceDirectory() . DIRECTORY_SEPARATOR . 'prefix_date_time_author_camera_token-1_token-2.jpg', 'old-bunchId.jpg')
+            ->with($this->resourceDirectory() . DIRECTORY_SEPARATOR . 'prefix_date_time_author_camera_token-1_token-2.jpg', 'old-bunchId.JPG')
             ->once()
             ->andReturn(false)
             ->getMock()
@@ -146,7 +146,7 @@ class AssemblerTest extends \PHPUnit_Framework_TestCase
             $hashinator
         );
 
-        $photoBunch = new PhotoBunch('old-bunchId', array('dng', 'jpg'));
+        $photoBunch = new PhotoBunch('old-bunchId', array('dng', 'JPG'));
         $tokens = new Tokens(
             array('date', 'time'),
             array('token-1', 'token-2'),
