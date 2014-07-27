@@ -117,6 +117,16 @@ class TokenizerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('210000', $tokens->time());
     }
 
+    public function test_tokenize_lengthy_separated_date_from_cyanogenmod()
+    {
+        $photoBunch = $this->photoBunch('IMG_20070417_210000');
+        $tokenizer = new Tokenizer($this->configure(), $this->exifAnalyzer($photoBunch, null, null));
+        $tokens = $tokenizer->tokenize($photoBunch);
+        $this->assertInstanceOf('\\Zebooka\\PD\\Tokens', $tokens);
+        $this->assertEquals('070417', $tokens->date());
+        $this->assertEquals('210000', $tokens->time());
+    }
+
     public function test_tokenize_unknown_date()
     {
         $photoBunch = $this->photoBunch('200YM4DD_H1M2S3');
