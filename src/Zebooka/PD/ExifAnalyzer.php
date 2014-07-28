@@ -84,7 +84,6 @@ class ExifAnalyzer
         } elseif ('FUJIFILM' == $exif->Make && 'FinePix S5500' == $exif->Model) {
             return 'f5500';
         } else {
-            // TODO: search for k100d, k100ds exifs for detection
             return null;
         }
     }

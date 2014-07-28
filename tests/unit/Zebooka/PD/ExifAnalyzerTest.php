@@ -4,17 +4,20 @@ namespace Zebooka\PD;
 
 class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
 {
-    private function resourceDirectory()
-    {
-        return __DIR__ . '/../../../res/exif-analyzer';
-    }
-
     /**
      * @return Configure
      */
     private function configure()
     {
         return \Mockery::mock('\\Zebooka\\PD\\Configure');
+    }
+
+    private function realConfigure()
+    {
+        return new \Zebooka\PD\Configure(
+            array(),
+            json_decode(file_get_contents(__DIR__ . '/../../../../res/tokens.json'), true)
+        );
     }
 
     /**
@@ -152,6 +155,16 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
         list ($detectedDateTime, $detectedCamera) = $analyzer->extractDateTimeCameraTokens($this->photoBunch($exifs));
         $this->assertEquals(strtotime('2007-04-21 23:00:00'), $detectedDateTime);
         $this->assertEquals('d700', $detectedCamera);
+    }
+
+    public function test_all_detected_cameras_are_known()
+    {
+        $configure = $this->realConfigure();
+        $knownCameras = $configure->knownCameras();
+        foreach ($this->camerasExifsProperties() as $exifProperiesAndCamera) {
+            list ($camera, $exifProperies) = $exifProperiesAndCamera;
+            $this->assertContains($camera, $knownCameras);
+        }
     }
 
     private function camerasExifsProperties()
