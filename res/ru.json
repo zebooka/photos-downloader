@@ -5,6 +5,7 @@
     "currentConfiguration": "ТЕКУЩАЯ КОНФИГУРАЦИЯ:",
     "error/exifAnalyzer/differentCameras": "Фото не обработаны, так как согласно Exif профилям отсняты на разные камеры.",
     "error/exifAnalyzer/differentDates": "Фото не обработаны, так как имеют различные временные метки в Exif профилях.",
+    "error/exifAnalyzer/exifException": "Фото не обработаны, так как произошла ошибка чтения Exif профилей.",
     "error/tokenize/datetime": "Не удалось определить теги — ошибка определения даты/времени.",
     "error/unableToAssembleTokens": "Не удалось собрать теги в новое имя файла.",
     "error/unableToCreateDestinationDir": "Не удалось создать директорию назначения ''{0}''.",

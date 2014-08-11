@@ -14,7 +14,16 @@ class ExifAnalyzer
     public function extractDateTimeCameraTokens(PhotoBunch $photoBunch)
     {
         $datetimes = $cameras = $tokens = array();
-        foreach ($photoBunch->exifs() as $extension => $exif) {
+        try {
+            $exifs = $photoBunch->exifs();
+        } catch (\Exception $e) {
+            throw new ExifAnalyzerException(
+                'Unable to read one of Exifs.',
+                ExifAnalyzerException::EXIF_EXCEPTION,
+                $e
+            );
+        }
+        foreach ($exifs as $extension => $exif) {
             if ($exif->DateTimeOriginal) {
                 $datetimes[$extension] = strtotime($exif->DateTimeOriginal);
             }

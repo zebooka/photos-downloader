@@ -62,13 +62,13 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
     /**
      * @return Tokenizer
      */
-    private function tokenizerException(PhotoBunch $photoBunch, $code)
+    private function tokenizerException(PhotoBunch $photoBunch, \Exception $exception)
     {
         return \Mockery::mock('\\Zebooka\\PD\\Tokenizer')
             ->shouldReceive('tokenize')
             ->with($photoBunch)
             ->once()
-            ->andThrow(new TokenizerException('', $code))
+            ->andThrow($exception)
             ->getMock();
     }
 
@@ -158,19 +158,27 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
     public function test_process_stops_if_tokenize_fails()
     {
-        $photoBunch = $this->photoBunch();
-        $tokens = $this->tokens();
-        $processor = new Processor(
-            $this->configure(),
-            $this->tokenizerException($photoBunch, TokenizerException::NO_DATE_TIME_DETECTED),
-            $this->assemblerNeverCalled(),
-            $this->executor(),
-            $this->logger(),
-            $this->translator()
+        $exceptions = array(
+            new TokenizerException('', TokenizerException::NO_DATE_TIME_DETECTED),
+            new ExifAnalyzerException('', ExifAnalyzerException::DIFFERENT_CAMERAS),
+            new ExifAnalyzerException('', ExifAnalyzerException::DIFFERENT_DATES),
+            new ExifAnalyzerException('', ExifAnalyzerException::EXIF_EXCEPTION),
         );
+        foreach ($exceptions as $exception) {
+            $photoBunch = $this->photoBunch();
+            $tokens = $this->tokens();
+            $processor = new Processor(
+                $this->configure(),
+                $this->tokenizerException($photoBunch, $exception),
+                $this->assemblerNeverCalled(),
+                $this->executor(),
+                $this->logger(),
+                $this->translator()
+            );
 
-        $this->assertFalse($processor->process($photoBunch));
-        $this->assertEquals(0, $processor->bytesProcessed());
+            $this->assertFalse($processor->process($photoBunch));
+            $this->assertEquals(0, $processor->bytesProcessed());
+        }
     }
 
     public function test_process_stops_if_camera_not_in_list()

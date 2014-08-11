@@ -5,6 +5,7 @@
     "currentConfiguration": "CURRENT CONFIGURATION:",
     "error/exifAnalyzer/differentCameras": "Unable to process, because photos have different cameras in Exif profiles.",
     "error/exifAnalyzer/differentDates": "Unable to process, because photos have different timestamps in Exif profiles.",
+    "error/exifAnalyzer/exifException": "Unable to process, because of Exif reading failure.",
     "error/tokenize/datetime": "Unable to tokenize photo bunch — date/time detection error.",
     "error/unableToAssembleTokens": "Unable to assemble tokens into new filename.",
     "error/unableToCreateDestinationDir": "Unable to create destination directory ''{0}''.",

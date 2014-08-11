@@ -51,6 +51,8 @@ class Processor
                 $tokenizeErrorMessage = $this->translator->translate('error/exifAnalyzer/differentDates');
             } elseif (ExifAnalyzerException::DIFFERENT_CAMERAS == $e->getCode()) {
                 $tokenizeErrorMessage = $this->translator->translate('error/exifAnalyzer/differentCameras');
+            } elseif (ExifAnalyzerException::EXIF_EXCEPTION == $e->getCode()) {
+                $tokenizeErrorMessage = $this->translator->translate('error/exifAnalyzer/exifException');
             } else {
                 throw $e;
             }
