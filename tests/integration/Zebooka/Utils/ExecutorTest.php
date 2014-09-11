@@ -1,6 +1,6 @@
 <?php
 
-namespace Zebooka\PD;
+namespace Zebooka\Utils;
 
 class ExecutorTest extends \PHPUnit_Framework_TestCase
 {

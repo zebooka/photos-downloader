@@ -4,6 +4,7 @@ namespace Zebooka\PD;
 
 use Monolog\Logger;
 use Zebooka\Translator\Translator;
+use Zebooka\Utils\Executor;
 
 class ProcessorTest extends \PHPUnit_Framework_TestCase
 {
@@ -114,7 +115,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
      */
     private function executor()
     {
-        return \Mockery::mock('\\Zebooka\\PD\\Executor')
+        return \Mockery::mock('\\Zebooka\\Utils\\Executor')
             ->shouldReceive('execute')
             ->with(\Mockery::type('string'))
             ->andReturn(0)

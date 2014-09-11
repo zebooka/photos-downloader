@@ -49,7 +49,7 @@ $processor = new \Zebooka\PD\Processor(
     $configure,
     new \Zebooka\PD\Tokenizer($configure, new \Zebooka\PD\ExifAnalyzer($configure)),
     new \Zebooka\PD\Assembler($configure, new \Zebooka\PD\Hashinator()),
-    new \Zebooka\PD\Executor(),
+    new \Zebooka\Utils\Executor(),
     $logger,
     $translator
 );
