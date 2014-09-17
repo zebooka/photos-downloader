@@ -170,4 +170,17 @@ class TokenizerTest extends \PHPUnit_Framework_TestCase
         $this->assertContains('world', $tokens->tokens);
         $this->assertCount(2, $tokens->tokens);
     }
+
+    public function test_tokenize_correctly_sorts_tags()
+    {
+        $configure = $this->configure();
+        $configure->tokensToAdd = array('new');
+        $configure->tokensToDrop = array();
+        $configure->tokensDropUnknown = false;
+        $photoBunch = $this->photoBunch('S_BOA_hello_070417_210000,2_k100d_unknown1_old_world_old_unknown2');
+        $tokenizer = new Tokenizer($configure, $this->exifAnalyzer($photoBunch, null, null));
+        $tokens = $tokenizer->tokenize($photoBunch);
+        $this->assertInstanceOf('\\Zebooka\\PD\\Tokens', $tokens);
+        $this->assertEquals(array('hello', 'old', 'world', 'unknown1', 'unknown2', 'new'), $tokens->tokens);
+    }
 }

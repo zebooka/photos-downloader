@@ -74,7 +74,7 @@ Algorythm
 7. Overwrite exif detected camera and date/time by ones detected from basename.
 8. Drop and add known/other tokens according to configured parameters.
 9. Assemble destination directory. Can be either same directory if files are kept in place, specified directory or specified directory with Year/Month subdirectories structure.
-10. Assemble new basename for file (photo bunch) and check if it is already taken in destination directory.
+10. Assemble new basename for file (photo bunch) and check if it is already taken in destination directory. Basename pattern is assembled of (in this exact order) — prefix, date, time, shot, author, camera, known tokens, other tokens. Newly added tokens are placed at the end of known or other tokens lists.
 11. If there are some files with assembled basename in destination directory, verify their hashes with processed ones.
 12. If there are no files with same extensions in destination directory and in processed photo bunch, then consider basename as taken.
 13. If at least one of files have different hashes, then consider basename as taken.

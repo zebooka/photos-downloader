@@ -38,6 +38,7 @@ class Tokenizer
         $tokens = array_diff($tokens, $this->configure->tokensToDrop);
         $tokens = array_merge($tokens, $this->configure->tokensToAdd);
         $tokens = array_values(array_unique($tokens));
+        $tokens = array_merge(array_intersect($tokens, $this->configure->knownTokens()), array_diff($tokens, $this->configure->knownTokens()));
         return new Tokens($datetime, $tokens, $author, $camera, $prefix, $shot);
     }
 
