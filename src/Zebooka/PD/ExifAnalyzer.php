@@ -102,6 +102,12 @@ class ExifAnalyzer
         $tags = array();
         if ('Instagram' == $exif->Software) {
             $tags[] = 'instagram';
+        } elseif ('AutoStitch' == $exif->Software) {
+            $tags[] = 'pano';
+        } elseif (preg_match('/aviary/i', $exif->Software)) {
+            $tags[] = 'aviary';
+        } elseif (preg_match('/snapseed/i', $exif->Software)) {
+            $tags[] = 'snapseed';
         }
         return array_unique($tags);
     }
