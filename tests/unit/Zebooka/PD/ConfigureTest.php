@@ -38,11 +38,7 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
 
     public function test_configure()
     {
-        $knownData = array(
-            'authors' => array('unique-author-1', 'unique-author-2'),
-            'cameras' => array('unique-camera-1', 'unique-camera-2', 'unique-camera-3'),
-            'tokens' => array('unique-token-1', 'unique-token-2', 'unique-token-3', 'unique-token-4'),
-        );
+        $knownData = $this->knownData();
         $configure = new Configure($this->argv(), $knownData);
         $this->assertEquals('/example/bin', $configure->executableName);
         $this->assertTrue($configure->help);
@@ -93,6 +89,58 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array(), $configure->knownAuthors());
         $this->assertEquals(array(), $configure->knownCameras());
         $this->assertEquals(array(), $configure->knownTokens());
+    }
+
+    public function test_reassembling_configure()
+    {
+        $configure = new Configure($this->argv(), $this->knownData());
+        $argv = array(
+            escapeshellarg($configure->executableName),
+            '-' . Configure::P_HELP,
+            '-' . Configure::P_VERBOSE_LEVEL,
+            escapeshellarg($configure->verboseLevel),
+            '-' . Configure::P_LOG_FILE,
+            escapeshellarg($configure->logFile),
+            '-' . Configure::P_LOG_LEVEL,
+            escapeshellarg($configure->logLevel),
+            '-' . Configure::P_SIMULATE,
+            '-' . Configure::P_LIMIT,
+            escapeshellarg($configure->limit),
+            '-' . Configure::P_NO_RECURSIVE,
+            '-' . Configure::P_FROM,
+            escapeshellarg($configure->from[0]),
+            '-' . Configure::P_FROM,
+            escapeshellarg($configure->from[1]),
+            '-' . Configure::P_FROM,
+            escapeshellarg($configure->from[2]),
+            '-' . Configure::P_TO,
+            escapeshellarg($configure->to),
+            '-' . Configure::P_NO_SUBDIRS,
+            '-' . Configure::P_COPY,
+            '-' . Configure::P_NO_DELETE_DUPLICATES,
+            '-' . Configure::P_AUTHOR,
+            escapeshellarg($configure->author),
+            '-' . Configure::P_TOKENS_ADD,
+            escapeshellarg($configure->tokensToAdd[0]),
+            '-' . Configure::P_TOKENS_ADD,
+            escapeshellarg($configure->tokensToAdd[1]),
+            '-' . Configure::P_TOKENS_DROP,
+            escapeshellarg($configure->tokensToDrop[0]),
+            '-' . Configure::P_TOKENS_DROP,
+            escapeshellarg($configure->tokensToDrop[1]),
+            '-' . Configure::P_TOKENS_DROP_UNKNOWN,
+            '-' . Configure::P_NO_COMPARE_EXIFS,
+        );
+        $this->assertEquals($argv, $configure->argv());
+    }
+
+    private function knownData()
+    {
+        return array(
+            'authors' => array('unique-author-1', 'unique-author-2'),
+            'cameras' => array('unique-camera-1', 'unique-camera-2', 'unique-camera-3'),
+            'tokens' => array('unique-token-1', 'unique-token-2', 'unique-token-3', 'unique-token-4'),
+        );
     }
 
     private function argv()
