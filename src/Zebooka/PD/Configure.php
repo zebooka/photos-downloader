@@ -38,6 +38,7 @@ class Configure
     const P_LIMIT = 'l';
     const P_NO_RECURSIVE = 'R';
     const P_FROM = 'f';
+    const P_LIST_FILE = 'F';
     const P_TO = 't';
     const P_NO_SUBDIRS = 'D';
     const P_COPY = 'c';
@@ -57,6 +58,7 @@ class Configure
     public $limit = 0;
     public $recursive = true;
     public $from = array();
+    public $listFile = null;
     public $to = self::KEEP_IN_PLACE;
     public $subDirectoriesStructure = true;
     public $copy = false;
@@ -85,6 +87,7 @@ class Configure
         $this->limit = (array_key_exists(self::P_LIMIT, $argv) ? intval($argv->{self::P_LIMIT}) : $this->limit);
         $this->recursive = empty($argv->{self::P_NO_RECURSIVE});
         $this->from = (array_key_exists(self::P_FROM, $argv) ? $argv->{self::P_FROM} : $this->from);
+        $this->listFile = (array_key_exists(self::P_LIST_FILE, $argv) ? $argv->{self::P_LIST_FILE} : $this->listFile);
         $this->to = (array_key_exists(self::P_TO, $argv) ? strval($argv->{self::P_TO}) : $this->to);
         $this->subDirectoriesStructure = empty($argv->{self::P_NO_SUBDIRS});
         $this->copy = !empty($argv->{self::P_COPY});
@@ -167,6 +170,7 @@ class Configure
             self::P_LIMIT => $this->limit,
             self::P_NO_RECURSIVE => !$this->recursive,
             self::P_FROM => $this->from,
+            self::P_LIST_FILE => $this->listFile,
             self::P_TO => $this->to,
             self::P_NO_SUBDIRS => !$this->subDirectoriesStructure,
             self::P_COPY => $this->copy,
@@ -187,6 +191,7 @@ class Configure
             self::P_LOG_LEVEL,
             self::P_LIMIT,
             self::P_FROM,
+            self::P_LIST_FILE,
             self::P_TO,
             self::P_AUTHOR,
             self::P_CAMERAS,

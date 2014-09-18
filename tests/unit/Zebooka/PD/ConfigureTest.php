@@ -13,6 +13,7 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
                 Configure::P_LOG_LEVEL,
                 Configure::P_LIMIT,
                 Configure::P_FROM,
+                Configure::P_LIST_FILE,
                 Configure::P_TO,
                 Configure::P_AUTHOR,
                 Configure::P_CAMERAS,
@@ -47,6 +48,7 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(42, $configure->limit);
         $this->assertFalse($configure->recursive);
         $this->assertEquals(array('/path/1', '/path/2', '/path/3'), $configure->from);
+        $this->assertEquals('/path/list.txt', $configure->listFile);
         $this->assertEquals('/path/dst', $configure->to);
         $this->assertFalse($configure->subDirectoriesStructure);
         $this->assertTrue($configure->copy);
@@ -74,6 +76,7 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(0, $configure->limit);
         $this->assertTrue($configure->recursive);
         $this->assertEquals(array(), $configure->from);
+        $this->assertNull($configure->listFile);
         $this->assertEquals('-', $configure->to);
         $this->assertTrue($configure->subDirectoriesStructure);
         $this->assertFalse($configure->copy);
@@ -113,6 +116,8 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
             escapeshellarg($configure->from[1]),
             '-' . Configure::P_FROM,
             escapeshellarg($configure->from[2]),
+            '-' . Configure::P_LIST_FILE,
+            escapeshellarg($configure->listFile),
             '-' . Configure::P_TO,
             escapeshellarg($configure->to),
             '-' . Configure::P_NO_SUBDIRS,
@@ -159,6 +164,8 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
             '-f',
             '/path/2',
             '/path/3',
+            '-F',
+            '/path/list.txt',
             '-t',
             '/path/dst',
             '-D',

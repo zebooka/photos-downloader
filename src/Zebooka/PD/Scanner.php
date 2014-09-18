@@ -6,16 +6,16 @@ class Scanner
 {
     private $files = array();
     private $dirs = array();
-    private $stdin;
+    private $listHandler;
     private $recursive;
 
-    public function __construct(array $sourcePaths, $recursive, $listFile = 'php://stdin')
+    public function __construct(array $sourcePaths, $recursive, $listFile = null)
     {
         $this->recursive = $recursive;
         $sourcePaths = array_unique($sourcePaths);
         foreach ($sourcePaths as $sourcePath) {
             if (Configure::PATHS_FROM_STDIN === $sourcePath) {
-                $this->stdin = fopen($listFile, 'r');
+                $this->listHandler = fopen($listFile ? : 'php://stdin', 'r');
             } elseif (is_dir($sourcePath)) {
                 $this->dirs[] = realpath($sourcePath);
             } elseif (is_file($sourcePath)) {
@@ -26,8 +26,8 @@ class Scanner
 
     public function __destruct()
     {
-        if ($this->stdin) {
-            fclose($this->stdin);
+        if ($this->listHandler) {
+            fclose($this->listHandler);
         }
     }
 
@@ -50,9 +50,9 @@ class Scanner
      */
     public function searchForNextFile()
     {
-        if ($this->stdin && !feof($this->stdin)) {
-            while (!count($this->files) && !count($this->dirs) && !feof($this->stdin)) {
-                $sourcePath = rtrim(fgets($this->stdin));
+        if ($this->listHandler && !feof($this->listHandler)) {
+            while (!count($this->files) && !count($this->dirs) && !feof($this->listHandler)) {
+                $sourcePath = rtrim(fgets($this->listHandler));
                 if (is_dir($sourcePath)) {
                     $this->dirs[] = $sourcePath;
                 } elseif (is_file($sourcePath)) {
