@@ -9,13 +9,13 @@ class Scanner
     private $stdin;
     private $recursive;
 
-    public function __construct(array $sourcePaths, $recursive)
+    public function __construct(array $sourcePaths, $recursive, $listFile = 'php://stdin')
     {
         $this->recursive = $recursive;
         $sourcePaths = array_unique($sourcePaths);
         foreach ($sourcePaths as $sourcePath) {
             if (Configure::PATHS_FROM_STDIN === $sourcePath) {
-                $this->stdin = fopen('php://stdin', 'r');
+                $this->stdin = fopen($listFile, 'r');
             } elseif (is_dir($sourcePath)) {
                 $this->dirs[] = realpath($sourcePath);
             } elseif (is_file($sourcePath)) {
@@ -41,7 +41,7 @@ class Scanner
         if ('' === $basename) {
             return;
         }
-        $bunchId = $path->getPath() . DIRECTORY_SEPARATOR . $basename;
+        $bunchId = $path->getPathInfo()->getRealPath() . DIRECTORY_SEPARATOR . $basename;
         $this->files[] = new PhotoBunch($bunchId, array($path->getExtension()));
     }
 
