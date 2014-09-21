@@ -2,6 +2,7 @@
 
 namespace Zebooka\PD;
 
+use Mockery\MockInterface;
 use Monolog\Logger;
 use Zebooka\Translator\Translator;
 use Zebooka\Utils\Executor;
@@ -132,7 +133,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return Translator
+     * @return Translator|MockInterface
      */
     private function translator()
     {
@@ -230,6 +231,36 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->assertFalse($processor->process($photoBunch));
+        $this->assertEquals(0, $processor->bytesProcessed());
+    }
+
+    public function test_process_skips_by_regexp()
+    {
+        $configure = $this->configure();
+        $configure->regexpFilter = '/\\.test$/i';
+        $photoBunch = $this->photoBunch();
+        $tokens = $this->tokens();
+        $translator = $this->translator()
+            ->shouldReceive('translate')
+            ->with('originalPhotoBunchPath', \Mockery::type('array'))
+            ->once()
+            ->andReturn('unique-message')
+            ->getMock()
+            ->shouldReceive('translate')
+            ->with('skipped/filteredByRegExp', \Mockery::type('array'))
+            ->twice()
+            ->andReturn('unique-message')
+            ->getMock()
+        ;
+        $processor = new Processor(
+            $configure,
+            $this->tokenizer($photoBunch, $tokens),
+            $this->assembler($tokens, $photoBunch, 'unique-bunchId2'),
+            $this->executor(),
+            $this->logger(),
+            $translator
+        );
+        $this->assertTrue($processor->process($photoBunch));
         $this->assertEquals(0, $processor->bytesProcessed());
     }
 }

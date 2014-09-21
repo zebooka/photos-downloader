@@ -19,6 +19,7 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
                 Configure::P_CAMERAS,
                 Configure::P_TOKENS_ADD,
                 Configure::P_TOKENS_DROP,
+                Configure::P_REGEXP_FILTER,
             ),
             Configure::parametersRequiringValues()
         );
@@ -64,6 +65,7 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($knownData['authors'], $configure->knownAuthors());
         $this->assertEquals($knownData['cameras'], $configure->knownCameras());
         $this->assertEquals($knownData['tokens'], $configure->knownTokens());
+        $this->assertEquals('/\\.jpe?g$/i', $configure->regexpFilter);
     }
 
     public function test_empty_configure()
@@ -92,6 +94,7 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array(), $configure->knownAuthors());
         $this->assertEquals(array(), $configure->knownCameras());
         $this->assertEquals(array(), $configure->knownTokens());
+        $this->assertNull($configure->regexpFilter);
     }
 
     public function test_reassembling_configure()
@@ -135,6 +138,8 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
             escapeshellarg($configure->tokensToDrop[1]),
             '-' . Configure::P_TOKENS_DROP_UNKNOWN,
             '-' . Configure::P_NO_COMPARE_EXIFS,
+            '-' . Configure::P_REGEXP_FILTER,
+            escapeshellarg($configure->regexpFilter),
         );
         $this->assertEquals($argv, $configure->argv());
     }
@@ -187,6 +192,8 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
             '-O',
             '321',
             '-B',
+            '-g',
+            '/\\.jpe?g$/i',
         );
     }
 

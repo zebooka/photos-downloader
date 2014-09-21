@@ -49,6 +49,7 @@ class Configure
     const P_TOKENS_DROP = 'y';
     const P_TOKENS_DROP_UNKNOWN = 'Y';
     const P_NO_COMPARE_EXIFS = 'B';
+    const P_REGEXP_FILTER = 'g';
 
     public $help = false;
     public $verboseLevel = 100;
@@ -69,6 +70,7 @@ class Configure
     public $tokensToDrop = array();
     public $tokensDropUnknown = false;
     public $compareExifs = true;
+    public $regexpFilter = null;
     public $executableName;
 
     private $knownAuthors = array();
@@ -98,6 +100,7 @@ class Configure
         $this->tokensToDrop = $this->splitSpaceSeparated(array_key_exists(self::P_TOKENS_DROP, $argv) ? $argv->{self::P_TOKENS_DROP} : $this->tokensToDrop);
         $this->tokensDropUnknown = !empty($argv->{self::P_TOKENS_DROP_UNKNOWN});
         $this->compareExifs = empty($argv->{self::P_NO_COMPARE_EXIFS});
+        $this->regexpFilter = (array_key_exists(self::P_REGEXP_FILTER, $argv) ? strval($argv->{self::P_REGEXP_FILTER}) : $this->regexpFilter);
         $this->from = array_unique(array_merge($this->from, array_slice($argv->positionedParameters(), 1)));
         $positionedParameters = $argv->positionedParameters();
         $this->executableName = (isset($positionedParameters[0]) ? $positionedParameters[0] : null);
@@ -180,6 +183,7 @@ class Configure
             self::P_TOKENS_DROP => $this->tokensToDrop,
             self::P_TOKENS_DROP_UNKNOWN => $this->tokensDropUnknown,
             self::P_NO_COMPARE_EXIFS => !$this->compareExifs,
+            self::P_REGEXP_FILTER => $this->regexpFilter,
         );
     }
 
@@ -197,6 +201,7 @@ class Configure
             self::P_CAMERAS,
             self::P_TOKENS_ADD,
             self::P_TOKENS_DROP,
+            self::P_REGEXP_FILTER,
         );
     }
 

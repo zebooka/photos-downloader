@@ -65,7 +65,7 @@ class Processor
         if ($this->configure->cameras && !in_array($tokens->camera, $this->configure->cameras)) {
             $this->logger->addNotice(
                 $this->translator->translate(
-                    'skippedBecauseCameraNotInList',
+                    'skipped/CameraNotInList',
                     array($tokens->camera, $photoBunch)
                 )
             );
@@ -83,7 +83,7 @@ class Processor
         // skip not changed
         if ($photoBunch->bunchId() === $newBunchId) {
             $this->logger->addNotice(
-                $this->translator->translate('skippedBecauseSourceEqualsDestination', array(count($photoBunch->extensions()), $photoBunch))
+                $this->translator->translate('skipped/sourceEqualsDestination', array(count($photoBunch->extensions()), $photoBunch))
             );
             return false;
         }
@@ -110,12 +110,15 @@ class Processor
             // QUESTION: should we lowercase only photo extensions + known ones (xmp, txt) ?
             $to = $newBunchId . '.' . mb_strtolower($extension);
             $fileTransfered = $fileRemoved = false;
-            if (is_file($to) && $this->configure->deleteDuplicates && !$this->configure->copy) {
+            if ($this->configure->regexpFilter && !preg_match($this->configure->regexpFilter, $to)) {
+                $this->logger->addNotice($this->translator->translate('skipped/filteredByRegExp', array($to)));
+                continue;
+            } elseif (is_file($to) && $this->configure->deleteDuplicates && !$this->configure->copy) {
                 $cmd = 'rm ' . escapeshellarg($from);
                 $errorMessage = $this->translator->translate('error/unableToDelete', array($from));
                 $fileRemoved = true;
             } elseif (is_file($to) && (!$this->configure->deleteDuplicates || $this->configure->copy)) {
-                $this->logger->addNotice($this->translator->translate('skippedBecauseTargetAlreadyExists', array($extension)));
+                $this->logger->addNotice($this->translator->translate('skipped/targetAlreadyExists', array($extension)));
                 continue;
             } elseif ($this->configure->copy) {
                 $cmd = 'cp ' . escapeshellarg($from) . ' ' . escapeshellarg($to);
