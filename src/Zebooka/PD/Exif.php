@@ -11,6 +11,8 @@ namespace Zebooka\PD;
  * @property string $Model
  * @property string $DateTimeOriginal
  * @property string $Software
+ * @property string $ImageWidth
+ * @property string $ImageHeight
  */
 class Exif
 {

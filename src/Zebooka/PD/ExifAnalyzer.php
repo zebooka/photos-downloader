@@ -109,6 +109,11 @@ class ExifAnalyzer
         } elseif (preg_match('/snapseed/i', $exif->Software)) {
             $tags[] = 'snapseed';
         }
+        $min = min($exif->ImageWidth, $exif->ImageHeight);
+        $max = max($exif->ImageWidth, $exif->ImageHeight);
+        if ($min > 0 && $max / $min >= $this->configure->panoramicRatio) {
+            $tags[] = 'pano';
+        }
         return array_unique($tags);
     }
 }

@@ -34,40 +34,45 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
             ->getMock();
     }
 
-    public function test_detection()
+    public function test_datetime_detection()
     {
         $datetime = '2007-04-17 16:00:00';
+        /** @var Exif $exif */
+        $exif = \Mockery::mock('\\Zebooka\\PD\\Exif');
+        $exif->DateTimeOriginal = $datetime;
+        $analyzer = new ExifAnalyzer($this->configure());
+        list($detectedDateTime) = $analyzer->extractDateTimeCameraTokens($this->photoBunch(array($exif)));
+        $this->assertEquals(strtotime($datetime), $detectedDateTime);
+    }
+
+    public function test_cameras_detection()
+    {
         foreach ($this->camerasExifsProperties() as $exifProperiesAndCamera) {
             list ($camera, $exifProperies) = $exifProperiesAndCamera;
             /** @var Exif $exif */
             $exif = \Mockery::mock('\\Zebooka\\PD\\Exif');
-            $exif->DateTimeOriginal = $datetime;
             foreach ($exifProperies as $property => $value) {
                 $exif->{$property} = $value;
             }
             $analyzer = new ExifAnalyzer($this->configure());
-            list($detectedDateTime, $detectedCamera) = $analyzer->extractDateTimeCameraTokens($this->photoBunch(array($exif)));
-            $this->assertEquals(strtotime($datetime), $detectedDateTime);
+            list(, $detectedCamera) = $analyzer->extractDateTimeCameraTokens($this->photoBunch(array($exif)));
             $this->assertEquals($camera, $detectedCamera);
         }
     }
 
     public function test_tokens_detection()
     {
-        $datetime = '2007-04-17 16:00:00';
-        $camera = '5s';
-        $exifProperies = array('Make' => 'Apple', 'Model' => 'iPhone 5s', 'Software' => 'Instagram');
-        /** @var Exif $exif */
-        $exif = \Mockery::mock('\\Zebooka\\PD\\Exif');
-        $exif->DateTimeOriginal = $datetime;
-        foreach ($exifProperies as $property => $value) {
-            $exif->{$property} = $value;
+        foreach ($this->tokensExifsProperties() as $exifProperiesAndTokens) {
+            list ($tokens, $exifProperies) = $exifProperiesAndTokens;
+            /** @var Exif $exif */
+            $exif = \Mockery::mock('\\Zebooka\\PD\\Exif');
+            foreach ($exifProperies as $property => $value) {
+                $exif->{$property} = $value;
+            }
+            $analyzer = new ExifAnalyzer($this->configure());
+            list(, , $detectedTokens) = $analyzer->extractDateTimeCameraTokens($this->photoBunch(array($exif)));
+            $this->assertEquals($tokens, $detectedTokens);
         }
-        $analyzer = new ExifAnalyzer($this->configure());
-        list($detectedDateTime, $detectedCamera, $detectedTokens) = $analyzer->extractDateTimeCameraTokens($this->photoBunch(array($exif)));
-        $this->assertEquals(strtotime($datetime), $detectedDateTime);
-        $this->assertEquals($camera, $detectedCamera);
-        $this->assertContains('instagram', $detectedTokens);
     }
 
     public function test_failure_different_datetimes()
@@ -150,11 +155,13 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
         $exif2 = \Mockery::mock('\\Zebooka\\PD\\Exif');
         $exif2->DateTimeOriginal = '2007-04-21 23:00:00';
         $exif2->Model = 'NIKON D700';
+        $exif2->Software = 'Snapseed';
         $exifs = array($exif1, $exif2);
         $analyzer = new ExifAnalyzer($this->configure());
-        list ($detectedDateTime, $detectedCamera) = $analyzer->extractDateTimeCameraTokens($this->photoBunch($exifs));
+        list ($detectedDateTime, $detectedCamera, $detectedTokes) = $analyzer->extractDateTimeCameraTokens($this->photoBunch($exifs));
         $this->assertEquals(strtotime('2007-04-21 23:00:00'), $detectedDateTime);
         $this->assertEquals('d700', $detectedCamera);
+        $this->assertEquals(array('snapseed'), $detectedTokes);
     }
 
     public function test_all_detected_cameras_are_known()
@@ -189,6 +196,18 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
             array('k100d', array('InternalSerialNumber' => '6374615')),
             array('k100ds', array('InternalSerialNumber' => '6609148')),
             array('f5500', array('Make' => 'FUJIFILM', 'Model' => 'FinePix S5500')),
+        );
+    }
+
+    private function tokensExifsProperties()
+    {
+        return array(
+            array(array('instagram'), array('Software' => 'Instagram')),
+            array(array('aviary'), array('Software' => 'Aviary')),
+            array(array('snapseed'), array('Software' => 'Snapseed')),
+            array(array('pano'), array('Software' => 'AutoStitch')),
+            array(array('pano'), array('ImageWidth' => 1000, 'ImageHeight' => 500)),
+            array(array(), array('ImageWidth' => 1000, 'ImageHeight' => 501)),
         );
     }
 }
