@@ -58,12 +58,12 @@ foreach (new \Zebooka\PD\ScannerIterator($configure->from, $configure->recursive
     $processor->process($photoBunch);
     $i++;
     if ($configure->limit && $i >= $configure->limit) {
-        $logger->addInfo($translator->translate('processedPhotosLimitWasReached', array($configure->limit)));
+        $logger->addInfo($translator->translate('processedFilesLimitWasReached', array($configure->limit)));
         break;
     }
 }
 
-$logger->addInfo($translator->translate('xPhotosProcessed', array($i)));
+$logger->addInfo($translator->translate('xFilesProcessed', array($i)));
 $logger->addInfo(
     $translator->translate(
         'xBytesProcessed',

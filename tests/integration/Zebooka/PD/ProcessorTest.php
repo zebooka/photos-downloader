@@ -242,7 +242,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $tokens = $this->tokens();
         $translator = $this->translator()
             ->shouldReceive('translate')
-            ->with('originalPhotoBunchPath', \Mockery::type('array'))
+            ->with('originalFileBunchPath', \Mockery::type('array'))
             ->once()
             ->andReturn('unique-message')
             ->getMock()

@@ -34,7 +34,7 @@ class Processor
 
     public function process(PhotoBunch $photoBunch)
     {
-        $this->logger->addNotice($this->translator->translate('originalPhotoBunchPath', array($photoBunch)));
+        $this->logger->addNotice($this->translator->translate('originalFileBunchPath', array($photoBunch)));
 
         // tokenize
         try {
