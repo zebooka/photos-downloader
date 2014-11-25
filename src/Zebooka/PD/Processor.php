@@ -32,7 +32,7 @@ class Processor
         $this->translator = $translator;
     }
 
-    public function process(PhotoBunch $photoBunch)
+    public function process(FileBunch $photoBunch)
     {
         $this->logger->addNotice($this->translator->translate('originalFileBunchPath', array($photoBunch)));
 

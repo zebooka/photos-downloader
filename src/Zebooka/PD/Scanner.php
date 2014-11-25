@@ -42,11 +42,11 @@ class Scanner
             return;
         }
         $bunchId = $path->getPathInfo()->getRealPath() . DIRECTORY_SEPARATOR . $basename;
-        $this->files[] = new PhotoBunch($bunchId, array($path->getExtension()));
+        $this->files[] = new FileBunch($bunchId, array($path->getExtension()));
     }
 
     /**
-     * @return false|PhotoBunch
+     * @return false|FileBunch
      */
     public function searchForNextFile()
     {
@@ -100,7 +100,7 @@ class Scanner
         }
         foreach ($files as $bunchId => $extensions) {
             if (count(self::filterSupportedExtensions($extensions)) > 0) {
-                $this->files[] = new PhotoBunch($bunchId, $extensions);
+                $this->files[] = new FileBunch($bunchId, $extensions);
             }
         }
     }

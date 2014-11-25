@@ -22,11 +22,11 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param Exif[] $exifs
-     * @return PhotoBunch
+     * @return FileBunch
      */
     private function photoBunch(array $exifs)
     {
-        return \Mockery::mock('\\Zebooka\\PD\\PhotoBunch')
+        return \Mockery::mock('\\Zebooka\\PD\\FileBunch')
             ->shouldReceive('exifs')
             ->withNoArgs()
             ->once()

@@ -2,7 +2,7 @@
 
 namespace Zebooka\PD;
 
-class PhotoBunch
+class FileBunch
 {
     const ERROR_EMPTY_EXTENSIONS = 1;
     const ERROR_NO_PHOTO_EXTENSIONS = 2;

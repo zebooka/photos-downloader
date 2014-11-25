@@ -32,7 +32,7 @@ class ScannerIterator implements \Iterator
     }
 
     /**
-     * @return false|PhotoBunch
+     * @return false|FileBunch
      */
     public function current()
     {

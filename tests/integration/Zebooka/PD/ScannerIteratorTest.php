@@ -16,14 +16,14 @@ class ScannerIteratorTest extends \PHPUnit_Framework_TestCase
         $i = 0;
         foreach ($scannerIterator as $photoBunch) {
             $i++;
-            $this->assertInstanceOf('\\Zebooka\\PD\\PhotoBunch', $photoBunch);
+            $this->assertInstanceOf('\\Zebooka\\PD\\FileBunch', $photoBunch);
         }
         $this->assertEquals(4, $i);
         // we can restart iteration
         $i = 0;
         foreach ($scannerIterator as $photoBunch) {
             $i++;
-            $this->assertInstanceOf('\\Zebooka\\PD\\PhotoBunch', $photoBunch);
+            $this->assertInstanceOf('\\Zebooka\\PD\\FileBunch', $photoBunch);
         }
         $this->assertEquals(4, $i);
     }
@@ -35,14 +35,14 @@ class ScannerIteratorTest extends \PHPUnit_Framework_TestCase
         $i = 0;
         foreach ($scannerIterator as $photoBunch) {
             $i++;
-            $this->assertInstanceOf('\\Zebooka\\PD\\PhotoBunch', $photoBunch);
+            $this->assertInstanceOf('\\Zebooka\\PD\\FileBunch', $photoBunch);
         }
         $this->assertEquals(1, $i);
         // we can restart iteration
         $i = 0;
         foreach ($scannerIterator as $photoBunch) {
             $i++;
-            $this->assertInstanceOf('\\Zebooka\\PD\\PhotoBunch', $photoBunch);
+            $this->assertInstanceOf('\\Zebooka\\PD\\FileBunch', $photoBunch);
         }
         $this->assertEquals(1, $i);
     }

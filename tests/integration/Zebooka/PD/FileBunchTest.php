@@ -2,7 +2,7 @@
 
 namespace Zebooka\PD;
 
-class PhotoBunchTest extends \PHPUnit_Framework_TestCase
+class FileBunchTest extends \PHPUnit_Framework_TestCase
 {
     private function resourceDirectory()
     {
@@ -14,11 +14,11 @@ class PhotoBunchTest extends \PHPUnit_Framework_TestCase
         foreach (Scanner::supportedExtensions() as $photoExtension) {
             // test with not-photo-extension
             $extensions = array($photoExtension, 'not-photo-extension');
-            $photoBunch = new PhotoBunch('unique-bunchId', $extensions);
+            $photoBunch = new FileBunch('unique-bunchId', $extensions);
             $this->assertEquals('unique-bunchId.{' . implode(',', $extensions) . '}', strval($photoBunch));
 
             // test with single extension
-            $photoBunch = new PhotoBunch('unique-bunchId', array($photoExtension));
+            $photoBunch = new FileBunch('unique-bunchId', array($photoExtension));
             $this->assertEquals('unique-bunchId.' . $photoExtension, strval($photoBunch));
         }
     }
@@ -26,17 +26,17 @@ class PhotoBunchTest extends \PHPUnit_Framework_TestCase
     public function test_methods()
     {
         $extensions = Scanner::supportedExtensions();
-        $photoBunch = new PhotoBunch('unique-bunchId', $extensions);
+        $photoBunch = new FileBunch('unique-bunchId', $extensions);
         $this->assertEquals('.', $photoBunch->directory());
         $this->assertEquals('unique-bunchId', $photoBunch->basename());
         $this->assertEquals($extensions, $photoBunch->extensions());
 
-        $photoBunch = new PhotoBunch('/unique-bunchId', $extensions);
+        $photoBunch = new FileBunch('/unique-bunchId', $extensions);
         $this->assertEquals('/', $photoBunch->directory());
         $this->assertEquals('unique-bunchId', $photoBunch->basename());
         $this->assertEquals($extensions, $photoBunch->extensions());
 
-        $photoBunch = new PhotoBunch('/directory/unique-bunchId', $extensions);
+        $photoBunch = new FileBunch('/directory/unique-bunchId', $extensions);
         $this->assertEquals('/directory', $photoBunch->directory());
         $this->assertEquals('unique-bunchId', $photoBunch->basename());
         $this->assertEquals($extensions, $photoBunch->extensions());
@@ -50,7 +50,7 @@ class PhotoBunchTest extends \PHPUnit_Framework_TestCase
         );
         shuffle($extensions);
 
-        $photoBunch = new PhotoBunch('unique-bunchId', $extensions);
+        $photoBunch = new FileBunch('unique-bunchId', $extensions);
         $this->assertEquals(Scanner::supportedExtensions(), $photoBunch->photoExtensions());
     }
 
@@ -59,9 +59,9 @@ class PhotoBunchTest extends \PHPUnit_Framework_TestCase
         $this->setExpectedException(
             '\\InvalidArgumentException',
             'Empty extensions list passed.',
-            PhotoBunch::ERROR_EMPTY_EXTENSIONS
+            FileBunch::ERROR_EMPTY_EXTENSIONS
         );
-        new PhotoBunch('unique-bunchId', array());
+        new FileBunch('unique-bunchId', array());
     }
 
     public function test_failure_when_no_photo_extensions()
@@ -69,14 +69,14 @@ class PhotoBunchTest extends \PHPUnit_Framework_TestCase
         $this->setExpectedException(
             '\\InvalidArgumentException',
             'No supported photo-extensions passed.',
-            PhotoBunch::ERROR_NO_PHOTO_EXTENSIONS
+            FileBunch::ERROR_NO_PHOTO_EXTENSIONS
         );
-        new PhotoBunch('unique-bunchId', array('unsupported-extension-1', 'unsupported-extension-2'));
+        new FileBunch('unique-bunchId', array('unsupported-extension-1', 'unsupported-extension-2'));
     }
 
     public function test_exifs()
     {
-        $photoBunch = new PhotoBunch($this->resourceDirectory() . '/cubie', array('jpg', 'xmp', 'txt'));
+        $photoBunch = new FileBunch($this->resourceDirectory() . '/cubie', array('jpg', 'xmp', 'txt'));
         $exifs = $photoBunch->exifs();
         $this->assertInternalType('array', $exifs);
         $this->assertCount(1, $exifs);

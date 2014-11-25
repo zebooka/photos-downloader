@@ -27,7 +27,7 @@ class TokenizerTest extends \PHPUnit_Framework_TestCase
     /**
      * @return ExifAnalyzer
      */
-    private function exifAnalyzer(PhotoBunch $photoBunch, $datetime, $camera, $tokens = array())
+    private function exifAnalyzer(FileBunch $photoBunch, $datetime, $camera, $tokens = array())
     {
         return \Mockery::mock('\\Zebooka\\PD\\ExifAnalyzer')
             ->shouldReceive('extractDateTimeCameraTokens')
@@ -38,11 +38,11 @@ class TokenizerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return PhotoBunch
+     * @return FileBunch
      */
     private function photoBunch($basename)
     {
-        return \Mockery::mock('\\Zebooka\\PD\\PhotoBunch')
+        return \Mockery::mock('\\Zebooka\\PD\\FileBunch')
             ->shouldReceive('basename')
             ->withNoArgs()
             ->once()

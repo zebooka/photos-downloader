@@ -15,11 +15,11 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return PhotoBunch
+     * @return FileBunch
      */
     private function photoBunch()
     {
-        return \Mockery::mock('\\Zebooka\\PD\\PhotoBunch')
+        return \Mockery::mock('\\Zebooka\\PD\\FileBunch')
             ->shouldReceive('bunchId')
             ->withNoArgs()
             ->andReturn('unique-bunchId')
@@ -51,7 +51,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
     /**
      * @return Tokenizer
      */
-    private function tokenizer(PhotoBunch $photoBunch, Tokens $tokens)
+    private function tokenizer(FileBunch $photoBunch, Tokens $tokens)
     {
         return \Mockery::mock('\\Zebooka\\PD\\Tokenizer')
             ->shouldReceive('tokenize')
@@ -64,7 +64,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
     /**
      * @return Tokenizer
      */
-    private function tokenizerException(PhotoBunch $photoBunch, \Exception $exception)
+    private function tokenizerException(FileBunch $photoBunch, \Exception $exception)
     {
         return \Mockery::mock('\\Zebooka\\PD\\Tokenizer')
             ->shouldReceive('tokenize')
@@ -77,7 +77,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
     /**
      * @return Assembler
      */
-    private function assembler(Tokens $tokens, PhotoBunch $photoBunch, $newBunchId)
+    private function assembler(Tokens $tokens, FileBunch $photoBunch, $newBunchId)
     {
         return \Mockery::mock('\\Zebooka\\PD\\Assembler')
             ->shouldReceive('assemble')
@@ -90,7 +90,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
     /**
      * @return Assembler
      */
-    private function assemblerException(Tokens $tokens, PhotoBunch $photoBunch, $code)
+    private function assemblerException(Tokens $tokens, FileBunch $photoBunch, $code)
     {
         return \Mockery::mock('\\Zebooka\\PD\\Assembler')
             ->shouldReceive('assemble')

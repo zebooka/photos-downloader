@@ -45,7 +45,7 @@ class AssemblerTest extends \PHPUnit_Framework_TestCase
 
     private function photoBunch($originalDir = false)
     {
-        $photoBunch = \Mockery::mock('\\Zebooka\\PD\\PhotoBunch');
+        $photoBunch = \Mockery::mock('\\Zebooka\\PD\\FileBunch');
         if (false !== $originalDir) {
             $photoBunch->shouldReceive('directory')
                 ->withNoArgs()
@@ -146,7 +146,7 @@ class AssemblerTest extends \PHPUnit_Framework_TestCase
             $hashinator
         );
 
-        $photoBunch = new PhotoBunch('old-bunchId', array('dng', 'JPG'));
+        $photoBunch = new FileBunch('old-bunchId', array('dng', 'JPG'));
         $tokens = new Tokens(
             array('date', 'time'),
             array('token-1', 'token-2'),
@@ -158,7 +158,7 @@ class AssemblerTest extends \PHPUnit_Framework_TestCase
         $newBunchId = $assembler->assemble($tokens, $photoBunch);
         $this->assertEquals($this->resourceDirectory() . DIRECTORY_SEPARATOR . 'prefix_date_time,2_author_camera_token-1_token-2', $newBunchId);
 
-        $photoBunch2 = new PhotoBunch('old-bunchId-2', array('dng'));
+        $photoBunch2 = new FileBunch('old-bunchId-2', array('dng'));
         $tokens2 = new Tokens(
             array('date', 'time'),
             array('token-1', 'token-2'),

@@ -11,7 +11,7 @@ class ExifAnalyzer
         $this->configure = $configure;
     }
 
-    public function extractDateTimeCameraTokens(PhotoBunch $photoBunch)
+    public function extractDateTimeCameraTokens(FileBunch $photoBunch)
     {
         $datetimes = $cameras = $tokens = array();
         try {

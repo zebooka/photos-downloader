@@ -7,7 +7,7 @@ class Assembler
     private $configure;
     private $hashinator;
     /**
-     * @var PhotoBunch[]
+     * @var FileBunch[]
      */
     private $simulated = array();
 
@@ -17,7 +17,7 @@ class Assembler
         $this->hashinator = $hashinator;
     }
 
-    public function assemble(Tokens $tokens, PhotoBunch $photoBunch)
+    public function assemble(Tokens $tokens, FileBunch $photoBunch)
     {
         if (Configure::KEEP_IN_PLACE !== $this->configure->to) {
             $to = (file_exists($this->configure->to) ? realpath($this->configure->to) : $this->configure->to);
@@ -42,7 +42,7 @@ class Assembler
         return $newBunchId;
     }
 
-    private function bunchTaken($newBunchId, PhotoBunch $photoBunch)
+    private function bunchTaken($newBunchId, FileBunch $photoBunch)
     {
         // find extensions of new bunch
         $foundExtensions = $this->findExtensionsForBunchId($newBunchId);
