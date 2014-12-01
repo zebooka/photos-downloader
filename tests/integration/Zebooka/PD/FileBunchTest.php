@@ -42,41 +42,55 @@ class FileBunchTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($extensions, $photoBunch->extensions());
     }
 
+    public function test_allExtensions()
+    {
+        $primaryExtensions = Scanner::supportedExtensions();
+        shuffle($primaryExtensions);
+        $secondaryExtensions = array('secondary-extension-1', 'secondary-extension-2', 'secondary-extension-3');
+        shuffle($secondaryExtensions);
+
+        $photoBunch = new FileBunch('unique-bunchId', $primaryExtensions, $secondaryExtensions);
+        $this->assertEquals(Scanner::supportedExtensions(), $photoBunch->primaryExtensions());
+        $this->assertEquals($secondaryExtensions, $photoBunch->secondaryExtensions());
+    }
+
     public function test_photoExtensions()
     {
-        $extensions = array_merge(
-            Scanner::supportedExtensions(),
-            array('not-photo-extension-1', 'not-photo-extension-2', 'not-photo-extension-3')
-        );
-        shuffle($extensions);
+        $primaryExtensions = Scanner::supportedPhotoExtensions();
+        shuffle($primaryExtensions);
+        $secondaryExtensions = array('secondary-extension-1', 'secondary-extension-2', 'secondary-extension-3');
+        shuffle($secondaryExtensions);
 
-        $photoBunch = new FileBunch('unique-bunchId', $extensions);
-        $this->assertEquals(Scanner::supportedExtensions(), $photoBunch->photoExtensions());
+        $photoBunch = new FileBunch('unique-bunchId', $primaryExtensions, $secondaryExtensions);
+        $this->assertEquals(Scanner::supportedPhotoExtensions(), $photoBunch->primaryExtensions());
+        $this->assertEquals($secondaryExtensions, $photoBunch->secondaryExtensions());
+    }
+
+    public function test_videoExtensions()
+    {
+        $primaryExtensions = Scanner::supportedVideoExtensions();
+        shuffle($primaryExtensions);
+        $secondaryExtensions = array('secondary-extension-1', 'secondary-extension-2', 'secondary-extension-3');
+        shuffle($secondaryExtensions);
+
+        $photoBunch = new FileBunch('unique-bunchId', $primaryExtensions, $secondaryExtensions);
+        $this->assertEquals(Scanner::supportedVideoExtensions(), $photoBunch->primaryExtensions());
+        $this->assertEquals($secondaryExtensions, $photoBunch->secondaryExtensions());
     }
 
     public function test_failure_on_empty_extensions()
     {
         $this->setExpectedException(
             '\\InvalidArgumentException',
-            'Empty extensions list passed.',
+            'Empty primaryExtensions list passed.',
             FileBunch::ERROR_EMPTY_EXTENSIONS
         );
         new FileBunch('unique-bunchId', array());
     }
 
-    public function test_failure_when_no_photo_extensions()
-    {
-        $this->setExpectedException(
-            '\\InvalidArgumentException',
-            'No supported photo-extensions passed.',
-            FileBunch::ERROR_NO_PHOTO_EXTENSIONS
-        );
-        new FileBunch('unique-bunchId', array('unsupported-extension-1', 'unsupported-extension-2'));
-    }
-
     public function test_exifs()
     {
-        $photoBunch = new FileBunch($this->resourceDirectory() . '/cubie', array('jpg', 'xmp', 'txt'));
+        $photoBunch = new FileBunch($this->resourceDirectory() . '/cubie', array('jpg'));
         $exifs = $photoBunch->exifs();
         $this->assertInternalType('array', $exifs);
         $this->assertCount(1, $exifs);

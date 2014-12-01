@@ -5,28 +5,27 @@ namespace Zebooka\PD;
 class FileBunch
 {
     const ERROR_EMPTY_EXTENSIONS = 1;
-    const ERROR_NO_PHOTO_EXTENSIONS = 2;
 
     private $bunchId;
-    private $extensions;
+    private $primaryExtensions;
+    private $secondaryExtensions;
 
-    public function __construct($bunchId, array $extensions)
+    public function __construct($bunchId, array $primaryExtensions, array $secondaryExtensions = array())
     {
-        if (!count($extensions)) {
-            throw new \InvalidArgumentException('Empty extensions list passed.', self::ERROR_EMPTY_EXTENSIONS);
+        if (!count($primaryExtensions)) {
+            throw new \InvalidArgumentException('Empty primaryExtensions list passed.', self::ERROR_EMPTY_EXTENSIONS);
         }
         $this->bunchId = strval($bunchId);
-        $this->extensions = array_values(array_unique($extensions));
-        if (!count($this->photoExtensions())) {
-            throw new \InvalidArgumentException('No supported photo-extensions passed.', self::ERROR_NO_PHOTO_EXTENSIONS);
-        }
+        $this->primaryExtensions = Scanner::sortExtensions(array_unique($primaryExtensions));
+        $this->secondaryExtensions = array_values(array_diff(array_unique($secondaryExtensions), $this->primaryExtensions));
     }
 
     public function __toString()
     {
+        $extensions = $this->extensions();
         return
             $this->bunchId . '.' .
-            (count($this->extensions) > 1 ? '{' . implode(',', $this->extensions) . '}' : $this->extensions[0]);
+            (count($extensions) > 1 ? '{' . implode(',', $extensions) . '}' : reset($extensions));
     }
 
     public function directory()
@@ -49,15 +48,23 @@ class FileBunch
      */
     public function extensions()
     {
-        return $this->extensions;
+        return array_merge($this->primaryExtensions, $this->secondaryExtensions);
     }
 
     /**
      * @return string[]
      */
-    public function photoExtensions()
+    public function primaryExtensions()
     {
-        return Scanner::filterSupportedExtensions($this->extensions);
+        return $this->primaryExtensions;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function secondaryExtensions()
+    {
+        return $this->secondaryExtensions;
     }
 
     /**
@@ -65,7 +72,7 @@ class FileBunch
      */
     public function exifs()
     {
-        $extensions = $this->photoExtensions();
+        $extensions = $this->primaryExtensions();
         $bunchId = $this->bunchId();
         return array_combine(
             $extensions,

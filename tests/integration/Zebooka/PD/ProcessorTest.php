@@ -17,7 +17,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
     /**
      * @return FileBunch
      */
-    private function photoBunch()
+    private function fileBunch()
     {
         return \Mockery::mock('\\Zebooka\\PD\\FileBunch')
             ->shouldReceive('bunchId')
@@ -143,7 +143,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
     public function test_process()
     {
-        $photoBunch = $this->photoBunch();
+        $photoBunch = $this->fileBunch();
         $tokens = $this->tokens();
         $processor = new Processor(
             $this->configure(),
@@ -167,7 +167,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
             new ExifAnalyzerException('', ExifAnalyzerException::EXIF_EXCEPTION),
         );
         foreach ($exceptions as $exception) {
-            $photoBunch = $this->photoBunch();
+            $photoBunch = $this->fileBunch();
             $tokens = $this->tokens();
             $processor = new Processor(
                 $this->configure(),
@@ -185,7 +185,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
     public function test_process_stops_if_camera_not_in_list()
     {
-        $photoBunch = $this->photoBunch();
+        $photoBunch = $this->fileBunch();
         $tokens = $this->tokens();
         $processor = new Processor(
             $this->configure(array('camera-1', 'camera-2')),
@@ -202,7 +202,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
     public function test_process_stops_if_assemble_exception()
     {
-        $photoBunch = $this->photoBunch();
+        $photoBunch = $this->fileBunch();
         $tokens = $this->tokens();
         $processor = new Processor(
             $this->configure(),
@@ -219,7 +219,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
     public function test_process_stops_if_new_bunchId_is_same_as_old()
     {
-        $photoBunch = $this->photoBunch();
+        $photoBunch = $this->fileBunch();
         $tokens = $this->tokens();
         $processor = new Processor(
             $this->configure(),
@@ -238,7 +238,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
     {
         $configure = $this->configure();
         $configure->regexpFilter = '/\\.test$/i';
-        $photoBunch = $this->photoBunch();
+        $photoBunch = $this->fileBunch();
         $tokens = $this->tokens();
         $translator = $this->translator()
             ->shouldReceive('translate')

@@ -19,7 +19,7 @@ class Scanner
             } elseif (is_dir($sourcePath)) {
                 $this->dirs[] = realpath($sourcePath);
             } elseif (is_file($sourcePath)) {
-                $this->addPathAsPhotoBunch(realpath($sourcePath));
+                $this->addPathAsFileBunch(realpath($sourcePath));
             }
         }
     }
@@ -31,7 +31,7 @@ class Scanner
         }
     }
 
-    private function addPathAsPhotoBunch($sourcePath)
+    private function addPathAsFileBunch($sourcePath)
     {
         $path = new \SplFileInfo($sourcePath);
         if (!in_array(mb_strtolower($path->getExtension()), self::supportedExtensions())) {
@@ -56,7 +56,7 @@ class Scanner
                 if (is_dir($sourcePath)) {
                     $this->dirs[] = $sourcePath;
                 } elseif (is_file($sourcePath)) {
-                    $this->addPathAsPhotoBunch($sourcePath);
+                    $this->addPathAsFileBunch($sourcePath);
                 }
             }
         }
@@ -99,29 +99,55 @@ class Scanner
             array_unshift($this->dirs, array_pop($dirs));
         }
         foreach ($files as $bunchId => $extensions) {
-            if (count(self::filterSupportedExtensions($extensions)) > 0) {
-                $this->files[] = new FileBunch($bunchId, $extensions);
+            // TODO: magic
+            $supportedVideo = self::filterBySupportedExtensions($extensions, self::supportedVideoExtensions());
+            $supportedPhoto = self::filterBySupportedExtensions($extensions, self::supportedPhotoExtensions());
+            if (count($supportedVideo) > 0) {
+                $this->files[] = new FileBunch($bunchId, $supportedVideo, array_diff($extensions, $supportedVideo));
+            } elseif (count($supportedPhoto) > 0) {
+                $this->files[] = new FileBunch($bunchId, $supportedPhoto, array_diff($extensions, $supportedPhoto));
             }
         }
     }
 
-    public static function filterSupportedExtensions(array $extensions)
+    public static function filterBySupportedExtensions(array $extensions, array $supportedExtensions)
     {
-        $extensions = array_map(
+        $supportedExtensions = array_map(
             function ($extension) {
                 return preg_quote($extension, '/');
             },
-            $extensions
+            $supportedExtensions
         );
         return array_filter(
-            Scanner::supportedExtensions(),
-            function ($extension) use ($extensions) {
-                return preg_match('/^(' . implode('|', $extensions) . ')$/i', $extension);
+            $extensions,
+            function ($extension) use ($supportedExtensions) {
+                return preg_match('/^(' . implode('|', $supportedExtensions) . ')$/i', $extension);
             }
         );
     }
 
+    public static function sortExtensions(array $extensions)
+    {
+        $sorted = $tail = array();
+        $ranks = array_flip(self::supportedExtensions());
+        foreach ($extensions as $extension) {
+            $lowerExtension = mb_strtolower($extension);
+            if (isset($ranks[$lowerExtension])) {
+                $sorted[$ranks[$lowerExtension]] = $extension;
+            } else {
+                $tail[] = $extension;
+            }
+        }
+        ksort($sorted);
+        return array_values(array_merge($sorted, $tail));
+    }
+
     public static function supportedExtensions()
+    {
+        return array_merge(self::supportedVideoExtensions(), self::supportedPhotoExtensions());
+    }
+
+    public static function supportedPhotoExtensions()
     {
         return array(
             '3fr', // Hasselblad
@@ -155,6 +181,18 @@ class Scanner
             'jpeg',
             'tiff',
             'tif',
+        );
+    }
+
+    public static function supportedVideoExtensions()
+    {
+        return array(
+            'mkv',
+            'mov',
+            'avi',
+            'mpg',
+            'mp4',
+            '3gp',
         );
     }
 }
