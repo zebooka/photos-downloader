@@ -24,7 +24,7 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
      * @param Exif[] $exifs
      * @return FileBunch
      */
-    private function photoBunch(array $exifs)
+    private function fileBunch(array $exifs)
     {
         return \Mockery::mock('\\Zebooka\\PD\\FileBunch')
             ->shouldReceive('exifs')
@@ -41,7 +41,7 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
         $exif = \Mockery::mock('\\Zebooka\\PD\\Exif');
         $exif->DateTimeOriginal = $datetime;
         $analyzer = new ExifAnalyzer($this->configure());
-        list($detectedDateTime) = $analyzer->extractDateTimeCameraTokens($this->photoBunch(array($exif)));
+        list($detectedDateTime) = $analyzer->extractDateTimeCameraTokens($this->fileBunch(array($exif)));
         $this->assertEquals(strtotime($datetime), $detectedDateTime);
     }
 
@@ -55,7 +55,7 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
                 $exif->{$property} = $value;
             }
             $analyzer = new ExifAnalyzer($this->configure());
-            list(, $detectedCamera) = $analyzer->extractDateTimeCameraTokens($this->photoBunch(array($exif)));
+            list(, $detectedCamera) = $analyzer->extractDateTimeCameraTokens($this->fileBunch(array($exif)));
             $this->assertEquals($camera, $detectedCamera);
         }
     }
@@ -70,7 +70,7 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
                 $exif->{$property} = $value;
             }
             $analyzer = new ExifAnalyzer($this->configure());
-            list(, , $detectedTokens) = $analyzer->extractDateTimeCameraTokens($this->photoBunch(array($exif)));
+            list(, , $detectedTokens) = $analyzer->extractDateTimeCameraTokens($this->fileBunch(array($exif)));
             $this->assertEquals($tokens, $detectedTokens);
         }
     }
@@ -90,7 +90,7 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
             'Photos have 2 unique date/time values.',
             ExifAnalyzerException::DIFFERENT_DATES
         );
-        $analyzer->extractDateTimeCameraTokens($this->photoBunch($exifs));
+        $analyzer->extractDateTimeCameraTokens($this->fileBunch($exifs));
     }
 
     public function test_failure_different_cameras()
@@ -108,7 +108,7 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
             'Photos have 2 unique detected cameras.',
             ExifAnalyzerException::DIFFERENT_CAMERAS
         );
-        $analyzer->extractDateTimeCameraTokens($this->photoBunch($exifs));
+        $analyzer->extractDateTimeCameraTokens($this->fileBunch($exifs));
     }
 
     public function test_no_failure_when_d700_and_d700x()
@@ -123,7 +123,7 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
             $exif2->CustomSettingsBank = $customSettingsBank;
             $exifs = array($exif1, $exif2);
             $analyzer = new ExifAnalyzer($this->configure());
-            list (, $camera) = $analyzer->extractDateTimeCameraTokens($this->photoBunch($exifs));
+            list (, $camera) = $analyzer->extractDateTimeCameraTokens($this->fileBunch($exifs));
             $this->assertEquals('d700' . $customSettingsBank, $camera);
         }
     }
@@ -142,7 +142,7 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
         $exif2->Model = 'NIKON D700';
         $exifs = array($exif1, $exif2);
         $analyzer = new ExifAnalyzer($configure);
-        list ($detectedDateTime, $detectedCamera) = $analyzer->extractDateTimeCameraTokens($this->photoBunch($exifs));
+        list ($detectedDateTime, $detectedCamera) = $analyzer->extractDateTimeCameraTokens($this->fileBunch($exifs));
         $this->assertEquals(strtotime('2007-04-17 16:00:00'), $detectedDateTime);
         $this->assertEquals('htc', $detectedCamera);
     }
@@ -158,7 +158,7 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
         $exif2->Software = 'Snapseed';
         $exifs = array($exif1, $exif2);
         $analyzer = new ExifAnalyzer($this->configure());
-        list ($detectedDateTime, $detectedCamera, $detectedTokes) = $analyzer->extractDateTimeCameraTokens($this->photoBunch($exifs));
+        list ($detectedDateTime, $detectedCamera, $detectedTokes) = $analyzer->extractDateTimeCameraTokens($this->fileBunch($exifs));
         $this->assertEquals(strtotime('2007-04-21 23:00:00'), $detectedDateTime);
         $this->assertEquals('d700', $detectedCamera);
         $this->assertEquals(array('snapseed'), $detectedTokes);

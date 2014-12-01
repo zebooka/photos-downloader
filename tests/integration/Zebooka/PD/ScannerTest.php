@@ -15,9 +15,9 @@ class ScannerTest extends \PHPUnit_Framework_TestCase
     {
         $scanner = new Scanner(array($this->resourceDirectory() . '/0.jpg', $this->resourceDirectory()), true);
         $i = 0;
-        while ($photoBunch = $scanner->searchForNextFile()) {
+        while ($fileBunch = $scanner->searchForNextFile()) {
             $i++;
-            $this->assertInstanceOf('\\Zebooka\\PD\\FileBunch', $photoBunch);
+            $this->assertInstanceOf('\\Zebooka\\PD\\FileBunch', $fileBunch);
         }
         $this->assertEquals(5, $i);
     }
@@ -26,9 +26,9 @@ class ScannerTest extends \PHPUnit_Framework_TestCase
     {
         $scanner = new Scanner(array($this->resourceDirectory() . '/0.jpg', $this->resourceDirectory()), false);
         $i = 0;
-        while ($photoBunch = $scanner->searchForNextFile()) {
+        while ($fileBunch = $scanner->searchForNextFile()) {
             $i++;
-            $this->assertInstanceOf('\\Zebooka\\PD\\FileBunch', $photoBunch);
+            $this->assertInstanceOf('\\Zebooka\\PD\\FileBunch', $fileBunch);
         }
         $this->assertEquals(2, $i);
     }
@@ -46,12 +46,12 @@ class ScannerTest extends \PHPUnit_Framework_TestCase
     {
         $scanner = new Scanner(array('-'), false, $this->resourceDirectory() . '/list.txt');
 
-        $photoBunch = $scanner->searchForNextFile();
-        $this->assertInstanceOf('\\Zebooka\\PD\\FileBunch', $photoBunch);
-        $this->assertEquals(realpath($this->resourceDirectory()), $photoBunch->directory());
+        $fileBunch = $scanner->searchForNextFile();
+        $this->assertInstanceOf('\\Zebooka\\PD\\FileBunch', $fileBunch);
+        $this->assertEquals(realpath($this->resourceDirectory()), $fileBunch->directory());
 
-        $photoBunch = $scanner->searchForNextFile();
-        $this->assertFalse($photoBunch);
+        $fileBunch = $scanner->searchForNextFile();
+        $this->assertFalse($fileBunch);
     }
 
     protected function setUp()

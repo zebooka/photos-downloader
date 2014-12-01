@@ -51,11 +51,11 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
     /**
      * @return Tokenizer
      */
-    private function tokenizer(FileBunch $photoBunch, Tokens $tokens)
+    private function tokenizer(FileBunch $fileBunch, Tokens $tokens)
     {
         return \Mockery::mock('\\Zebooka\\PD\\Tokenizer')
             ->shouldReceive('tokenize')
-            ->with($photoBunch)
+            ->with($fileBunch)
             ->once()
             ->andReturn($tokens)
             ->getMock();
@@ -64,11 +64,11 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
     /**
      * @return Tokenizer
      */
-    private function tokenizerException(FileBunch $photoBunch, \Exception $exception)
+    private function tokenizerException(FileBunch $fileBunch, \Exception $exception)
     {
         return \Mockery::mock('\\Zebooka\\PD\\Tokenizer')
             ->shouldReceive('tokenize')
-            ->with($photoBunch)
+            ->with($fileBunch)
             ->once()
             ->andThrow($exception)
             ->getMock();
@@ -77,11 +77,11 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
     /**
      * @return Assembler
      */
-    private function assembler(Tokens $tokens, FileBunch $photoBunch, $newBunchId)
+    private function assembler(Tokens $tokens, FileBunch $fileBunch, $newBunchId)
     {
         return \Mockery::mock('\\Zebooka\\PD\\Assembler')
             ->shouldReceive('assemble')
-            ->with($tokens, $photoBunch)
+            ->with($tokens, $fileBunch)
             ->once()
             ->andReturn($newBunchId)
             ->getMock();
@@ -90,11 +90,11 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
     /**
      * @return Assembler
      */
-    private function assemblerException(Tokens $tokens, FileBunch $photoBunch, $code)
+    private function assemblerException(Tokens $tokens, FileBunch $fileBunch, $code)
     {
         return \Mockery::mock('\\Zebooka\\PD\\Assembler')
             ->shouldReceive('assemble')
-            ->with($tokens, $photoBunch)
+            ->with($tokens, $fileBunch)
             ->once()
             ->andThrow(new AssemblerException('', $code))
             ->getMock();
@@ -143,18 +143,18 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
 
     public function test_process()
     {
-        $photoBunch = $this->fileBunch();
+        $fileBunch = $this->fileBunch();
         $tokens = $this->tokens();
         $processor = new Processor(
             $this->configure(),
-            $this->tokenizer($photoBunch, $tokens),
-            $this->assembler($tokens, $photoBunch, $this->resourceDirectory() . DIRECTORY_SEPARATOR . 'new-unique-bunchId'),
+            $this->tokenizer($fileBunch, $tokens),
+            $this->assembler($tokens, $fileBunch, $this->resourceDirectory() . DIRECTORY_SEPARATOR . 'new-unique-bunchId'),
             $this->executor(),
             $this->logger(),
             $this->translator()
         );
 
-        $this->assertTrue($processor->process($photoBunch));
+        $this->assertTrue($processor->process($fileBunch));
         $this->assertEquals(0, $processor->bytesProcessed()); // no bytes transfered as files are "deleted", need better test.
     }
 
@@ -167,70 +167,70 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
             new ExifAnalyzerException('', ExifAnalyzerException::EXIF_EXCEPTION),
         );
         foreach ($exceptions as $exception) {
-            $photoBunch = $this->fileBunch();
+            $fileBunch = $this->fileBunch();
             $tokens = $this->tokens();
             $processor = new Processor(
                 $this->configure(),
-                $this->tokenizerException($photoBunch, $exception),
+                $this->tokenizerException($fileBunch, $exception),
                 $this->assemblerNeverCalled(),
                 $this->executor(),
                 $this->logger(),
                 $this->translator()
             );
 
-            $this->assertFalse($processor->process($photoBunch));
+            $this->assertFalse($processor->process($fileBunch));
             $this->assertEquals(0, $processor->bytesProcessed());
         }
     }
 
     public function test_process_stops_if_camera_not_in_list()
     {
-        $photoBunch = $this->fileBunch();
+        $fileBunch = $this->fileBunch();
         $tokens = $this->tokens();
         $processor = new Processor(
             $this->configure(array('camera-1', 'camera-2')),
-            $this->tokenizer($photoBunch, $tokens),
+            $this->tokenizer($fileBunch, $tokens),
             $this->assemblerNeverCalled(),
             $this->executor(),
             $this->logger(),
             $this->translator()
         );
 
-        $this->assertFalse($processor->process($photoBunch));
+        $this->assertFalse($processor->process($fileBunch));
         $this->assertEquals(0, $processor->bytesProcessed());
     }
 
     public function test_process_stops_if_assemble_exception()
     {
-        $photoBunch = $this->fileBunch();
+        $fileBunch = $this->fileBunch();
         $tokens = $this->tokens();
         $processor = new Processor(
             $this->configure(),
-            $this->tokenizer($photoBunch, $tokens),
-            $this->assemblerException($tokens, $photoBunch, AssemblerException::TEST),
+            $this->tokenizer($fileBunch, $tokens),
+            $this->assemblerException($tokens, $fileBunch, AssemblerException::TEST),
             $this->executor(),
             $this->logger(),
             $this->translator()
         );
 
-        $this->assertFalse($processor->process($photoBunch));
+        $this->assertFalse($processor->process($fileBunch));
         $this->assertEquals(0, $processor->bytesProcessed());
     }
 
     public function test_process_stops_if_new_bunchId_is_same_as_old()
     {
-        $photoBunch = $this->fileBunch();
+        $fileBunch = $this->fileBunch();
         $tokens = $this->tokens();
         $processor = new Processor(
             $this->configure(),
-            $this->tokenizer($photoBunch, $tokens),
-            $this->assembler($tokens, $photoBunch, 'unique-bunchId'),
+            $this->tokenizer($fileBunch, $tokens),
+            $this->assembler($tokens, $fileBunch, 'unique-bunchId'),
             $this->executor(),
             $this->logger(),
             $this->translator()
         );
 
-        $this->assertFalse($processor->process($photoBunch));
+        $this->assertFalse($processor->process($fileBunch));
         $this->assertEquals(0, $processor->bytesProcessed());
     }
 
@@ -238,7 +238,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
     {
         $configure = $this->configure();
         $configure->regexpFilter = '/\\.test$/i';
-        $photoBunch = $this->fileBunch();
+        $fileBunch = $this->fileBunch();
         $tokens = $this->tokens();
         $translator = $this->translator()
             ->shouldReceive('translate')
@@ -254,13 +254,13 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         ;
         $processor = new Processor(
             $configure,
-            $this->tokenizer($photoBunch, $tokens),
-            $this->assembler($tokens, $photoBunch, 'unique-bunchId2'),
+            $this->tokenizer($fileBunch, $tokens),
+            $this->assembler($tokens, $fileBunch, 'unique-bunchId2'),
             $this->executor(),
             $this->logger(),
             $translator
         );
-        $this->assertTrue($processor->process($photoBunch));
+        $this->assertTrue($processor->process($fileBunch));
         $this->assertEquals(0, $processor->bytesProcessed());
     }
 }

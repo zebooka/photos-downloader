@@ -43,17 +43,17 @@ class AssemblerTest extends \PHPUnit_Framework_TestCase
 
 //    private function tokensKeep
 
-    private function photoBunch($originalDir = false)
+    private function fileBunch($originalDir = false)
     {
-        $photoBunch = \Mockery::mock('\\Zebooka\\PD\\FileBunch');
+        $fileBunch = \Mockery::mock('\\Zebooka\\PD\\FileBunch');
         if (false !== $originalDir) {
-            $photoBunch->shouldReceive('directory')
+            $fileBunch->shouldReceive('directory')
                 ->withNoArgs()
                 ->once()
                 ->andReturn($originalDir)
                 ->getMock();
         }
-        return $photoBunch;
+        return $fileBunch;
     }
 
     public function test_assembling_uniqueDir_with_simulation()
@@ -62,7 +62,7 @@ class AssemblerTest extends \PHPUnit_Framework_TestCase
             $this->configure('unique-dir', true, true),
             $this->hashinator()
         );
-        $newBunchId = $assembler->assemble($this->tokens(), $this->photoBunch());
+        $newBunchId = $assembler->assemble($this->tokens(), $this->fileBunch());
         $this->assertEquals('unique-dir' . DIRECTORY_SEPARATOR . 'assembled-dir' . DIRECTORY_SEPARATOR . 'assembled-basename', $newBunchId);
     }
 
@@ -72,7 +72,7 @@ class AssemblerTest extends \PHPUnit_Framework_TestCase
             $this->configure('unique-dir', true, false),
             $this->hashinator()
         );
-        $newBunchId = $assembler->assemble($this->tokens(), $this->photoBunch());
+        $newBunchId = $assembler->assemble($this->tokens(), $this->fileBunch());
         $this->assertEquals('unique-dir' . DIRECTORY_SEPARATOR . 'assembled-dir' . DIRECTORY_SEPARATOR . 'assembled-basename', $newBunchId);
     }
 
@@ -82,7 +82,7 @@ class AssemblerTest extends \PHPUnit_Framework_TestCase
             $this->configure('unique-dir', false, true),
             $this->hashinator()
         );
-        $newBunchId = $assembler->assemble($this->tokens(false), $this->photoBunch());
+        $newBunchId = $assembler->assemble($this->tokens(false), $this->fileBunch());
         $this->assertEquals('unique-dir' . DIRECTORY_SEPARATOR . 'assembled-basename', $newBunchId);
     }
 
@@ -92,7 +92,7 @@ class AssemblerTest extends \PHPUnit_Framework_TestCase
             $this->configure('unique-dir', false, false),
             $this->hashinator()
         );
-        $newBunchId = $assembler->assemble($this->tokens(false), $this->photoBunch());
+        $newBunchId = $assembler->assemble($this->tokens(false), $this->fileBunch());
         $this->assertEquals('unique-dir' . DIRECTORY_SEPARATOR . 'assembled-basename', $newBunchId);
     }
 
@@ -102,7 +102,7 @@ class AssemblerTest extends \PHPUnit_Framework_TestCase
             $this->configure(Configure::KEEP_IN_PLACE, true, true),
             $this->hashinator()
         );
-        $newBunchId = $assembler->assemble($this->tokens(false), $this->photoBunch('original-dir'));
+        $newBunchId = $assembler->assemble($this->tokens(false), $this->fileBunch('original-dir'));
         $this->assertEquals('original-dir' . DIRECTORY_SEPARATOR . 'assembled-basename', $newBunchId);
     }
 
@@ -112,7 +112,7 @@ class AssemblerTest extends \PHPUnit_Framework_TestCase
             $this->configure(Configure::KEEP_IN_PLACE, true, false),
             $this->hashinator()
         );
-        $newBunchId = $assembler->assemble($this->tokens(false), $this->photoBunch('original-dir'));
+        $newBunchId = $assembler->assemble($this->tokens(false), $this->fileBunch('original-dir'));
         $this->assertEquals('original-dir' . DIRECTORY_SEPARATOR . 'assembled-basename', $newBunchId);
     }
 
@@ -122,7 +122,7 @@ class AssemblerTest extends \PHPUnit_Framework_TestCase
             $this->configure($this->resourceDirectory(), false, true),
             $this->hashinator()
         );
-        $newBunchId = $assembler->assemble($this->tokens(false), $this->photoBunch());
+        $newBunchId = $assembler->assemble($this->tokens(false), $this->fileBunch());
         $this->assertEquals($this->resourceDirectory() . DIRECTORY_SEPARATOR . 'assembled-basename', $newBunchId);
     }
 
@@ -146,7 +146,7 @@ class AssemblerTest extends \PHPUnit_Framework_TestCase
             $hashinator
         );
 
-        $photoBunch = new FileBunch('old-bunchId', array('dng', 'JPG'));
+        $fileBunch = new FileBunch('old-bunchId', array('dng', 'JPG'));
         $tokens = new Tokens(
             array('date', 'time'),
             array('token-1', 'token-2'),
@@ -155,10 +155,10 @@ class AssemblerTest extends \PHPUnit_Framework_TestCase
             'prefix',
             null
         );
-        $newBunchId = $assembler->assemble($tokens, $photoBunch);
+        $newBunchId = $assembler->assemble($tokens, $fileBunch);
         $this->assertEquals($this->resourceDirectory() . DIRECTORY_SEPARATOR . 'prefix_date_time,2_author_camera_token-1_token-2', $newBunchId);
 
-        $photoBunch2 = new FileBunch('old-bunchId-2', array('dng'));
+        $fileBunch2 = new FileBunch('old-bunchId-2', array('dng'));
         $tokens2 = new Tokens(
             array('date', 'time'),
             array('token-1', 'token-2'),
@@ -167,7 +167,7 @@ class AssemblerTest extends \PHPUnit_Framework_TestCase
             'prefix',
             null
         );
-        $newBunchId = $assembler->assemble($tokens2, $photoBunch2);
+        $newBunchId = $assembler->assemble($tokens2, $fileBunch2);
         $this->assertEquals($this->resourceDirectory() . DIRECTORY_SEPARATOR . 'prefix_date_time,3_author_camera_token-1_token-2', $newBunchId);
     }
 }
