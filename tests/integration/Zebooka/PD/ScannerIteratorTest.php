@@ -18,14 +18,14 @@ class ScannerIteratorTest extends \PHPUnit_Framework_TestCase
             $i++;
             $this->assertInstanceOf('\\Zebooka\\PD\\FileBunch', $fileBunch);
         }
-        $this->assertEquals(4, $i);
+        $this->assertEquals(5, $i);
         // we can restart iteration
         $i = 0;
         foreach ($scannerIterator as $fileBunch) {
             $i++;
             $this->assertInstanceOf('\\Zebooka\\PD\\FileBunch', $fileBunch);
         }
-        $this->assertEquals(4, $i);
+        $this->assertEquals(5, $i);
     }
 
     public function test_not_recursive_iteration()

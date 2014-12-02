@@ -18,8 +18,14 @@ class ScannerTest extends \PHPUnit_Framework_TestCase
         while ($fileBunch = $scanner->searchForNextFile()) {
             $i++;
             $this->assertInstanceOf('\\Zebooka\\PD\\FileBunch', $fileBunch);
+            if (array_intersect($fileBunch->primaryExtensions(), Scanner::supportedPhotoExtensions())) {
+                $this->assertCount(0, array_intersect($fileBunch->primaryExtensions(), Scanner::supportedVideoExtensions()));
+            }
+            if (array_intersect($fileBunch->primaryExtensions(), Scanner::supportedVideoExtensions())) {
+                $this->assertCount(0, array_intersect($fileBunch->primaryExtensions(), Scanner::supportedPhotoExtensions()));
+            }
         }
-        $this->assertEquals(5, $i);
+        $this->assertEquals(6, $i);
     }
 
     public function test_searchForNextFile_not_recursive()

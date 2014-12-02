@@ -99,7 +99,6 @@ class Scanner
             array_unshift($this->dirs, array_pop($dirs));
         }
         foreach ($files as $bunchId => $extensions) {
-            // TODO: magic
             $supportedVideo = self::filterBySupportedExtensions($extensions, self::supportedVideoExtensions());
             $supportedPhoto = self::filterBySupportedExtensions($extensions, self::supportedPhotoExtensions());
             if (count($supportedVideo) > 0) {
