@@ -219,4 +219,77 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
             array(array(), array('ImageWidth' => 1000, 'ImageHeight' => 501)),
         );
     }
+
+    public function test_detectTokenIds_null()
+    {
+        /** @var Exif $exif */
+        $exif = \Mockery::mock('\\Zebooka\\PD\\Exif');
+
+        $tokensConfig = array();
+        $token = ExifAnalyzer::detectTokenIds($exif, $tokensConfig, false);
+        $this->assertNull($token);
+    }
+
+    public function test_detectTokenIds_empty()
+    {
+        /** @var Exif $exif */
+        $exif = \Mockery::mock('\\Zebooka\\PD\\Exif');
+
+        $tokensConfig = array();
+        $tokens = ExifAnalyzer::detectTokenIds($exif, $tokensConfig, true);
+        $this->assertEquals(array(), $tokens);
+    }
+
+    public function test_detectTokenIds_single()
+    {
+        /** @var Exif $exif1 */
+        $exif1 = \Mockery::mock('\\Zebooka\\PD\\Exif');
+        $exif1->TestTag = 'unique-value';
+
+        /** @var Exif $exif2 */
+        $exif2 = \Mockery::mock('\\Zebooka\\PD\\Exif');
+        $exif2->AnotherTag = 'OTHER-Value 123';
+        $exif2->SomeTag = 'some-value';
+
+        $tokensConfig = array(
+            'unique-token' => array(
+                array('TestTag' => 'unique-value'),
+                array('AnotherTag' => '/other-value/i'),
+            ),
+            'some-token' => array(
+                array('SomeTag' => 'some-value'),
+            ),
+        );
+
+        $token = ExifAnalyzer::detectTokenIds($exif1, $tokensConfig, false);
+        $this->assertEquals('unique-token', $token);
+
+        $token = ExifAnalyzer::detectTokenIds($exif2, $tokensConfig, false);
+        $this->assertEquals('unique-token', $token);
+    }
+
+    public function test_detectTokenIds_multiple()
+    {
+        /** @var Exif $exif1 */
+        $exif = \Mockery::mock('\\Zebooka\\PD\\Exif');
+        $exif->TestTag = 'unique-value';
+        $exif->AnotherTag = 'OTHER-Value 123';
+        $exif->SomeTag = 'some-value';
+
+        $tokensConfig = array(
+            'unique-token' => array(
+                array('TestTag' => 'unique-value'),
+                array('AnotherTag' => '/other-value/i'),
+            ),
+            'some-token' => array(
+                array('SomeTag' => '/SOME-value/'),
+            ),
+            123 => array(
+                array('AnotherTag' => '/[0-9]+/'),
+            ),
+        );
+
+        $tokens = ExifAnalyzer::detectTokenIds($exif, $tokensConfig, true);
+        $this->assertEquals(array('unique-token', 123), $tokens);
+    }
 }
