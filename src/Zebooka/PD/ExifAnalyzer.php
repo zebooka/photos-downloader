@@ -23,9 +23,19 @@ class ExifAnalyzer
                 $e
             );
         }
+        $datePropertiesNames = array(
+            'DateTimeOriginal',
+            'CreateDate',
+            'CreationDate',
+            'TrackCreateDate',
+            'MediaCreateDate'
+        );
         foreach ($exifs as $extension => $exif) {
-            if ($exif->DateTimeOriginal) {
-                $datetimes[$extension] = strtotime($exif->DateTimeOriginal);
+            foreach ($datePropertiesNames as $datePropertyName) {
+                if ($exif->{$datePropertyName}) {
+                    $datetimes[$extension] = strtotime($exif->{$datePropertyName});
+                    break;
+                }
             }
             if (null !== ($camera = $this->detectCamera($exif))) {
                 $cameras[$extension] = $camera;
@@ -35,7 +45,7 @@ class ExifAnalyzer
         $datetimes = array_unique($datetimes);
         if ($this->configure->compareExifs && count($datetimes) > 1) {
             throw new ExifAnalyzerException(
-                'Photos have ' . count($datetimes) . ' unique date/time values.',
+                'Files have ' . count($datetimes) . ' unique date/time values.',
                 ExifAnalyzerException::DIFFERENT_DATES
             );
         }
@@ -49,7 +59,7 @@ class ExifAnalyzer
         }
         if ($this->configure->compareExifs && count($cameras) > 1) {
             throw new ExifAnalyzerException(
-                'Photos have ' . count($cameras) . ' unique detected cameras.',
+                'Files have ' . count($cameras) . ' unique detected cameras.',
                 ExifAnalyzerException::DIFFERENT_CAMERAS
             );
         }

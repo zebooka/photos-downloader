@@ -10,6 +10,10 @@ namespace Zebooka\PD;
  * @property string $Make
  * @property string $Model
  * @property string $DateTimeOriginal
+ * @property string $CreateDate
+ * @property string $CreationDate
+ * @property string $TrackCreateDate
+ * @property string $MediaCreateDate
  * @property string $Software
  * @property string $ImageWidth
  * @property string $ImageHeight

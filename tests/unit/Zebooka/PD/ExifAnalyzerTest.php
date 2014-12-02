@@ -37,12 +37,21 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
     public function test_datetime_detection()
     {
         $datetime = '2007-04-17 16:00:00';
-        /** @var Exif $exif */
-        $exif = \Mockery::mock('\\Zebooka\\PD\\Exif');
-        $exif->DateTimeOriginal = $datetime;
-        $analyzer = new ExifAnalyzer($this->configure());
-        list($detectedDateTime) = $analyzer->extractDateTimeCameraTokens($this->fileBunch(array($exif)));
-        $this->assertEquals(strtotime($datetime), $detectedDateTime);
+        $datetimeProperties = array(
+            'DateTimeOriginal',
+            'CreateDate',
+            'CreationDate',
+            'TrackCreateDate',
+            'MediaCreateDate'
+        );
+        foreach ($datetimeProperties as $datetimeProperty) {
+            /** @var Exif $exif */
+            $exif = \Mockery::mock('\\Zebooka\\PD\\Exif');
+            $exif->{$datetimeProperty} = $datetime;
+            $analyzer = new ExifAnalyzer($this->configure());
+            list($detectedDateTime) = $analyzer->extractDateTimeCameraTokens($this->fileBunch(array($exif)));
+            $this->assertEquals(strtotime($datetime), $detectedDateTime);
+        }
     }
 
     public function test_cameras_detection()
@@ -87,7 +96,7 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
         $analyzer = new ExifAnalyzer($this->configure());
         $this->setExpectedException(
             '\\Zebooka\\PD\\ExifAnalyzerException',
-            'Photos have 2 unique date/time values.',
+            'Files have 2 unique date/time values.',
             ExifAnalyzerException::DIFFERENT_DATES
         );
         $analyzer->extractDateTimeCameraTokens($this->fileBunch($exifs));
@@ -105,7 +114,7 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
         $analyzer = new ExifAnalyzer($this->configure());
         $this->setExpectedException(
             '\\Zebooka\\PD\\ExifAnalyzerException',
-            'Photos have 2 unique detected cameras.',
+            'Files have 2 unique detected cameras.',
             ExifAnalyzerException::DIFFERENT_CAMERAS
         );
         $analyzer->extractDateTimeCameraTokens($this->fileBunch($exifs));

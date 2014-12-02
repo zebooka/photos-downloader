@@ -192,6 +192,7 @@ class Scanner
             'avi',
             'mpg',
             'mp4',
+            'mts',
             '3gp',
         );
     }
