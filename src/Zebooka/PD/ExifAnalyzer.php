@@ -74,56 +74,60 @@ class ExifAnalyzer
 
     private function detectCamera(Exif $exif)
     {
-        if (('HTC' == $exif->Make && 'Desire S' == $exif->Model)
-            || 'HTC Desire S' == $exif->Model || 'HTC Saga' == $exif->Model
-        ) {
-            return 'htc';
-        } elseif ('Apple' == $exif->Make && 'iPhone 5s' == $exif->Model) {
-            return '5s';
-        } elseif ('Apple' == $exif->Make && 'iPhone 5c' == $exif->Model) {
-            return '5c';
-        } elseif ('Apple' == $exif->Make && 'iPhone 4s' == $exif->Model) {
-            return '4s';
-        } elseif ('Apple' == $exif->Make && 'iPad mini' == $exif->Model) {
-            return 'mini';
-        } elseif ('NIKON D700' == $exif->Model) {
-            return 'd700' . ($exif->CustomSettingsBank ? : '');
-        } elseif ('(F17) 2010:08:25 no. 0366' == $exif->InternalSerialNumber) {
-            return 'lx5';
-        } elseif ('4123986' == $exif->InternalSerialNumber) {
-            return 'k10z';
-        } elseif ('8041881' == $exif->InternalSerialNumber) {
-            return 'k10g';
-        } elseif ('6011443' == $exif->InternalSerialNumber) {
-            return 'ds';
-        } elseif ('6374615' == $exif->InternalSerialNumber) {
-            return 'k100d';
-        } elseif ('6609148' == $exif->InternalSerialNumber) {
-            return 'k100ds';
-        } elseif ('FUJIFILM' == $exif->Make && 'FinePix S5500' == $exif->Model) {
-            return 'f5500';
-        } else {
-            return null;
-        }
+        return self::detectTokenIds($exif, $this->configure->camerasConfigure(), false);
     }
 
     private function detectTokens(Exif $exif)
     {
-        $tags = array();
-        if ('Instagram' == $exif->Software) {
-            $tags[] = 'instagram';
-        } elseif ('AutoStitch' == $exif->Software) {
-            $tags[] = 'pano';
-        } elseif (preg_match('/aviary/i', $exif->Software)) {
-            $tags[] = 'aviary';
-        } elseif (preg_match('/snapseed/i', $exif->Software)) {
-            $tags[] = 'snapseed';
-        }
+        $tags = self::detectTokenIds($exif, $this->configure->tokensConfigure(), true);
         $min = min($exif->ImageWidth, $exif->ImageHeight);
         $max = max($exif->ImageWidth, $exif->ImageHeight);
         if ($min > 0 && $max / $min >= $this->configure->panoramicRatio) {
             $tags[] = 'pano';
         }
         return array_unique($tags);
+    }
+
+    /**
+     * @param Exif $exif
+     * @param array $tokensConfig
+     * @param bool $allowMultiple
+     * @return array|string|null
+     */
+    public static function detectTokenIds(Exif $exif, array $tokensConfig, $allowMultiple = false)
+    {
+        $detected = array();
+        foreach ($tokensConfig as $tokenId => $conditions) {
+            foreach ($conditions as $condition) {
+                $matched = true;
+                foreach ($condition as $tag => $expression) {
+                    if (preg_match('#^/.+/[a-z]*$#i', $expression)) {
+                        if (!preg_match($expression, $exif->{$tag})) {
+                            $matched = false;
+                            break;
+                        }
+                    } else {
+                        if ($exif->{$tag} !== $expression) {
+                            $matched = false;
+                            break;
+                        }
+                    }
+                }
+                if ($matched) {
+                    $detected[] = $tokenId;
+                    if ($allowMultiple) {
+                        break;
+                    } else {
+                        break 2;
+                    }
+                }
+            }
+        }
+
+        if ($allowMultiple) {
+            return $detected;
+        } else {
+            return (count($detected) > 0 ? reset($detected) : null);
+        }
     }
 }

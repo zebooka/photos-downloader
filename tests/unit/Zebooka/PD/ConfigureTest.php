@@ -64,8 +64,8 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('/tmp/example.log', $configure->logFile);
         $this->assertEquals(321, $configure->logLevel);
         $this->assertEquals($knownData['authors'], $configure->knownAuthors());
-        $this->assertEquals($knownData['cameras'], $configure->knownCameras());
-        $this->assertEquals($knownData['tokens'], $configure->knownTokens());
+        $this->assertEquals(array_keys($knownData['cameras']), $configure->knownCameras());
+        $this->assertEquals(array_keys($knownData['tokens']), $configure->knownTokens());
         $this->assertEquals('/\\.jpe?g$/i', $configure->regexpFilter);
         $this->assertEquals(3.2, $configure->panoramicRatio);
     }
@@ -152,9 +152,21 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
     private function knownData()
     {
         return array(
-            'authors' => array('unique-author-1', 'unique-author-2'),
-            'cameras' => array('unique-camera-1', 'unique-camera-2', 'unique-camera-3'),
-            'tokens' => array('unique-token-1', 'unique-token-2', 'unique-token-3', 'unique-token-4'),
+            'authors' => array(
+                'unique-author-1',
+                'unique-author-2',
+            ),
+            'cameras' => array(
+                'unique-camera-1' => array(),
+                'unique-camera-2' => array(),
+                'unique-camera-3' => array(),
+            ),
+            'tokens' => array(
+                'unique-token-1' => array(),
+                'unique-token-2' => array(),
+                'unique-token-3' => array(),
+                'unique-token-4' => array(),
+            ),
         );
     }
 

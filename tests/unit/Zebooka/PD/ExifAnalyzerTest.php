@@ -48,7 +48,7 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
             /** @var Exif $exif */
             $exif = \Mockery::mock('\\Zebooka\\PD\\Exif');
             $exif->{$datetimeProperty} = $datetime;
-            $analyzer = new ExifAnalyzer($this->configure());
+            $analyzer = new ExifAnalyzer($this->realConfigure());
             list($detectedDateTime) = $analyzer->extractDateTimeCameraTokens($this->fileBunch(array($exif)));
             $this->assertEquals(strtotime($datetime), $detectedDateTime);
         }
@@ -63,7 +63,7 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
             foreach ($exifProperies as $property => $value) {
                 $exif->{$property} = $value;
             }
-            $analyzer = new ExifAnalyzer($this->configure());
+            $analyzer = new ExifAnalyzer($this->realConfigure());
             list(, $detectedCamera) = $analyzer->extractDateTimeCameraTokens($this->fileBunch(array($exif)));
             $this->assertEquals($camera, $detectedCamera);
         }
@@ -78,7 +78,7 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
             foreach ($exifProperies as $property => $value) {
                 $exif->{$property} = $value;
             }
-            $analyzer = new ExifAnalyzer($this->configure());
+            $analyzer = new ExifAnalyzer($this->realConfigure());
             list(, , $detectedTokens) = $analyzer->extractDateTimeCameraTokens($this->fileBunch(array($exif)));
             $this->assertEquals($tokens, $detectedTokens);
         }
@@ -93,7 +93,7 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
         $exif2 = \Mockery::mock('\\Zebooka\\PD\\Exif');
         $exif2->DateTimeOriginal = '2007-04-21 23:00:00';
         $exifs = array($exif1, $exif2);
-        $analyzer = new ExifAnalyzer($this->configure());
+        $analyzer = new ExifAnalyzer($this->realConfigure());
         $this->setExpectedException(
             '\\Zebooka\\PD\\ExifAnalyzerException',
             'Files have 2 unique date/time values.',
@@ -111,7 +111,7 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
         $exif2 = \Mockery::mock('\\Zebooka\\PD\\Exif');
         $exif2->Model = 'NIKON D700';
         $exifs = array($exif1, $exif2);
-        $analyzer = new ExifAnalyzer($this->configure());
+        $analyzer = new ExifAnalyzer($this->realConfigure());
         $this->setExpectedException(
             '\\Zebooka\\PD\\ExifAnalyzerException',
             'Files have 2 unique detected cameras.',
@@ -131,7 +131,7 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
             $exif2->Model = 'NIKON D700';
             $exif2->CustomSettingsBank = $customSettingsBank;
             $exifs = array($exif1, $exif2);
-            $analyzer = new ExifAnalyzer($this->configure());
+            $analyzer = new ExifAnalyzer($this->realConfigure());
             list (, $camera) = $analyzer->extractDateTimeCameraTokens($this->fileBunch($exifs));
             $this->assertEquals('d700' . $customSettingsBank, $camera);
         }
@@ -139,7 +139,7 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
 
     public function test_no_failure_when_compareExifs_is_false()
     {
-        $configure = $this->configure();
+        $configure = $this->realConfigure();
         $configure->compareExifs = false;
         /** @var Exif $exif1 */
         $exif1 = \Mockery::mock('\\Zebooka\\PD\\Exif');
@@ -166,7 +166,7 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
         $exif2->Model = 'NIKON D700';
         $exif2->Software = 'Snapseed';
         $exifs = array($exif1, $exif2);
-        $analyzer = new ExifAnalyzer($this->configure());
+        $analyzer = new ExifAnalyzer($this->realConfigure());
         list ($detectedDateTime, $detectedCamera, $detectedTokes) = $analyzer->extractDateTimeCameraTokens($this->fileBunch($exifs));
         $this->assertEquals(strtotime('2007-04-21 23:00:00'), $detectedDateTime);
         $this->assertEquals('d700', $detectedCamera);

@@ -154,6 +154,11 @@ class Configure
      */
     public function knownCameras()
     {
+        return array_keys($this->knownCameras);
+    }
+
+    public function camerasConfigure()
+    {
         return $this->knownCameras;
     }
 
@@ -161,6 +166,11 @@ class Configure
      * @return string[]
      */
     public function knownTokens()
+    {
+        return array_keys($this->knownTokens);
+    }
+
+    public function tokensConfigure()
     {
         return $this->knownTokens;
     }
