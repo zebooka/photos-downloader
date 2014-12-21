@@ -263,4 +263,34 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($processor->process($fileBunch));
         $this->assertEquals(0, $processor->bytesProcessed());
     }
+
+    public function test_process_skips_by_negative_regexp()
+    {
+        $configure = $this->configure();
+        $configure->regexpNegativeFilter = '/\\.ext2?$/i';
+        $fileBunch = $this->fileBunch();
+        $tokens = $this->tokens();
+        $translator = $this->translator()
+            ->shouldReceive('translate')
+            ->with('originalFileBunchPath', \Mockery::type('array'))
+            ->once()
+            ->andReturn('unique-message')
+            ->getMock()
+            ->shouldReceive('translate')
+            ->with('skipped/filteredByRegExp', \Mockery::type('array'))
+            ->twice()
+            ->andReturn('unique-message')
+            ->getMock()
+        ;
+        $processor = new Processor(
+            $configure,
+            $this->tokenizer($fileBunch, $tokens),
+            $this->assembler($tokens, $fileBunch, 'unique-bunchId2'),
+            $this->executor(),
+            $this->logger(),
+            $translator
+        );
+        $this->assertTrue($processor->process($fileBunch));
+        $this->assertEquals(0, $processor->bytesProcessed());
+    }
 }
