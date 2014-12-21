@@ -51,6 +51,7 @@ class Configure
     const P_TOKENS_DROP_UNKNOWN = 'Y';
     const P_NO_COMPARE_EXIFS = 'B';
     const P_REGEXP_FILTER = 'g';
+    const P_REGEXP_NEGATIVE_FILTER = 'G';
     const P_PANORAMIC_RATIO = 'p';
 
     public $help = false;
@@ -73,6 +74,7 @@ class Configure
     public $tokensDropUnknown = false;
     public $compareExifs = true;
     public $regexpFilter = null;
+    public $regexpNegativeFilter = null;
     public $panoramicRatio = 2.0;
     public $executableName;
 
@@ -104,6 +106,7 @@ class Configure
         $this->tokensDropUnknown = !empty($argv->{self::P_TOKENS_DROP_UNKNOWN});
         $this->compareExifs = empty($argv->{self::P_NO_COMPARE_EXIFS});
         $this->regexpFilter = (array_key_exists(self::P_REGEXP_FILTER, $argv) ? strval($argv->{self::P_REGEXP_FILTER}) : $this->regexpFilter);
+        $this->regexpNegativeFilter = (array_key_exists(self::P_REGEXP_NEGATIVE_FILTER, $argv) ? strval($argv->{self::P_REGEXP_NEGATIVE_FILTER}) : $this->regexpNegativeFilter);
         $this->panoramicRatio = (array_key_exists(self::P_PANORAMIC_RATIO, $argv) ? strval($argv->{self::P_PANORAMIC_RATIO}) : $this->panoramicRatio);
         $this->from = array_unique(array_merge($this->from, array_slice($argv->positionedParameters(), 1)));
         $positionedParameters = $argv->positionedParameters();
@@ -198,6 +201,7 @@ class Configure
             self::P_TOKENS_DROP_UNKNOWN => $this->tokensDropUnknown,
             self::P_NO_COMPARE_EXIFS => !$this->compareExifs,
             self::P_REGEXP_FILTER => $this->regexpFilter,
+            self::P_REGEXP_NEGATIVE_FILTER => $this->regexpNegativeFilter,
             self::P_PANORAMIC_RATIO => $this->panoramicRatio,
         );
     }
@@ -217,6 +221,7 @@ class Configure
             self::P_TOKENS_ADD,
             self::P_TOKENS_DROP,
             self::P_REGEXP_FILTER,
+            self::P_REGEXP_NEGATIVE_FILTER,
             self::P_PANORAMIC_RATIO,
         );
     }

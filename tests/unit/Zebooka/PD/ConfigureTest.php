@@ -20,6 +20,7 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
                 Configure::P_TOKENS_ADD,
                 Configure::P_TOKENS_DROP,
                 Configure::P_REGEXP_FILTER,
+                Configure::P_REGEXP_NEGATIVE_FILTER,
                 Configure::P_PANORAMIC_RATIO,
             ),
             Configure::parametersRequiringValues()
@@ -67,6 +68,7 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array_keys($knownData['cameras']), $configure->knownCameras());
         $this->assertEquals(array_keys($knownData['tokens']), $configure->knownTokens());
         $this->assertEquals('/\\.jpe?g$/i', $configure->regexpFilter);
+        $this->assertEquals('/\\.dng$/i', $configure->regexpNegativeFilter);
         $this->assertEquals(3.2, $configure->panoramicRatio);
     }
 
@@ -97,6 +99,7 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array(), $configure->knownCameras());
         $this->assertEquals(array(), $configure->knownTokens());
         $this->assertNull($configure->regexpFilter);
+        $this->assertNull($configure->regexpNegativeFilter);
         $this->assertEquals(2.0, $configure->panoramicRatio);
     }
 
@@ -143,6 +146,8 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
             '-' . Configure::P_NO_COMPARE_EXIFS,
             '-' . Configure::P_REGEXP_FILTER,
             escapeshellarg($configure->regexpFilter),
+            '-' . Configure::P_REGEXP_NEGATIVE_FILTER,
+            escapeshellarg($configure->regexpNegativeFilter),
             '-' . Configure::P_PANORAMIC_RATIO,
             escapeshellarg($configure->panoramicRatio),
         );
@@ -211,6 +216,8 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
             '-B',
             '-g',
             '/\\.jpe?g$/i',
+            '-G',
+            '/\\.dng$/i',
             '-p',
             '3.2',
         );
