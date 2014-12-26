@@ -6,6 +6,7 @@
     "error/exifAnalyzer/differentCameras": "Файлы не обработаны, так как согласно Exif профилям отсняты на разные камеры.",
     "error/exifAnalyzer/differentDates": "Файлы не обработаны, так как имеют различные временные метки в Exif профилях.",
     "error/exifAnalyzer/exifException": "Файлы не обработаны, так как произошла ошибка чтения Exif профилей.",
+    "error/regexpInvalid": "Невалидное регулярное выражение: ''{0}''.",
     "error/tokenize/datetime": "Не удалось определить теги — ошибка определения даты/времени.",
     "error/unableToAssembleTokens": "Не удалось собрать теги в новое имя файла.",
     "error/unableToCreateDestinationDir": "Не удалось создать директорию назначения ''{0}''.",

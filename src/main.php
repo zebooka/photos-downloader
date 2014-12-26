@@ -47,6 +47,20 @@ if ($configure->help || 1 === count($_SERVER['argv'])) {
     $logger->addInfo($view->renderConfiguration());
 }
 
+// validate regexp
+try {
+    preg_match($configure->regexpFilter ? : '/test/', 'test');
+} catch (\ErrorException $e) {
+    $logger->addCritical($translator->translate('error/regexpInvalid', array($configure->regexpFilter)));
+    exit(1);
+}
+try {
+    preg_match($configure->regexpNegativeFilter ? : '/test/', 'test');
+} catch (\ErrorException $e) {
+    $logger->addCritical($translator->translate('error/regexpInvalid', array($configure->regexpNegativeFilter)));
+    exit(1);
+}
+
 // processing
 $processor = new \Zebooka\PD\Processor(
     $configure,
