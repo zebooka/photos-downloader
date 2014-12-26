@@ -29,6 +29,11 @@ class ConfigureView
             PHP_EOL;
     }
 
+    public function renderConfiguration()
+    {
+        return PHP_EOL . $this->currentConfiguration() . PHP_EOL;
+    }
+
     private function indent()
     {
         return '   ';

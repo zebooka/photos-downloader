@@ -42,6 +42,9 @@ if ($configure->help || 1 === count($_SERVER['argv'])) {
     $view = new \Zebooka\PD\ConfigureView($configure, $translator, \Zebooka\Utils\Cli\Size::getTerminalWidth() ? : 80);
     $logger->addInfo($view->render());
     exit(0);
+} else {
+    $view = new \Zebooka\PD\ConfigureView($configure, $translator, \Zebooka\Utils\Cli\Size::getTerminalWidth() ? : 80);
+    $logger->addInfo($view->renderConfiguration());
 }
 
 // processing
