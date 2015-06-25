@@ -217,6 +217,7 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
             array(array('pano'), array('Software' => 'AutoStitch')),
             array(array('pano'), array('ImageWidth' => 1000, 'ImageHeight' => 500)),
             array(array(), array('ImageWidth' => 1000, 'ImageHeight' => 501)),
+            array(array('vsco', 'abc123'), array('Software' => 'VSCOcam', 'Description' => 'Processed with VSCOcam with abc123 preset')),
         );
     }
 

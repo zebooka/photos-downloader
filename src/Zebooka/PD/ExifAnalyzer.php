@@ -100,9 +100,14 @@ class ExifAnalyzer
         foreach ($tokensConfig as $tokenId => $conditions) {
             foreach ($conditions as $condition) {
                 $matched = true;
+                $extracts = array();
                 foreach ($condition as $tag => $expression) {
                     if (preg_match('#^/.+/[a-z]*$#i', $expression)) {
-                        if (!preg_match($expression, $exif->{$tag})) {
+                        if (preg_match($expression, $exif->{$tag}, $matches)) {
+                            if (count($matches) > 1) {
+                                $extracts = array_merge($extracts, array_slice($matches, 1));
+                            }
+                        } else {
                             $matched = false;
                             break;
                         }
@@ -114,7 +119,12 @@ class ExifAnalyzer
                     }
                 }
                 if ($matched) {
-                    $detected[] = $tokenId;
+                    if (count($extracts) > 0) {
+                        $detected = array_merge($detected, $extracts);
+                    } else {
+                        $detected[] = $tokenId;
+                    }
+
                     if ($allowMultiple) {
                         break;
                     } else {
