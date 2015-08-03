@@ -61,6 +61,7 @@ $phar->buildFromIterator(
 $stub =
     '#!/usr/bin/env php' . PHP_EOL .
     '<?php ' .
+    'define(\'VERSION\', \'' . (exec('git describe --tags || git describe --all') ?: '?') . '\'); ' .
     'set_include_path(\'phar://' . $alias . '\' . PATH_SEPARATOR . get_include_path()); ' .
     'include \'phar://' . $alias . '/src/main.php\'; ' .
     '__HALT_COMPILER();' . PHP_EOL;

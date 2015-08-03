@@ -35,7 +35,7 @@ $logger = \Zebooka\PD\LoggerFactory::logger($configure);
 $translator = \Zebooka\Translator\TranslatorFactory::translator(__DIR__ . '/../res', setlocale(LC_CTYPE, 0));
 
 $version = trim(file_get_contents(__DIR__ . '/../res/VERSION'));
-$logger->addInfo($translator->translate('appName', array($version)));
+$logger->addInfo($translator->translate('appName', array(VERSION, $version)));
 $logger->addInfo($translator->translate('copyrightInfo'));
 
 if ($configure->help || 1 === count($_SERVER['argv'])) {
