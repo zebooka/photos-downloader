@@ -89,6 +89,14 @@ class TokensTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($datetime->getTimestamp(), $tokens->timestamp());
         $this->assertEquals('2007/04', $tokens->assembleDirectory());
         $this->assertEquals('070417_160000', $tokens->assembleBasename());
+
+        // scanned film photo with date and shot
+        $tokens = new Tokens(array('1985x'), array('test'), null, null, null, 123);
+        $this->assertEquals('1985x', $tokens->date());
+        $this->assertNull($tokens->time());
+        $this->assertNull($tokens->timestamp());
+        $this->assertEquals('1985x', $tokens->assembleDirectory());
+        $this->assertEquals('1985x_123_test', $tokens->assembleBasename());
     }
 
     public function test_failure_with_unsupported_date_time_value_type()

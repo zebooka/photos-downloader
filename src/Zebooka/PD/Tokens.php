@@ -129,6 +129,8 @@ class Tokens
                 $dir = (2000 + intval(ltrim($matches[1], '0'))) . DIRECTORY_SEPARATOR . $matches[2];
             } elseif (preg_match('/^([0-9Y]{4})([0-9M]{2})[0-9D]{2}$/i', $date, $matches)) {
                 $dir = $matches[1] . DIRECTORY_SEPARATOR . $matches[2];
+            } elseif (preg_match('/^([0-9Y]{4}x)?$/i', $date, $matches)) {
+                $dir = $matches[1];
             }
         }
         return $dir;

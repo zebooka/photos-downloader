@@ -183,4 +183,15 @@ class TokenizerTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('\\Zebooka\\PD\\Tokens', $tokens);
         $this->assertEquals(array('hello', 'old', 'world', 'unknown1', 'unknown2', 'new'), $tokens->tokens);
     }
+
+    public function test_tokenize_short_scanned_film_photo()
+    {
+        $fileBunch = $this->fileBunch('1980x_123');
+        $exifAnalyzer = $this->exifAnalyzer($fileBunch, 0, null);
+        $tokenizer = new Tokenizer($this->configure(), $exifAnalyzer);
+        $tokens = $tokenizer->tokenize($fileBunch);
+        $this->assertInstanceOf('\\Zebooka\\PD\\Tokens', $tokens);
+        $this->assertEquals('1980x', $tokens->date());
+        $this->assertEquals('123', $tokens->shot);
+    }
 }

@@ -130,6 +130,12 @@ class Tokenizer
                 unset($tokens[$index]);
                 unset($tokens[$index + 1]);
                 break;
+            } elseif (preg_match('/^([0-9Y]{4}x?)$/', $token, $matches) && isset($tokens[$index + 1])
+                && preg_match('/^([0-9]+)$/', $tokens[$index + 1], $matches2)
+            ) {
+                $datetime = array($token);
+                $shot = $tokens[$index + 1];
+                unset($tokens[$index + 1]);
             }
         }
         $tokens = array_values($tokens);
