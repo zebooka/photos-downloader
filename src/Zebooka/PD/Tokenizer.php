@@ -13,12 +13,12 @@ class Tokenizer
         $this->exifAnalyzer = $exifAnalyzer;
     }
 
-    public function tokenize(FileBunch $photoBunch)
+    public function tokenize(FileBunch $fileBunch)
     {
-        list($exifDateTime, $exifCamera, $exifTokens) = $this->exifAnalyzer->extractDateTimeCameraTokens($photoBunch);
+        list($exifDateTime, $exifCamera, $exifTokens) = $this->exifAnalyzer->extractDateTimeCameraTokens($fileBunch);
         $tokens = array_values(
             array_filter(
-                explode(Tokens::SEPARATOR, $photoBunch->basename()),
+                explode(Tokens::SEPARATOR, $fileBunch->basename()),
                 function ($value) {
                     return '' !== $value;
                 }

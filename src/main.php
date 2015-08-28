@@ -71,8 +71,8 @@ $processor = new \Zebooka\PD\Processor(
     $translator
 );
 $i = 0;
-foreach (new \Zebooka\PD\ScannerIterator($configure->from, $configure->recursive) as $photoBunch) {
-    $processor->process($photoBunch);
+foreach (new \Zebooka\PD\ScannerIterator($configure->from, $configure->recursive) as $fileBunch) {
+    $processor->process($fileBunch);
     $i++;
     if ($configure->limit && $i >= $configure->limit) {
         $logger->addInfo($translator->translate('processedFilesLimitWasReached', array($configure->limit)));

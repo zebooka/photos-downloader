@@ -32,13 +32,13 @@ class Processor
         $this->translator = $translator;
     }
 
-    public function process(FileBunch $photoBunch)
+    public function process(FileBunch $fileBunch)
     {
-        $this->logger->addNotice($this->translator->translate('originalFileBunchPath', array($photoBunch)));
+        $this->logger->addNotice($this->translator->translate('originalFileBunchPath', array($fileBunch)));
 
         // tokenize
         try {
-            $tokens = $this->tokenizer->tokenize($photoBunch);
+            $tokens = $this->tokenizer->tokenize($fileBunch);
         } catch (TokenizerException $e) {
             if (TokenizerException::NO_DATE_TIME_DETECTED == $e->getCode()) {
                 $tokenizeErrorMessage = $this->translator->translate('error/tokenize/datetime');
@@ -66,7 +66,7 @@ class Processor
             $this->logger->addNotice(
                 $this->translator->translate(
                     'skipped/CameraNotInList',
-                    array($tokens->camera, $photoBunch)
+                    array($tokens->camera, $fileBunch)
                 )
             );
             return false;
@@ -74,16 +74,16 @@ class Processor
 
         // assemble
         try {
-            $newBunchId = $this->assembler->assemble($tokens, $photoBunch);
+            $newBunchId = $this->assembler->assemble($tokens, $fileBunch);
         } catch (AssemblerException $e) {
-            $this->logger->addError($this->translator->translate('error/unableToAssembleTokens', array($photoBunch)));
+            $this->logger->addError($this->translator->translate('error/unableToAssembleTokens', array($fileBunch)));
             return false;
         }
 
         // skip not changed
-        if ($photoBunch->bunchId() === $newBunchId) {
+        if ($fileBunch->bunchId() === $newBunchId) {
             $this->logger->addNotice(
-                $this->translator->translate('skipped/sourceEqualsDestination', array(count($photoBunch->extensions()), $photoBunch))
+                $this->translator->translate('skipped/sourceEqualsDestination', array(count($fileBunch->extensions()), $fileBunch))
             );
             return false;
         }
@@ -105,8 +105,8 @@ class Processor
         }
 
         // move/copy files
-        foreach ($photoBunch->extensions() as $extension) {
-            $from = $photoBunch->bunchId() . '.' . $extension;
+        foreach ($fileBunch->extensions() as $extension) {
+            $from = $fileBunch->bunchId() . '.' . $extension;
             // QUESTION: should we lowercase only primary extensions + known ones (xmp, txt) ?
             $to = $newBunchId . '.' . mb_strtolower($extension);
             $fileTransfered = $fileRemoved = false;

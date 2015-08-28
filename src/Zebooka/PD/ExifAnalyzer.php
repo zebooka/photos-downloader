@@ -11,11 +11,11 @@ class ExifAnalyzer
         $this->configure = $configure;
     }
 
-    public function extractDateTimeCameraTokens(FileBunch $photoBunch)
+    public function extractDateTimeCameraTokens(FileBunch $fileBunch)
     {
         $datetimes = $cameras = $tokens = array();
         try {
-            $exifs = $photoBunch->exifs();
+            $exifs = $fileBunch->exifs();
         } catch (\Exception $e) {
             throw new ExifAnalyzerException(
                 'Unable to read one of Exifs.',
