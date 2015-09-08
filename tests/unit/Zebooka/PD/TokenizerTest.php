@@ -165,6 +165,33 @@ class TokenizerTest extends \PHPUnit_Framework_TestCase
         $tokenizer->tokenize($fileBunch);
     }
 
+
+    public function test_tokenize_failure_with_incorrect_dates_with_placeholders()
+    {
+        $this->setExpectedException(
+            '\\Zebooka\\PD\\TokenizerException',
+            'Unable to detect date/time.',
+            TokenizerException::NO_DATE_TIME_DETECTED
+        );
+        $fileBunch = $this->fileBunch('YYYY_123');
+        $exifAnalyzer = $this->exifAnalyzer($fileBunch, null, null);
+        $tokenizer = new Tokenizer($this->configure(), $exifAnalyzer);
+        $tokenizer->tokenize($fileBunch);
+    }
+
+    public function test_tokenize_failure_with_incorrect_dates_with_placeholders_2()
+    {
+        $this->setExpectedException(
+            '\\Zebooka\\PD\\TokenizerException',
+            'Unable to detect date/time.',
+            TokenizerException::NO_DATE_TIME_DETECTED
+        );
+        $fileBunch = $this->fileBunch('1508DD_123');
+        $exifAnalyzer = $this->exifAnalyzer($fileBunch, null, null);
+        $tokenizer = new Tokenizer($this->configure(), $exifAnalyzer);
+        $tokenizer->tokenize($fileBunch);
+    }
+
     public function test_tokenize_with_unix_epoch()
     {
         $fileBunch = $this->fileBunch('hello_world');
@@ -203,7 +230,7 @@ class TokenizerTest extends \PHPUnit_Framework_TestCase
     public function test_tokenize_short_scanned_film_photo()
     {
         $fileBunch = $this->fileBunch('1980x_123');
-        $exifAnalyzer = $this->exifAnalyzer($fileBunch, 0, null);
+        $exifAnalyzer = $this->exifAnalyzer($fileBunch, null, null);
         $tokenizer = new Tokenizer($this->configure(), $exifAnalyzer);
         $tokens = $tokenizer->tokenize($fileBunch);
         $this->assertInstanceOf('\\Zebooka\\PD\\Tokens', $tokens);
