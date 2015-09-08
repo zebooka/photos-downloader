@@ -112,6 +112,9 @@ class Tokenizer
                     }
                     if (isset($matches[2]) && '' !== $matches[2]) {
                         $shot = $matches[2];
+                    } elseif (isset($tokens[$index + 2]) && preg_match('/^[0-9]+?$/', $tokens[$index + 2])) {
+                        $shot = $tokens[$index + 2];
+                        unset($tokens[$index + 2]);
                     }
                     unset($tokens[$index + 1]);
                 } elseif (isset($tokens[$index + 1]) && preg_match('/^[0-9]+?$/', $tokens[$index + 1])) {
