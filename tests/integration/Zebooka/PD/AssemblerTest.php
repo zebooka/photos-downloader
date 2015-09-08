@@ -156,7 +156,7 @@ class AssemblerTest extends \PHPUnit_Framework_TestCase
             null
         );
         $newBunchId = $assembler->assemble($tokens, $fileBunch);
-        $this->assertEquals($this->resourceDirectory() . DIRECTORY_SEPARATOR . 'prefix_date_time,2_author_camera_token-1_token-2', $newBunchId);
+        $this->assertEquals($this->resourceDirectory() . DIRECTORY_SEPARATOR . 'prefix_date_time_2_author_camera_token-1_token-2', $newBunchId);
 
         $fileBunch2 = new FileBunch('old-bunchId-2', array('dng'));
         $tokens2 = new Tokens(
@@ -168,6 +168,6 @@ class AssemblerTest extends \PHPUnit_Framework_TestCase
             null
         );
         $newBunchId = $assembler->assemble($tokens2, $fileBunch2);
-        $this->assertEquals($this->resourceDirectory() . DIRECTORY_SEPARATOR . 'prefix_date_time,3_author_camera_token-1_token-2', $newBunchId);
+        $this->assertEquals($this->resourceDirectory() . DIRECTORY_SEPARATOR . 'prefix_date_time_3_author_camera_token-1_token-2', $newBunchId);
     }
 }

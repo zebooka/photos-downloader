@@ -98,17 +98,14 @@ class Tokens
         $filterNull = function ($v) {
             return (null !== $v && '' !== $v);
         };
-        $timeShot = implode(
-            self::TIME_SHOT_SEPARATOR,
-            array_filter(array($this->time(), $this->shot), $filterNull)
-        );
         $basename = implode(
             self::SEPARATOR,
             array_filter(
                 array(
                     $this->prefix,
                     $this->date(),
-                    $timeShot,
+                    $this->time(),
+                    $this->shot,
                     $this->author,
                     $this->camera,
                     implode(self::SEPARATOR, $this->tokens ?: array()),

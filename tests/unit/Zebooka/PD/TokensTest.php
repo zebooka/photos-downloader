@@ -26,7 +26,7 @@ class TokensTest extends \PHPUnit_Framework_TestCase
         $tokens->increaseShot();
         $this->assertEquals(124, $tokens->shot);
         $this->assertEquals('2007/04', $tokens->assembleDirectory());
-        $this->assertEquals('unique-prefix_070417_210000,124_unique-author_unique-camera_unique-token-1_unique-token-2', $tokens->assembleBasename());
+        $this->assertEquals('unique-prefix_070417_210000_124_unique-author_unique-camera_unique-token-1_unique-token-2', $tokens->assembleBasename());
     }
 
     public function test_creation_with_less_arguments()
