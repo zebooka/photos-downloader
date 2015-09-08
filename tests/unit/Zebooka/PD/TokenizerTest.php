@@ -78,6 +78,7 @@ class TokenizerTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('\\Zebooka\\PD\\Tokens', $tokens);
         $this->assertEquals('070417', $tokens->date());
         $this->assertEquals('210000', $tokens->time());
+        $this->assertEquals(strtotime('2007-04-17 21:00:00'), $tokens->timestamp());
         $this->assertEquals('2', $tokens->shot);
         $this->assertNull($tokens->author);
         $this->assertNull($tokens->prefix);

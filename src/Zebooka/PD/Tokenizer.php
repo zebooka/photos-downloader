@@ -107,6 +107,17 @@ class Tokenizer
                             intval($dateMatches[3]),
                             intval($dateMatches[1])
                         );
+                    } elseif (preg_match('/^([0-9]{2})([0-9]{2})([0-9]{2})$/', $token, $dateMatches) &&
+                        preg_match('/^([0-9]{2})([0-9]{2})([0-9]{2})$/', $matches[1], $timeMatches)
+                    ) {
+                        $datetime = mktime(
+                            intval($timeMatches[1]),
+                            intval($timeMatches[2]),
+                            intval($timeMatches[3]),
+                            intval($dateMatches[2]),
+                            intval($dateMatches[3]),
+                            2000 + intval($dateMatches[1])
+                        );
                     } else {
                         $datetime[] = $matches[1];
                     }
