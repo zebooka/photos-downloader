@@ -19,17 +19,17 @@ class Assembler
 
     public function assemble(Tokens $tokens, FileBunch $fileBunch)
     {
-        if (Configure::KEEP_IN_PLACE !== $this->configure->to) {
-            $to = (file_exists($this->configure->to) ? realpath($this->configure->to) : $this->configure->to);
+        if (!$tokens->shot) {
+            $tokens->shot = 1;
+            $newBunchId = $this->assembleNewBunchId($tokens, $fileBunch);
+            if (!$this->bunchTaken($newBunchId, $fileBunch)) {
+                $tokens->shot = null;
+            } else {
+                $tokens->increaseShot();
+            }
         }
         while (true) {
-            if (Configure::KEEP_IN_PLACE === $this->configure->to) {
-                $newBunchId = $fileBunch->directory() . DIRECTORY_SEPARATOR . $tokens->assembleBasename();
-            } elseif ($this->configure->subDirectoriesStructure && $dir = $tokens->assembleDirectory()) {
-                $newBunchId = $to . DIRECTORY_SEPARATOR . $dir . DIRECTORY_SEPARATOR . $tokens->assembleBasename();
-            } else {
-                $newBunchId = $to . DIRECTORY_SEPARATOR . $tokens->assembleBasename();
-            }
+            $newBunchId = $this->assembleNewBunchId($tokens, $fileBunch);
             if (!$this->bunchTaken($newBunchId, $fileBunch)) {
                 break;
             }
@@ -40,6 +40,18 @@ class Assembler
             $this->simulated[$newBunchId] = $fileBunch;
         }
         return $newBunchId;
+    }
+
+    private function assembleNewBunchId(Tokens $tokens, FileBunch $fileBunch)
+    {
+        $to = ((!$this->configure->isKeepInPlace() && file_exists($this->configure->to)) ? realpath($this->configure->to) : $this->configure->to);
+        if (Configure::KEEP_IN_PLACE === $this->configure->to) {
+            return $fileBunch->directory() . DIRECTORY_SEPARATOR . $tokens->assembleBasename();
+        } elseif ($this->configure->subDirectoriesStructure && $dir = $tokens->assembleDirectory()) {
+            return $to . DIRECTORY_SEPARATOR . $dir . DIRECTORY_SEPARATOR . $tokens->assembleBasename();
+        } else {
+            return $to . DIRECTORY_SEPARATOR . $tokens->assembleBasename();
+        }
     }
 
     private function bunchTaken($newBunchId, FileBunch $fileBunch)

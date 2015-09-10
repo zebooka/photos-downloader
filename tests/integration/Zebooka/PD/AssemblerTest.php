@@ -15,6 +15,9 @@ class AssemblerTest extends \PHPUnit_Framework_TestCase
         $configure->to = $to;
         $configure->subDirectoriesStructure = $subDirectoriesStructure;
         $configure->simulate = $simulate;
+        $configure->shouldReceive('isKeepInPlace')
+            ->withNoArgs()
+            ->andReturn(Configure::KEEP_IN_PLACE === $to);
         return $configure;
     }
 
@@ -28,13 +31,13 @@ class AssemblerTest extends \PHPUnit_Framework_TestCase
         $tokens = \Mockery::mock('\\Zebooka\\PD\\Tokens')
             ->shouldReceive('assembleBasename')
             ->withNoArgs()
-            ->once()
+            ->twice()
             ->andReturn($assembledBasename)
             ->getMock();
         if (false !== $assembledDir) {
             $tokens->shouldReceive('assembleDirectory')
                 ->withNoArgs()
-                ->once()
+                ->twice()
                 ->andReturn($assembledDir)
                 ->getMock();
         }
@@ -49,7 +52,7 @@ class AssemblerTest extends \PHPUnit_Framework_TestCase
         if (false !== $originalDir) {
             $fileBunch->shouldReceive('directory')
                 ->withNoArgs()
-                ->once()
+                ->twice()
                 ->andReturn($originalDir)
                 ->getMock();
         }
@@ -169,5 +172,35 @@ class AssemblerTest extends \PHPUnit_Framework_TestCase
         );
         $newBunchId = $assembler->assemble($tokens2, $fileBunch2);
         $this->assertEquals($this->resourceDirectory() . DIRECTORY_SEPARATOR . 'prefix_date_time_3_author_camera_token-1_token-2', $newBunchId);
+    }
+
+    public function test_assembling_with_real_directory_and_taken_basename_with_shot_1()
+    {
+        $hashinator = $this->hashinator()
+            ->shouldReceive('equal')
+            ->with($this->resourceDirectory() . DIRECTORY_SEPARATOR . 'date_time_1.jpg', 'old-bunchId.JPG')
+            ->once()
+            ->andReturn(false)
+            ->getMock()
+            ->shouldReceive('equal')
+            ->with('old-bunchId.dng', 'old-bunchId-2.dng')
+            ->once()
+            ->andReturn(false)
+            ->getMock();
+
+        $assembler = new Assembler(
+            $this->configure($this->resourceDirectory(), false, true),
+            $hashinator
+        );
+
+        $fileBunch = new FileBunch('old-bunchId', array('dng', 'JPG'));
+        $tokens = new Tokens(array('date', 'time'));
+        $newBunchId = $assembler->assemble($tokens, $fileBunch);
+        $this->assertEquals($this->resourceDirectory() . DIRECTORY_SEPARATOR . 'date_time_2', $newBunchId);
+
+        $fileBunch2 = new FileBunch('old-bunchId-2', array('dng'));
+        $tokens2 = new Tokens(array('date', 'time'));
+        $newBunchId = $assembler->assemble($tokens2, $fileBunch2);
+        $this->assertEquals($this->resourceDirectory() . DIRECTORY_SEPARATOR . 'date_time_3', $newBunchId);
     }
 }

@@ -178,6 +178,11 @@ class Configure
         return $this->knownTokens;
     }
 
+    public function isKeepInPlace()
+    {
+        return self::KEEP_IN_PLACE === $this->to;
+    }
+
     private function encodeParameters()
     {
         return array(
