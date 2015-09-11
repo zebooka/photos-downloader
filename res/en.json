@@ -56,7 +56,7 @@
     "parameters/value/P_VERBOSE_LEVEL": "LEVEL",
     "peakMemoryUsage": "Peak memory usage: {0}",
     "processedFilesLimitWasReached": "Processed files limit was reached ({0, plural, one {# file} other {# files}} limit).",
-    "skipped/filteredByRegExp": " --> skipped '{0}' file (filtered by regexp)",
+    "skipped/filteredByRegExp": " --> skipped ''{0}'' file (filtered by regexp)",
     "skipped/sourceEqualsDestination": " --> skipped (source == destination)",
     "skipped/targetAlreadyExists": " --> skipped .{0} file (already exists at destination path)",
     "usage": "USAGE:",
