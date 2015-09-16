@@ -11,6 +11,7 @@ class Processor
     private $configure;
     private $tokenizer;
     private $assembler;
+    private $bunchCache;
     private $executor;
     private $logger;
     private $translator;
@@ -20,6 +21,7 @@ class Processor
         Configure $configure,
         Tokenizer $tokenizer,
         Assembler $assembler,
+        BunchCache $bunchCache,
         Executor $executor,
         Logger $logger,
         Translator $translator
@@ -27,6 +29,7 @@ class Processor
         $this->configure = $configure;
         $this->tokenizer = $tokenizer;
         $this->assembler = $assembler;
+        $this->bunchCache = $bunchCache;
         $this->executor = $executor;
         $this->logger = $logger;
         $this->translator = $translator;
@@ -111,7 +114,8 @@ class Processor
             $to = $newBunchId . '.' . mb_strtolower($extension);
             $fileTransfered = $fileRemoved = false;
             if (($this->configure->regexpFilter && !preg_match($this->configure->regexpFilter, $to))
-            || ($this->configure->regexpNegativeFilter && preg_match($this->configure->regexpNegativeFilter, $to))) {
+                || ($this->configure->regexpNegativeFilter && preg_match($this->configure->regexpNegativeFilter, $to))
+            ) {
                 $this->logger->addNotice($this->translator->translate('skipped/filteredByRegExp', array($to)));
                 continue;
             } elseif (is_file($to) && $this->configure->deleteDuplicates && !$this->configure->copy) {

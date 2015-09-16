@@ -39,23 +39,23 @@ $logger->addInfo($translator->translate('appName', array(VERSION, $version)));
 $logger->addInfo($translator->translate('copyrightInfo'));
 
 if ($configure->help || 1 === count($_SERVER['argv'])) {
-    $view = new \Zebooka\PD\ConfigureView($configure, $translator, \Zebooka\Utils\Cli\Size::getTerminalWidth() ? : 80);
+    $view = new \Zebooka\PD\ConfigureView($configure, $translator, \Zebooka\Utils\Cli\Size::getTerminalWidth() ?: 80);
     $logger->addInfo($view->render());
     exit(0);
 } else {
-    $view = new \Zebooka\PD\ConfigureView($configure, $translator, \Zebooka\Utils\Cli\Size::getTerminalWidth() ? : 80);
+    $view = new \Zebooka\PD\ConfigureView($configure, $translator, \Zebooka\Utils\Cli\Size::getTerminalWidth() ?: 80);
     $logger->addInfo($view->renderConfiguration());
 }
 
 // validate regexp
 try {
-    preg_match($configure->regexpFilter ? : '/test/', 'test');
+    preg_match($configure->regexpFilter ?: '/test/', 'test');
 } catch (\ErrorException $e) {
     $logger->addCritical($translator->translate('error/regexpInvalid', array($configure->regexpFilter)));
     exit(1);
 }
 try {
-    preg_match($configure->regexpNegativeFilter ? : '/test/', 'test');
+    preg_match($configure->regexpNegativeFilter ?: '/test/', 'test');
 } catch (\ErrorException $e) {
     $logger->addCritical($translator->translate('error/regexpInvalid', array($configure->regexpNegativeFilter)));
     exit(1);
@@ -66,6 +66,7 @@ $processor = new \Zebooka\PD\Processor(
     $configure,
     new \Zebooka\PD\Tokenizer($configure, new \Zebooka\PD\ExifAnalyzer($configure)),
     new \Zebooka\PD\Assembler($configure, new \Zebooka\PD\Hashinator()),
+    new \Zebooka\PD\BunchCache(),
     new \Zebooka\Utils\Executor(),
     $logger,
     $translator

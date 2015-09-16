@@ -112,6 +112,14 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @return BunchCache
+     */
+    private function bunchCache()
+    {
+        return \Mockery::mock('\\Zebooka\\PD\\BunchCache');
+    }
+
+    /**
      * @return Executor
      */
     private function executor()
@@ -149,6 +157,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
             $this->configure(),
             $this->tokenizer($fileBunch, $tokens),
             $this->assembler($tokens, $fileBunch, $this->resourceDirectory() . DIRECTORY_SEPARATOR . 'new-unique-bunchId'),
+            $this->bunchCache(),
             $this->executor(),
             $this->logger(),
             $this->translator()
@@ -173,6 +182,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                 $this->configure(),
                 $this->tokenizerException($fileBunch, $exception),
                 $this->assemblerNeverCalled(),
+                $this->bunchCache(),
                 $this->executor(),
                 $this->logger(),
                 $this->translator()
@@ -191,6 +201,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
             $this->configure(array('camera-1', 'camera-2')),
             $this->tokenizer($fileBunch, $tokens),
             $this->assemblerNeverCalled(),
+            $this->bunchCache(),
             $this->executor(),
             $this->logger(),
             $this->translator()
@@ -208,6 +219,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
             $this->configure(),
             $this->tokenizer($fileBunch, $tokens),
             $this->assemblerException($tokens, $fileBunch, AssemblerException::TEST),
+            $this->bunchCache(),
             $this->executor(),
             $this->logger(),
             $this->translator()
@@ -225,6 +237,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
             $this->configure(),
             $this->tokenizer($fileBunch, $tokens),
             $this->assembler($tokens, $fileBunch, 'unique-bunchId'),
+            $this->bunchCache(),
             $this->executor(),
             $this->logger(),
             $this->translator()
@@ -250,12 +263,12 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
             ->with('skipped/filteredByRegExp', \Mockery::type('array'))
             ->twice()
             ->andReturn('unique-message')
-            ->getMock()
-        ;
+            ->getMock();
         $processor = new Processor(
             $configure,
             $this->tokenizer($fileBunch, $tokens),
             $this->assembler($tokens, $fileBunch, 'unique-bunchId2'),
+            $this->bunchCache(),
             $this->executor(),
             $this->logger(),
             $translator
@@ -280,12 +293,12 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
             ->with('skipped/filteredByRegExp', \Mockery::type('array'))
             ->twice()
             ->andReturn('unique-message')
-            ->getMock()
-        ;
+            ->getMock();
         $processor = new Processor(
             $configure,
             $this->tokenizer($fileBunch, $tokens),
             $this->assembler($tokens, $fileBunch, 'unique-bunchId2'),
+            $this->bunchCache(),
             $this->executor(),
             $this->logger(),
             $translator
