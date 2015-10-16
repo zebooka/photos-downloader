@@ -4,6 +4,18 @@ namespace Zebooka\PD;
 
 class TokensTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @return Configure
+     */
+    private function configure($subDirectoriesFormat = null)
+    {
+        $configure = \Mockery::mock('\\Zebooka\\PD\\Configure');
+        if ($subDirectoriesFormat) {
+            $configure->subDirectoriesFormat = $subDirectoriesFormat;
+        }
+        return $configure;
+    }
+
     public function test_creation_with_all_arguments()
     {
         $timestamp = mktime(21, 0, 0, 4, 17, 2007);
@@ -25,7 +37,8 @@ class TokensTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(123, $tokens->shot);
         $tokens->increaseShot();
         $this->assertEquals(124, $tokens->shot);
-        $this->assertEquals('2007/04', $tokens->assembleDirectory());
+        $this->assertEquals('2007/04', $tokens->assembleDirectory($this->configure()));
+        $this->assertEquals('2007/070400', $tokens->assembleDirectory($this->configure('Y/ym00')));
         $this->assertEquals('unique-prefix_070417_210000_124_unique-author_unique-camera_unique-token-1_unique-token-2', $tokens->assembleBasename());
     }
 
@@ -41,7 +54,8 @@ class TokensTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($tokens->camera);
         $this->assertNull($tokens->prefix);
         $this->assertNull($tokens->shot);
-        $this->assertEquals('2007/04', $tokens->assembleDirectory());
+        $this->assertEquals('2007/04', $tokens->assembleDirectory($this->configure()));
+        $this->assertEquals('2007/070400', $tokens->assembleDirectory($this->configure('Y/ym00')));
         $this->assertEquals('070417_210000', $tokens->assembleBasename());
     }
 
@@ -53,7 +67,8 @@ class TokensTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('070417', $tokens->date());
         $this->assertEquals('210000', $tokens->time());
         $this->assertEquals($timestamp, $tokens->timestamp());
-        $this->assertEquals('2007/04', $tokens->assembleDirectory());
+        $this->assertEquals('2007/04', $tokens->assembleDirectory($this->configure()));
+        $this->assertEquals('2007/070400', $tokens->assembleDirectory($this->configure('Y/ym00')));
         $this->assertEquals('070417_210000', $tokens->assembleBasename());
 
         // strtotime
@@ -62,7 +77,8 @@ class TokensTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('070417', $tokens->date());
         $this->assertEquals('160000', $tokens->time());
         $this->assertEquals(strtotime($timestr), $tokens->timestamp());
-        $this->assertEquals('2007/04', $tokens->assembleDirectory());
+        $this->assertEquals('2007/04', $tokens->assembleDirectory($this->configure()));
+        $this->assertEquals('2007/070400', $tokens->assembleDirectory($this->configure('Y/ym00')));
         $this->assertEquals('070417_160000', $tokens->assembleBasename());
 
         // array of date
@@ -70,7 +86,8 @@ class TokensTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('unique-date', $tokens->date());
         $this->assertNull($tokens->time());
         $this->assertNull($tokens->timestamp());
-        $this->assertEquals(null, $tokens->assembleDirectory());
+        $this->assertNull($tokens->assembleDirectory($this->configure()));
+        $this->assertNull($tokens->assembleDirectory($this->configure('Y/ym00')));
         $this->assertEquals('unique-date', $tokens->assembleBasename());
 
         // array of date and time
@@ -78,7 +95,8 @@ class TokensTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('unique-date', $tokens->date());
         $this->assertEquals('unique-time', $tokens->time());
         $this->assertNull($tokens->timestamp());
-        $this->assertEquals(null, $tokens->assembleDirectory());
+        $this->assertNull($tokens->assembleDirectory($this->configure()));
+        $this->assertNull($tokens->assembleDirectory($this->configure('Y/ym00')));
         $this->assertEquals('unique-date_unique-time', $tokens->assembleBasename());
 
         // DateTime class
@@ -87,7 +105,8 @@ class TokensTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('070417', $tokens->date());
         $this->assertEquals('160000', $tokens->time());
         $this->assertEquals($datetime->getTimestamp(), $tokens->timestamp());
-        $this->assertEquals('2007/04', $tokens->assembleDirectory());
+        $this->assertEquals('2007/04', $tokens->assembleDirectory($this->configure()));
+        $this->assertEquals('2007/070400', $tokens->assembleDirectory($this->configure('Y/ym00')));
         $this->assertEquals('070417_160000', $tokens->assembleBasename());
 
         // scanned film photo with date and shot
@@ -95,7 +114,8 @@ class TokensTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('1985x', $tokens->date());
         $this->assertNull($tokens->time());
         $this->assertNull($tokens->timestamp());
-        $this->assertEquals('1985x', $tokens->assembleDirectory());
+        $this->assertEquals('1985x', $tokens->assembleDirectory($this->configure()));
+        $this->assertEquals('1985x', $tokens->assembleDirectory($this->configure('Y/ym00')));
         $this->assertEquals('1985x_123_test', $tokens->assembleBasename());
     }
 

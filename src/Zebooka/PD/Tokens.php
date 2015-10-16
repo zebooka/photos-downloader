@@ -53,10 +53,10 @@ class Tokens
         }
 
         $this->tokens = $tokens;
-        $this->author = strval($author) ? : null;
-        $this->camera = strval($camera) ? : null;
-        $this->prefix = strval($prefix) ? : null;
-        $this->shot = intval($shot) ? : null;
+        $this->author = strval($author) ?: null;
+        $this->camera = strval($camera) ?: null;
+        $this->prefix = strval($prefix) ?: null;
+        $this->shot = intval($shot) ?: null;
     }
 
     /**
@@ -116,16 +116,19 @@ class Tokens
         return $basename;
     }
 
-    public function assembleDirectory()
+    public function assembleDirectory(Configure $configure)
     {
         $dir = null;
         if (null !== $this->timestamp()) {
-            $dir = date('Y', $this->timestamp()) . DIRECTORY_SEPARATOR . date('m', $this->timestamp());
+            $dir = date($configure->subDirectoriesFormat, $this->timestamp())
+                ?: date('Y/m', $this->timestamp());
         } elseif ($date = $this->date()) {
-            if (preg_match('/^([0-9]{2})([0-9]{2})[0-9D]{2}$/i', $date, $matches)) {
-                $dir = (2000 + intval(ltrim($matches[1], '0'))) . DIRECTORY_SEPARATOR . $matches[2];
+            if (preg_match('/^([0-9]{2})([0-9]{2})[0-9]{2}$/i', $date, $matches)) {
+                $year = 2000 + intval(ltrim($matches[1], '0'));
+                $dir = date($configure->subDirectoriesFormat, mktime(0, 0, 0, $matches[2], $matches[3], $year))
+                    ?: $year . DIRECTORY_SEPARATOR . $matches[2];
             } elseif (preg_match('/^([0-9Y]{4})([0-9M]{2})[0-9D]{2}$/i', $date, $matches)) {
-                $dir = $matches[1] . DIRECTORY_SEPARATOR . $matches[2];
+                $dir = $matches[1];
             } elseif (preg_match('/^([0-9Y]{4}x)?$/i', $date, $matches)) {
                 $dir = $matches[1];
             }

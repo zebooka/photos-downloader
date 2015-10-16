@@ -15,6 +15,7 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
                 Configure::P_FROM,
                 Configure::P_LIST_FILE,
                 Configure::P_TO,
+                Configure::P_SUBDIRS_FORMAT,
                 Configure::P_AUTHOR,
                 Configure::P_CAMERAS,
                 Configure::P_TOKENS_ADD,
@@ -54,6 +55,7 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('/path/list.txt', $configure->listFile);
         $this->assertEquals('/path/dst', $configure->to);
         $this->assertFalse($configure->subDirectoriesStructure);
+        $this->assertEquals('Y/ym00', $configure->subDirectoriesFormat);
         $this->assertTrue($configure->copy);
         $this->assertFalse($configure->deleteDuplicates);
         $this->assertEquals('AUTHOR', $configure->author);
@@ -85,6 +87,7 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($configure->listFile);
         $this->assertEquals('-', $configure->to);
         $this->assertTrue($configure->subDirectoriesStructure);
+        $this->assertEquals('Y/m', $configure->subDirectoriesFormat);
         $this->assertFalse($configure->copy);
         $this->assertTrue($configure->deleteDuplicates);
         $this->assertNull($configure->author);
@@ -130,6 +133,8 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
             '-' . Configure::P_TO,
             escapeshellarg($configure->to),
             '-' . Configure::P_NO_SUBDIRS,
+            '-' . Configure::P_SUBDIRS_FORMAT,
+            escapeshellarg($configure->subDirectoriesFormat),
             '-' . Configure::P_COPY,
             '-' . Configure::P_NO_DELETE_DUPLICATES,
             '-' . Configure::P_AUTHOR,
@@ -196,6 +201,8 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
             '-t',
             '/path/dst',
             '-D',
+            '-k',
+            'Y/ym00',
             '-c',
             '-Z',
             '-a',

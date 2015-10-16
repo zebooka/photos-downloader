@@ -47,7 +47,7 @@ class Assembler
         $to = ((!$this->configure->isKeepInPlace() && file_exists($this->configure->to)) ? realpath($this->configure->to) : $this->configure->to);
         if (Configure::KEEP_IN_PLACE === $this->configure->to) {
             return $fileBunch->directory() . DIRECTORY_SEPARATOR . $tokens->assembleBasename();
-        } elseif ($this->configure->subDirectoriesStructure && $dir = $tokens->assembleDirectory()) {
+        } elseif ($this->configure->subDirectoriesStructure && $dir = $tokens->assembleDirectory($this->configure)) {
             return $to . DIRECTORY_SEPARATOR . $dir . DIRECTORY_SEPARATOR . $tokens->assembleBasename();
         } else {
             return $to . DIRECTORY_SEPARATOR . $tokens->assembleBasename();

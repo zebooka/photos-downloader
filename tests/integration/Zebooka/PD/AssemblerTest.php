@@ -36,7 +36,7 @@ class AssemblerTest extends \PHPUnit_Framework_TestCase
             ->getMock();
         if (false !== $assembledDir) {
             $tokens->shouldReceive('assembleDirectory')
-                ->withNoArgs()
+                ->with(\Mockery::type('\\Zebooka\\PD\\Configure'))
                 ->twice()
                 ->andReturn($assembledDir)
                 ->getMock();

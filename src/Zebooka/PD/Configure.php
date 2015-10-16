@@ -15,6 +15,7 @@ use Zebooka\Utils\Cli\Parameters;
  * @property array $from
  * @property string $to
  * @property bool $subDirectoriesStructure
+ * @property string $subDirectoriesFormat
  * @property bool $copy
  * @property bool $deleteDuplicates
  * @property null|string $author
@@ -42,6 +43,7 @@ class Configure
     const P_LIST_FILE = 'F';
     const P_TO = 't';
     const P_NO_SUBDIRS = 'D';
+    const P_SUBDIRS_FORMAT = 'k';
     const P_COPY = 'c';
     const P_NO_DELETE_DUPLICATES = 'Z';
     const P_AUTHOR = 'a';
@@ -65,6 +67,7 @@ class Configure
     public $listFile = null;
     public $to = self::KEEP_IN_PLACE;
     public $subDirectoriesStructure = true;
+    public $subDirectoriesFormat = 'Y/m';
     public $copy = false;
     public $deleteDuplicates = true;
     public $author = null;
@@ -97,6 +100,7 @@ class Configure
         $this->listFile = (array_key_exists(self::P_LIST_FILE, $argv) ? $argv->{self::P_LIST_FILE} : $this->listFile);
         $this->to = (array_key_exists(self::P_TO, $argv) ? strval($argv->{self::P_TO}) : $this->to);
         $this->subDirectoriesStructure = empty($argv->{self::P_NO_SUBDIRS});
+        $this->subDirectoriesFormat = (array_key_exists(self::P_SUBDIRS_FORMAT, $argv) ? strval($argv->{self::P_SUBDIRS_FORMAT}) : $this->subDirectoriesFormat);
         $this->copy = !empty($argv->{self::P_COPY});
         $this->deleteDuplicates = empty($argv->{self::P_NO_DELETE_DUPLICATES});
         $this->author = (array_key_exists(self::P_AUTHOR, $argv) ? strval($argv->{self::P_AUTHOR}) : $this->author);
@@ -198,6 +202,7 @@ class Configure
             self::P_LIST_FILE => $this->listFile,
             self::P_TO => $this->to,
             self::P_NO_SUBDIRS => !$this->subDirectoriesStructure,
+            self::P_SUBDIRS_FORMAT => $this->subDirectoriesFormat,
             self::P_COPY => $this->copy,
             self::P_NO_DELETE_DUPLICATES => !$this->deleteDuplicates,
             self::P_AUTHOR => $this->author,
@@ -221,6 +226,7 @@ class Configure
             self::P_FROM,
             self::P_LIST_FILE,
             self::P_TO,
+            self::P_SUBDIRS_FORMAT,
             self::P_AUTHOR,
             self::P_CAMERAS,
             self::P_TOKENS_ADD,
