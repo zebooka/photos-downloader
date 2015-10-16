@@ -41,7 +41,7 @@ Standard MIT License — http://opensource.org/licenses/MIT
 
 http://zebooka.com/soft/LICENSE/
 
-Copyright (c) 2014, Anton Bondar.
+Copyright (c) 2015, Anton Bondar.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -73,7 +73,7 @@ Algorythm
 6. Analyze basename of file (photo bunch) and guess date/time, shot, author, camera, known tokens, other tokens from it.
 7. Overwrite exif detected camera and date/time by ones detected from basename.
 8. Drop and add known/other tokens according to configured parameters.
-9. Assemble destination directory. Can be either same directory if files are kept in place, specified directory or specified directory with Year/Month subdirectories structure.
+9. Assemble destination directory. Can be either same directory if files are kept in place, specified directory or specified directory with Year/Month subdirectories structure (format can be changed in configure).
 10. Assemble new basename for file (photo bunch) and check if it is already taken in destination directory. Basename pattern is assembled of (in this exact order) — prefix, date, time, shot, author, camera, known tokens, other tokens. Newly added tokens are placed at the end of known or other tokens lists.
 11. If there are some files with assembled basename in destination directory, verify their hashes with processed ones.
 12. If there are no files with same extensions in destination directory and in processed photo bunch, then consider basename as taken.
