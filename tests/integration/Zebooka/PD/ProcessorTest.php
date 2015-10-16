@@ -22,7 +22,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         return \Mockery::mock('\\Zebooka\\PD\\FileBunch')
             ->shouldReceive('bunchId')
             ->withNoArgs()
-            ->andReturn('unique-bunchId')
+            ->andReturn($this->resourceDirectory() . DIRECTORY_SEPARATOR . 'unique-bunchId')
             ->getMock()
             ->shouldReceive('extensions')
             ->withNoArgs()
@@ -127,7 +127,20 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         return \Mockery::mock('\\Zebooka\\Utils\\Executor')
             ->shouldReceive('execute')
             ->with(\Mockery::type('string'))
+            ->atLeast()
+            ->once()
             ->andReturn(0)
+            ->getMock();
+    }
+
+    /**
+     * @return Executor
+     */
+    private function executorNeverCalled()
+    {
+        return \Mockery::mock('\\Zebooka\\Utils\\Executor')
+            ->shouldReceive('execute')
+            ->never()
             ->getMock();
     }
 
@@ -164,7 +177,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->assertTrue($processor->process($fileBunch));
-        $this->assertEquals(0, $processor->bytesProcessed()); // no bytes transfered as files are "deleted", need better test.
+        $this->assertEquals(12, $processor->bytesProcessed());
     }
 
     public function test_process_stops_if_tokenize_fails()
@@ -183,7 +196,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
                 $this->tokenizerException($fileBunch, $exception),
                 $this->assemblerNeverCalled(),
                 $this->bunchCache(),
-                $this->executor(),
+                $this->executorNeverCalled(),
                 $this->logger(),
                 $this->translator()
             );
@@ -202,7 +215,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
             $this->tokenizer($fileBunch, $tokens),
             $this->assemblerNeverCalled(),
             $this->bunchCache(),
-            $this->executor(),
+            $this->executorNeverCalled(),
             $this->logger(),
             $this->translator()
         );
@@ -220,7 +233,7 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
             $this->tokenizer($fileBunch, $tokens),
             $this->assemblerException($tokens, $fileBunch, AssemblerException::TEST),
             $this->bunchCache(),
-            $this->executor(),
+            $this->executorNeverCalled(),
             $this->logger(),
             $this->translator()
         );
@@ -236,9 +249,9 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
         $processor = new Processor(
             $this->configure(),
             $this->tokenizer($fileBunch, $tokens),
-            $this->assembler($tokens, $fileBunch, 'unique-bunchId'),
+            $this->assembler($tokens, $fileBunch, $this->resourceDirectory() . DIRECTORY_SEPARATOR . 'unique-bunchId'),
             $this->bunchCache(),
-            $this->executor(),
+            $this->executorNeverCalled(),
             $this->logger(),
             $this->translator()
         );
@@ -269,12 +282,12 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
             $this->tokenizer($fileBunch, $tokens),
             $this->assembler($tokens, $fileBunch, 'unique-bunchId2'),
             $this->bunchCache(),
-            $this->executor(),
+            $this->executorNeverCalled(),
             $this->logger(),
             $translator
         );
         $this->assertTrue($processor->process($fileBunch));
-        $this->assertEquals(0, $processor->bytesProcessed());
+        $this->assertEquals(12, $processor->bytesProcessed());
     }
 
     public function test_process_skips_by_negative_regexp()
@@ -299,11 +312,11 @@ class ProcessorTest extends \PHPUnit_Framework_TestCase
             $this->tokenizer($fileBunch, $tokens),
             $this->assembler($tokens, $fileBunch, 'unique-bunchId2'),
             $this->bunchCache(),
-            $this->executor(),
+            $this->executorNeverCalled(),
             $this->logger(),
             $translator
         );
         $this->assertTrue($processor->process($fileBunch));
-        $this->assertEquals(0, $processor->bytesProcessed());
+        $this->assertEquals(12, $processor->bytesProcessed());
     }
 }

@@ -91,63 +91,65 @@ class Processor
             return false;
         }
 
+        $queue = array();
+
         // create dir if needed
         $dir = dirname($newBunchId);
         if (!is_dir($dir)) {
-            $cmd = 'mkdir -p ' . escapeshellarg($dir);
-            if ($this->configure->simulate) {
-                fwrite(STDOUT, $cmd . PHP_EOL);
-            } else {
-                if (0 !== $this->executor->execute($cmd)) {
-                    $this->logger->addError($this->translator->translate('error/unableToCreateDestinationDir', array($dir)));
-                    return false; // we fail to create destination dir and move/copy will also fail
-                } else {
-                    $this->logger->addNotice($this->translator->translate('createdDestinationDir', array($dir)));
-                }
-            }
+            $queue[] = new Executor\Command(
+                'mkdir -p ' . escapeshellarg($dir),
+                $this->translator->translate('error/unableToCreateDestinationDir', array($dir)),
+                $this->translator->translate('createdDestinationDir', array($dir))
+            );
         }
 
         // move/copy files
+        $filesTransfered = false;
         foreach ($fileBunch->extensions() as $extension) {
             $from = $fileBunch->bunchId() . '.' . $extension;
+            $this->bytesProcessed += filesize($from);
             // QUESTION: should we lowercase only primary extensions + known ones (xmp, txt) ?
             $to = $newBunchId . '.' . mb_strtolower($extension);
-            $fileTransfered = $fileRemoved = false;
             if (($this->configure->regexpFilter && !preg_match($this->configure->regexpFilter, $to))
                 || ($this->configure->regexpNegativeFilter && preg_match($this->configure->regexpNegativeFilter, $to))
             ) {
                 $this->logger->addNotice($this->translator->translate('skipped/filteredByRegExp', array($to)));
                 continue;
             } elseif (is_file($to) && $this->configure->deleteDuplicates && !$this->configure->copy) {
-                $cmd = 'rm ' . escapeshellarg($from);
-                $errorMessage = $this->translator->translate('error/unableToDelete', array($from));
-                $fileRemoved = true;
+                $queue[] = new Executor\Command(
+                    'rm ' . escapeshellarg($from),
+                    $this->translator->translate('error/unableToDelete', array($from)),
+                    $this->translator->translate('fileDuplicateWasRemoved', array($extension))
+                );
+                $filesTransfered = true;
             } elseif (is_file($to) && (!$this->configure->deleteDuplicates || $this->configure->copy)) {
                 $this->logger->addNotice($this->translator->translate('skipped/targetAlreadyExists', array($extension)));
                 continue;
             } elseif ($this->configure->copy) {
-                $cmd = 'cp ' . escapeshellarg($from) . ' ' . escapeshellarg($to);
-                $errorMessage = $this->translator->translate('error/unableToCopy', array($from, $to));
-                $fileTransfered = true;
+                $queue[] = new Executor\Command(
+                    'cp ' . escapeshellarg($from) . ' ' . escapeshellarg($to),
+                    $this->translator->translate('error/unableToCopy', array($from, $to)),
+                    $this->translator->translate('newFilePath', array($to))
+                );
+                $filesTransfered = true;
             } else {
-                $cmd = 'mv ' . escapeshellarg($from) . ' ' . escapeshellarg($to);
-                $errorMessage = $this->translator->translate('error/unableToMove', array($from, $to));
-                $fileTransfered = true;
+                $queue[] = new Executor\Command(
+                    'mv ' . escapeshellarg($from) . ' ' . escapeshellarg($to),
+                    $this->translator->translate('error/unableToMove', array($from, $to)),
+                    $this->translator->translate('newFilePath', array($to))
+                );
+                $filesTransfered = true;
             }
-            if ($this->configure->simulate) {
-                fwrite(STDOUT, $cmd . PHP_EOL);
-            } else {
-                if (0 !== $this->executor->execute($cmd)) {
-                    $this->logger->addError($errorMessage);
+        }
+        if ($filesTransfered) {
+            foreach ($queue as $command) {
+                /** @var Executor\Command $command */
+                if ($this->configure->simulate) {
+                    fwrite(STDOUT, $command->command() . PHP_EOL);
+                } elseif (0 !== $this->executor->execute($command->command())) {
+                    $this->logger->addError($command->errorMessage());
                 } else {
-                    if ($fileTransfered) {
-                        $this->logger->addNotice($this->translator->translate('newFilePath', array($to)));
-                        if (is_file($to)) {
-                            $this->bytesProcessed += filesize($to);
-                        }
-                    } elseif ($fileRemoved) {
-                        $this->logger->addNotice($this->translator->translate('fileDuplicateWasRemoved', array($extension)));
-                    }
+                    $this->logger->addNotice($command->successMessage());
                 }
             }
         }
