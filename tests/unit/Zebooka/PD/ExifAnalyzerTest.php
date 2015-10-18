@@ -38,11 +38,12 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
     {
         $datetime = '2007-04-17 16:00:00';
         $datetimeProperties = array(
+            'GPSDateTime',
             'DateTimeOriginal',
+            'TrackCreateDate',
+            'MediaCreateDate',
             'CreateDate',
             'CreationDate',
-            'TrackCreateDate',
-            'MediaCreateDate'
         );
         foreach ($datetimeProperties as $datetimeProperty) {
             /** @var Exif $exif */

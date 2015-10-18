@@ -24,11 +24,12 @@ class ExifAnalyzer
             );
         }
         $datePropertiesNames = array(
+            'GPSDateTime',
             'DateTimeOriginal',
+            'TrackCreateDate',
+            'MediaCreateDate',
             'CreateDate',
             'CreationDate',
-            'TrackCreateDate',
-            'MediaCreateDate'
         );
         foreach ($exifs as $extension => $exif) {
             foreach ($datePropertiesNames as $datePropertyName) {
