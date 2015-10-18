@@ -20,6 +20,7 @@ use Zebooka\Utils\Cli\Parameters;
  * @property bool $deleteDuplicates
  * @property null|string $author
  * @property array $cameras
+ * @property bool $preferExifDateTime
  * @property array $tokensToAdd
  * @property array $tokensToDrop
  * @property bool $tokensDropUnknown
@@ -48,6 +49,7 @@ class Configure
     const P_NO_DELETE_DUPLICATES = 'Z';
     const P_AUTHOR = 'a';
     const P_CAMERAS = 'd';
+    const P_PREFER_EXIF_DT = 'T';
     const P_TOKENS_ADD = 'x';
     const P_TOKENS_DROP = 'y';
     const P_TOKENS_DROP_UNKNOWN = 'Y';
@@ -72,6 +74,7 @@ class Configure
     public $deleteDuplicates = true;
     public $author = null;
     public $cameras = array();
+    public $preferExifDateTime = false;
     public $tokensToAdd = array();
     public $tokensToDrop = array();
     public $tokensDropUnknown = false;
@@ -105,6 +108,7 @@ class Configure
         $this->deleteDuplicates = empty($argv->{self::P_NO_DELETE_DUPLICATES});
         $this->author = (array_key_exists(self::P_AUTHOR, $argv) ? strval($argv->{self::P_AUTHOR}) : $this->author);
         $this->cameras = $this->splitSpaceSeparated(array_key_exists(self::P_CAMERAS, $argv) ? $argv->{self::P_CAMERAS} : $this->cameras);
+        $this->preferExifDateTime = !empty($argv->{self::P_PREFER_EXIF_DT});
         $this->tokensToAdd = $this->splitSpaceSeparated(array_key_exists(self::P_TOKENS_ADD, $argv) ? $argv->{self::P_TOKENS_ADD} : $this->tokensToAdd);
         $this->tokensToDrop = $this->splitSpaceSeparated(array_key_exists(self::P_TOKENS_DROP, $argv) ? $argv->{self::P_TOKENS_DROP} : $this->tokensToDrop);
         $this->tokensDropUnknown = !empty($argv->{self::P_TOKENS_DROP_UNKNOWN});
@@ -207,6 +211,7 @@ class Configure
             self::P_NO_DELETE_DUPLICATES => !$this->deleteDuplicates,
             self::P_AUTHOR => $this->author,
             self::P_CAMERAS => $this->cameras,
+            self::P_PREFER_EXIF_DT => $this->preferExifDateTime,
             self::P_TOKENS_ADD => $this->tokensToAdd,
             self::P_TOKENS_DROP => $this->tokensToDrop,
             self::P_TOKENS_DROP_UNKNOWN => $this->tokensDropUnknown,
