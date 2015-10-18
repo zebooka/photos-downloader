@@ -206,6 +206,7 @@ class Configure
             self::P_COPY => $this->copy,
             self::P_NO_DELETE_DUPLICATES => !$this->deleteDuplicates,
             self::P_AUTHOR => $this->author,
+            self::P_CAMERAS => $this->cameras,
             self::P_TOKENS_ADD => $this->tokensToAdd,
             self::P_TOKENS_DROP => $this->tokensToDrop,
             self::P_TOKENS_DROP_UNKNOWN => $this->tokensDropUnknown,
