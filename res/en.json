@@ -32,6 +32,7 @@
     "parameters/description/P_NO_RECURSIVE": "No recursive from-paths scanning.",
     "parameters/description/P_NO_SUBDIRS": "Do not create directory structure in to-path.",
     "parameters/description/P_PANORAMIC_RATIO": "Aspect ratio, after which files are considered panoramic.",
+    "parameters/description/P_PREFER_EXIF_DT": "Prefer date/time from Exif, even if they are set in filename.",
     "parameters/description/P_REGEXP_FILTER": "Filter files by regular expression. The check is performed on result filename (including directory and extension). Files in bunches are processed separately.",
     "parameters/description/P_REGEXP_NEGATIVE_FILTER": "Filter files by regular expression. Negative filter option (files matched by expression will not be parsed). The check is performed on result filename (including directory and extension). Files in bunches are processed separately.",
     "parameters/description/P_SIMULATE": "Simulate. Will output commands to STDOUT.",
