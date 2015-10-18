@@ -238,4 +238,17 @@ class TokenizerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('1980x', $tokens->date());
         $this->assertEquals('123', $tokens->shot);
     }
+
+    public function test_tokenize_preferExifDateTime()
+    {
+        $configure = $this->configure();
+        $configure->preferExifDateTime = true;
+        $fileBunch = $this->fileBunch('S_BOA_hello_070417_210000,2_k100d_old_world_old_unknown');
+        $tokenizer = new Tokenizer($configure, $this->exifAnalyzer($fileBunch, '2009-08-21 11:00:00', null));
+        $tokens = $tokenizer->tokenize($fileBunch);
+        $this->assertInstanceOf('\\Zebooka\\PD\\Tokens', $tokens);
+        $this->assertEquals('090821', $tokens->date());
+        $this->assertEquals('110000', $tokens->time());
+        $this->assertEquals('2', $tokens->shot);
+    }
 }

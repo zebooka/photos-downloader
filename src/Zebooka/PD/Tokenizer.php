@@ -153,6 +153,11 @@ class Tokenizer
             }
         }
         $tokens = array_values($tokens);
+
+        if (null !== $exifDateTime && $this->configure->preferExifDateTime) {
+            $datetime = $exifDateTime;
+        }
+
         return array($datetime, $shot);
     }
 }
