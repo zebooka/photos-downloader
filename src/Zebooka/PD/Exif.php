@@ -28,7 +28,7 @@ class Exif
 
         $output = array();
         $code = 0;
-        exec('exiftool -j -d "%Y-%m-%d %H:%M:%S" -fast ' . escapeshellarg($filename), $output, $code);
+        exec('exiftool -j -d "%Y-%m-%d %H:%M:%S %z" -fast ' . escapeshellarg($filename), $output, $code);
         if ($code) {
             throw new \RuntimeException('ExifTool failed with code #' . $code . '.');
         }
