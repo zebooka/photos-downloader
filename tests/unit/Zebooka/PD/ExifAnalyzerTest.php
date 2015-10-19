@@ -55,6 +55,25 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    public function test_datetime_priority()
+    {
+        $analyzer = new ExifAnalyzer($this->realConfigure());
+
+        // if difference is not large, we use DateTimeOriginal
+        $exif = \Mockery::mock('\\Zebooka\\PD\\Exif');
+        $exif->GPSDateTime  = '2007-04-17 16:00:00';
+        $exif->DateTimeOriginal = $datetime = '2007-04-17 16:00:10';
+        list($detectedDateTime) = $analyzer->extractDateTimeCameraTokens($this->fileBunch(array($exif)));
+        $this->assertEquals(strtotime($datetime), $detectedDateTime);
+
+        // if difference is large, we use GPSDateTime
+        $exif = \Mockery::mock('\\Zebooka\\PD\\Exif');
+        $exif->GPSDateTime = $datetime = '2007-04-17 16:00:00';
+        $exif->DateTimeOriginal = '2007-04-17 17:00:00';
+        list($detectedDateTime) = $analyzer->extractDateTimeCameraTokens($this->fileBunch(array($exif)));
+        $this->assertEquals(strtotime($datetime), $detectedDateTime);
+    }
+
     public function test_cameras_detection()
     {
         foreach ($this->camerasExifsProperties() as $exifProperiesAndCamera) {

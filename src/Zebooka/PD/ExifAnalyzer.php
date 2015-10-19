@@ -13,7 +13,7 @@ class ExifAnalyzer
 
     public function extractDateTimeCameraTokens(FileBunch $fileBunch)
     {
-        $datetimes = $cameras = $tokens = array();
+        $datetimes = $gpsDatetimes = $cameras = $tokens = array();
         try {
             $exifs = $fileBunch->exifs();
         } catch (\Exception $e) {
@@ -24,10 +24,10 @@ class ExifAnalyzer
             );
         }
         $datePropertiesNames = array(
-            'GPSDateTime',
             'DateTimeOriginal',
             'TrackCreateDate',
             'MediaCreateDate',
+            'GPSDateTime',
             'CreateDate',
             'CreationDate',
         );
@@ -37,6 +37,9 @@ class ExifAnalyzer
                     $datetimes[$extension] = strtotime($exif->{$datePropertyName});
                     break;
                 }
+            }
+            if ($exif->GPSDateTime && $gpsDatetime = strtotime($exif->GPSDateTime)) {
+                $gpsDatetimes[$extension] = $gpsDatetime;
             }
             if (null !== ($camera = $this->detectCamera($exif))) {
                 $cameras[$extension] = $camera;
@@ -50,6 +53,14 @@ class ExifAnalyzer
                 ExifAnalyzerException::DIFFERENT_DATES
             );
         }
+        $datetime = ($datetimes ? reset($datetimes) : null);
+        $gpsDatetimes = array_unique($gpsDatetimes);
+        $gpsDatetime = ($gpsDatetimes ? reset($gpsDatetimes) : null);
+        if($gpsDatetime && abs($datetime - $gpsDatetime) > 60){
+            // clock difference larger than 60 seconds
+            $datetime = $gpsDatetime;
+        }
+
         $cameras = array_unique($cameras);
         // remove d700, because it can be detected only from maker notes tag which is not available in processed jpg
         foreach (array('d700a', 'd700b', 'd700c', 'd700d') as $d700x) {
@@ -67,7 +78,7 @@ class ExifAnalyzer
         $tokens = array_unique($tokens);
 
         return array(
-            $datetimes ? reset($datetimes) : null,
+            $datetime,
             $cameras ? reset($cameras) : null,
             $tokens,
         );
