@@ -96,5 +96,8 @@ class FileBunchTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(1, $exifs);
         $this->assertArrayHasKey('jpg', $exifs);
         $this->assertInstanceOf('\\Zebooka\\PD\\Exif', $exifs['jpg']);
+
+        $exifs2 = $fileBunch->exifs();
+        $this->assertSame($exifs, $exifs2);
     }
 }

@@ -29,7 +29,8 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
         return \Mockery::mock('\\Zebooka\\PD\\FileBunch')
             ->shouldReceive('exifs')
             ->withNoArgs()
-            ->once()
+            ->atMost()
+            ->times(3)
             ->andReturn($exifs)
             ->getMock();
     }

@@ -11,11 +11,10 @@ class ExifAnalyzer
         $this->configure = $configure;
     }
 
-    public function extractDateTimeCameraTokens(FileBunch $fileBunch)
+    private function exifs(FileBunch $fileBunch)
     {
-        $datetimes = $gpsDatetimes = $cameras = $tokens = array();
         try {
-            $exifs = $fileBunch->exifs();
+            return $fileBunch->exifs();
         } catch (\Exception $e) {
             throw new ExifAnalyzerException(
                 'Unable to read one of Exifs.',
@@ -23,6 +22,11 @@ class ExifAnalyzer
                 $e
             );
         }
+    }
+
+    public function extractDateTime(FileBunch $fileBunch)
+    {
+        $datetimes = $gpsDatetimes = array();
         $datePropertiesNames = array(
             'DateTimeOriginal',
             'TrackCreateDate',
@@ -31,7 +35,7 @@ class ExifAnalyzer
             'CreateDate',
             'CreationDate',
         );
-        foreach ($exifs as $extension => $exif) {
+        foreach ($this->exifs($fileBunch) as $extension => $exif) {
             foreach ($datePropertiesNames as $datePropertyName) {
                 if ($exif->{$datePropertyName}) {
                     $datetimes[$extension] = strtotime($exif->{$datePropertyName});
@@ -41,10 +45,6 @@ class ExifAnalyzer
             if ($exif->GPSDateTime && $gpsDatetime = strtotime($exif->GPSDateTime)) {
                 $gpsDatetimes[$extension] = $gpsDatetime;
             }
-            if (null !== ($camera = $this->detectCamera($exif))) {
-                $cameras[$extension] = $camera;
-            }
-            $tokens = array_merge($tokens, $this->detectTokens($exif));
         }
         $datetimes = array_unique($datetimes);
         if ($this->configure->compareExifs && count($datetimes) > 1) {
@@ -56,11 +56,21 @@ class ExifAnalyzer
         $datetime = ($datetimes ? reset($datetimes) : null);
         $gpsDatetimes = array_unique($gpsDatetimes);
         $gpsDatetime = ($gpsDatetimes ? reset($gpsDatetimes) : null);
-        if($gpsDatetime && abs($datetime - $gpsDatetime) > 60){
+        if ($gpsDatetime && abs($datetime - $gpsDatetime) > 60) {
             // clock difference larger than 60 seconds
             $datetime = $gpsDatetime;
         }
+        return $datetime;
+    }
 
+    public function extractCamera(FileBunch $fileBunch)
+    {
+        $cameras = array();
+        foreach ($this->exifs($fileBunch) as $extension => $exif) {
+            if (null !== ($camera = $this->detectCamera($exif))) {
+                $cameras[$extension] = $camera;
+            }
+        }
         $cameras = array_unique($cameras);
         // remove d700, because it can be detected only from maker notes tag which is not available in processed jpg
         foreach (array('d700a', 'd700b', 'd700c', 'd700d') as $d700x) {
@@ -75,12 +85,24 @@ class ExifAnalyzer
                 ExifAnalyzerException::DIFFERENT_CAMERAS
             );
         }
-        $tokens = array_unique($tokens);
+        return ($cameras ? reset($cameras) : null);
+    }
 
+    public function extractTokens(FileBunch $fileBunch)
+    {
+        $tokens = array();
+        foreach ($this->exifs($fileBunch) as $extension => $exif) {
+            $tokens = array_merge($tokens, $this->detectTokens($exif));
+        }
+        return array_unique($tokens);
+    }
+
+    public function extractDateTimeCameraTokens(FileBunch $fileBunch)
+    {
         return array(
-            $datetime,
-            $cameras ? reset($cameras) : null,
-            $tokens,
+            $this->extractDateTime($fileBunch),
+            $this->extractCamera($fileBunch),
+            $this->extractTokens($fileBunch),
         );
     }
 

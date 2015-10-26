@@ -9,6 +9,7 @@ class FileBunch
     private $bunchId;
     private $primaryExtensions;
     private $secondaryExtensions;
+    private $exifs;
 
     public function __construct($bunchId, array $primaryExtensions, array $secondaryExtensions = array())
     {
@@ -72,16 +73,19 @@ class FileBunch
      */
     public function exifs()
     {
-        $extensions = $this->primaryExtensions();
-        $bunchId = $this->bunchId();
-        return array_combine(
-            $extensions,
-            array_map(
-                function ($extension) use ($bunchId) {
-                    return new Exif($bunchId . '.' . $extension);
-                },
-                $extensions
-            )
-        );
+        if (!$this->exifs) {
+            $extensions = $this->primaryExtensions();
+            $bunchId = $this->bunchId();
+            $this->exifs = array_combine(
+                $extensions,
+                array_map(
+                    function ($extension) use ($bunchId) {
+                        return new Exif($bunchId . '.' . $extension);
+                    },
+                    $extensions
+                )
+            );
+        }
+        return $this->exifs;
     }
 }
