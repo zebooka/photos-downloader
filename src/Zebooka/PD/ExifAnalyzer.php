@@ -24,7 +24,7 @@ class ExifAnalyzer
         }
     }
 
-    public function extractDateTime(FileBunch $fileBunch)
+    public function extractDateTime(FileBunch $fileBunch, &$replacedWithGps = false)
     {
         $datetimes = $gpsDatetimes = array();
         $datePropertiesNames = array(
@@ -59,6 +59,7 @@ class ExifAnalyzer
         if ($gpsDatetime && abs($datetime - $gpsDatetime) > 60) {
             // clock difference larger than 60 seconds
             $datetime = $gpsDatetime;
+            $replacedWithGps = true;
         }
         return $datetime;
     }
@@ -99,10 +100,12 @@ class ExifAnalyzer
 
     public function extractDateTimeCameraTokens(FileBunch $fileBunch)
     {
+        $gpsDateTime = false;
         return array(
-            $this->extractDateTime($fileBunch),
+            $this->extractDateTime($fileBunch, $gpsDateTime),
             $this->extractCamera($fileBunch),
             $this->extractTokens($fileBunch),
+            $gpsDateTime
         );
     }
 

@@ -61,18 +61,30 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
         $analyzer = new ExifAnalyzer($this->realConfigure());
 
         // if difference is not large, we use DateTimeOriginal
+        $replacedWithGps = false;
         $exif = \Mockery::mock('\\Zebooka\\PD\\Exif');
-        $exif->GPSDateTime  = '2007-04-17 16:00:00';
+        $exif->GPSDateTime = '2007-04-17 16:00:00';
         $exif->DateTimeOriginal = $datetime = '2007-04-17 16:00:10';
-        list($detectedDateTime) = $analyzer->extractDateTimeCameraTokens($this->fileBunch(array($exif)));
+        list($detectedDateTime, , , $replacedWithGps) = $analyzer->extractDateTimeCameraTokens($this->fileBunch(array($exif)));
         $this->assertEquals(strtotime($datetime), $detectedDateTime);
+        $this->assertFalse($replacedWithGps);
+        $replacedWithGps = false;
+        $detectedDateTime = $analyzer->extractDateTime($this->fileBunch(array($exif)), $replacedWithGps);
+        $this->assertEquals(strtotime($datetime), $detectedDateTime);
+        $this->assertFalse($replacedWithGps);
 
         // if difference is large, we use GPSDateTime
+        $replacedWithGps = false;
         $exif = \Mockery::mock('\\Zebooka\\PD\\Exif');
         $exif->GPSDateTime = $datetime = '2007-04-17 16:00:00';
         $exif->DateTimeOriginal = '2007-04-17 17:00:00';
-        list($detectedDateTime) = $analyzer->extractDateTimeCameraTokens($this->fileBunch(array($exif)));
+        list($detectedDateTime, , , $replacedWithGps) = $analyzer->extractDateTimeCameraTokens($this->fileBunch(array($exif)));
         $this->assertEquals(strtotime($datetime), $detectedDateTime);
+        $this->assertTrue($replacedWithGps);
+        $replacedWithGps = false;
+        $detectedDateTime = $analyzer->extractDateTime($this->fileBunch(array($exif)), $replacedWithGps);
+        $this->assertEquals(strtotime($datetime), $detectedDateTime);
+        $this->assertTrue($replacedWithGps);
     }
 
     public function test_cameras_detection()
@@ -103,6 +115,16 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
             list(, , $detectedTokens) = $analyzer->extractDateTimeCameraTokens($this->fileBunch(array($exif)));
             $this->assertEquals($tokens, $detectedTokens);
         }
+    }
+
+    public function test_detection_array()
+    {
+        /** @var Exif $exif */
+        $exif = \Mockery::mock('\\Zebooka\\PD\\Exif');
+        $analyzer = new ExifAnalyzer($this->realConfigure());
+        $detected = $analyzer->extractDateTimeCameraTokens($this->fileBunch(array($exif)));
+        $this->assertInternalType('array', $detected);
+        $this->assertCount(4, $detected);
     }
 
     public function test_failure_different_datetimes()
