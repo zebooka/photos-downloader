@@ -32,7 +32,7 @@ class Exif
         $code = 0;
         // -d "%Y-%m-%d %H:%M:%S %z" - we no longer use this format because it will output current timezone
         // if date does not have one. But we need to distinguish between local tz and no tz.
-        exec('exiftool -j -fast ' . escapeshellarg($filename), $output, $code);
+        exec('exiftool -j -d "%Y-%m-%d %H:%M:%S %z" -fast ' . escapeshellarg($filename), $output, $code);
         if ($code) {
             throw new \RuntimeException('ExifTool failed with code #' . $code . '.');
         }
