@@ -110,6 +110,18 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(2.0, $configure->panoramicRatio);
     }
 
+    public function test_timezones()
+    {
+        $configure = new Configure(array(1 => '-z', '+06:00'), array());
+        $this->assertEquals('+06:00', $configure->timezone);
+        $configure = new Configure(array(1 => '-z', '-0600'), array());
+        $this->assertEquals('-0600', $configure->timezone);
+        $configure = new Configure(array(1 => '-z', '0600'), array());
+        $this->assertNull($configure->timezone);
+        $configure = new Configure(array(1 => '-z', '+600'), array());
+        $this->assertNull($configure->timezone);
+    }
+
     public function test_reassembling_configure()
     {
         $configure = new Configure($this->argv(), $this->knownData());

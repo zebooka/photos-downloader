@@ -112,7 +112,7 @@ class Configure
         $this->author = (array_key_exists(self::P_AUTHOR, $argv) ? strval($argv->{self::P_AUTHOR}) : $this->author);
         $this->cameras = $this->splitSpaceSeparated(array_key_exists(self::P_CAMERAS, $argv) ? $argv->{self::P_CAMERAS} : $this->cameras);
         $this->preferExifDateTime = !empty($argv->{self::P_PREFER_EXIF_DT});
-        $this->timezone = (array_key_exists(self::P_TIMEZONE, $argv) ? strval($argv->{self::P_TIMEZONE}) : $this->timezone);
+        $this->timezone = (array_key_exists(self::P_TIMEZONE, $argv) && preg_match('/^[+-][0-9]{2}:?[0-9]{2}$/', $argv->{self::P_TIMEZONE}) ? strval($argv->{self::P_TIMEZONE}) : $this->timezone);
         $this->tokensToAdd = $this->splitSpaceSeparated(array_key_exists(self::P_TOKENS_ADD, $argv) ? $argv->{self::P_TOKENS_ADD} : $this->tokensToAdd);
         $this->tokensToDrop = $this->splitSpaceSeparated(array_key_exists(self::P_TOKENS_DROP, $argv) ? $argv->{self::P_TOKENS_DROP} : $this->tokensToDrop);
         $this->tokensDropUnknown = !empty($argv->{self::P_TOKENS_DROP_UNKNOWN});
