@@ -21,6 +21,7 @@ use Zebooka\Utils\Cli\Parameters;
  * @property null|string $author
  * @property array $cameras
  * @property bool $preferExifDateTime
+ * @property null|string $timezone
  * @property array $tokensToAdd
  * @property array $tokensToDrop
  * @property bool $tokensDropUnknown
@@ -50,6 +51,7 @@ class Configure
     const P_AUTHOR = 'a';
     const P_CAMERAS = 'd';
     const P_PREFER_EXIF_DT = 'T';
+    const P_TIMEZONE = 'z';
     const P_TOKENS_ADD = 'x';
     const P_TOKENS_DROP = 'y';
     const P_TOKENS_DROP_UNKNOWN = 'Y';
@@ -75,6 +77,7 @@ class Configure
     public $author = null;
     public $cameras = array();
     public $preferExifDateTime = false;
+    public $timezone = null;
     public $tokensToAdd = array();
     public $tokensToDrop = array();
     public $tokensDropUnknown = false;
@@ -109,6 +112,7 @@ class Configure
         $this->author = (array_key_exists(self::P_AUTHOR, $argv) ? strval($argv->{self::P_AUTHOR}) : $this->author);
         $this->cameras = $this->splitSpaceSeparated(array_key_exists(self::P_CAMERAS, $argv) ? $argv->{self::P_CAMERAS} : $this->cameras);
         $this->preferExifDateTime = !empty($argv->{self::P_PREFER_EXIF_DT});
+        $this->timezone = (array_key_exists(self::P_TIMEZONE, $argv) ? strval($argv->{self::P_TIMEZONE}) : $this->timezone);
         $this->tokensToAdd = $this->splitSpaceSeparated(array_key_exists(self::P_TOKENS_ADD, $argv) ? $argv->{self::P_TOKENS_ADD} : $this->tokensToAdd);
         $this->tokensToDrop = $this->splitSpaceSeparated(array_key_exists(self::P_TOKENS_DROP, $argv) ? $argv->{self::P_TOKENS_DROP} : $this->tokensToDrop);
         $this->tokensDropUnknown = !empty($argv->{self::P_TOKENS_DROP_UNKNOWN});
@@ -212,6 +216,7 @@ class Configure
             self::P_AUTHOR => $this->author,
             self::P_CAMERAS => $this->cameras,
             self::P_PREFER_EXIF_DT => $this->preferExifDateTime,
+            self::P_TIMEZONE => $this->timezone,
             self::P_TOKENS_ADD => $this->tokensToAdd,
             self::P_TOKENS_DROP => $this->tokensToDrop,
             self::P_TOKENS_DROP_UNKNOWN => $this->tokensDropUnknown,
@@ -235,6 +240,7 @@ class Configure
             self::P_SUBDIRS_FORMAT,
             self::P_AUTHOR,
             self::P_CAMERAS,
+            self::P_TIMEZONE,
             self::P_TOKENS_ADD,
             self::P_TOKENS_DROP,
             self::P_REGEXP_FILTER,

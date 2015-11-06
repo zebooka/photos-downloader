@@ -18,6 +18,7 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
                 Configure::P_SUBDIRS_FORMAT,
                 Configure::P_AUTHOR,
                 Configure::P_CAMERAS,
+                Configure::P_TIMEZONE,
                 Configure::P_TOKENS_ADD,
                 Configure::P_TOKENS_DROP,
                 Configure::P_REGEXP_FILTER,
@@ -56,6 +57,7 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('/path/dst', $configure->to);
         $this->assertFalse($configure->subDirectoriesStructure);
         $this->assertEquals('Y/ym00', $configure->subDirectoriesFormat);
+        $this->assertTrue($configure->preferExifDateTime);
         $this->assertTrue($configure->copy);
         $this->assertFalse($configure->deleteDuplicates);
         $this->assertEquals('AUTHOR', $configure->author);
@@ -88,6 +90,8 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('-', $configure->to);
         $this->assertTrue($configure->subDirectoriesStructure);
         $this->assertEquals('Y/m', $configure->subDirectoriesFormat);
+        $this->assertFalse($configure->preferExifDateTime);
+        $this->assertNull($configure->timezone);
         $this->assertFalse($configure->copy);
         $this->assertTrue($configure->deleteDuplicates);
         $this->assertNull($configure->author);
@@ -146,6 +150,8 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
             '-' . Configure::P_CAMERAS,
             escapeshellarg($configure->cameras[2]),
             '-' . Configure::P_PREFER_EXIF_DT,
+            '-' . Configure::P_TIMEZONE,
+            escapeshellarg($configure->timezone),
             '-' . Configure::P_TOKENS_ADD,
             escapeshellarg($configure->tokensToAdd[0]),
             '-' . Configure::P_TOKENS_ADD,
@@ -219,6 +225,8 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
             '-d',
             'cam4',
             '-T',
+            '-z',
+            '+06:00',
             '-x',
             'add1 add2',
             '-y',
