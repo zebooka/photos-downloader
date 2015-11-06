@@ -45,6 +45,10 @@ class ExifAnalyzer
                 }
             }
             if ($exif->GPSDateTime && $gpsDatetime = strtotime($exif->GPSDateTime)) {
+                if ($this->configure->timezone) {
+                    // correct GPS timestamp from specified TZ to local TZ
+                    $gpsDatetime += time() - strtotime($this->configure->timezone);
+                }
                 $gpsDatetimes[$extension] = $gpsDatetime;
             }
         }
