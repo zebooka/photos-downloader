@@ -31,9 +31,11 @@ class ExifAnalyzer
             'DateTimeOriginal',
             'TrackCreateDate',
             'MediaCreateDate',
-            'GPSDateTime',
+            'DateCreated',
             'CreateDate',
             'CreationDate',
+            'ModifyDate',
+            'GPSDateTime',
         );
         foreach ($this->exifs($fileBunch) as $extension => $exif) {
             foreach ($datePropertiesNames as $datePropertyName) {

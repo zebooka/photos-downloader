@@ -11,6 +11,8 @@ namespace Zebooka\PD;
  * @property string $Model
  * @property string $DateTimeOriginal
  * @property string $CreateDate
+ * @property string $ModifyDate
+ * @property string $GPSDateTime
  * @property string $CreationDate
  * @property string $TrackCreateDate
  * @property string $MediaCreateDate
@@ -28,7 +30,9 @@ class Exif
 
         $output = array();
         $code = 0;
-        exec('exiftool -j -d "%Y-%m-%d %H:%M:%S %z" -fast ' . escapeshellarg($filename), $output, $code);
+        // -d "%Y-%m-%d %H:%M:%S %z" - we no longer use this format because it will output current timezone
+        // if date does not have one. But we need to distinguish between local tz and no tz.
+        exec('exiftool -j -fast ' . escapeshellarg($filename), $output, $code);
         if ($code) {
             throw new \RuntimeException('ExifTool failed with code #' . $code . '.');
         }
