@@ -62,7 +62,7 @@ class ExifAnalyzer
         $datetime = ($datetimes ? reset($datetimes) : null);
         $gpsDatetimes = array_unique($gpsDatetimes);
         $gpsDatetime = ($gpsDatetimes ? reset($gpsDatetimes) : null);
-        if ($gpsDatetime && abs($datetime - $gpsDatetime) > 60) {
+        if ($this->configure->preferExifDateTime && $gpsDatetime && abs($datetime - $gpsDatetime) > 60) {
             // clock difference larger than 60 seconds
             $datetime = $gpsDatetime;
             $replacedWithGps = true;
