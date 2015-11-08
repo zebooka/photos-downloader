@@ -15,7 +15,7 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
     private function realConfigure()
     {
         return new \Zebooka\PD\Configure(
-            array(),
+            array(1 => '-T'),
             json_decode(file_get_contents(__DIR__ . '/../../../../res/tokens.json'), true)
         );
     }
