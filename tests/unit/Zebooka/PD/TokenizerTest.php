@@ -237,6 +237,7 @@ class TokenizerTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('\\Zebooka\\PD\\Tokens', $tokens);
         $this->assertEquals('1980x', $tokens->date());
         $this->assertEquals('123', $tokens->shot);
+        $this->assertEquals(array(), $tokens->tokens);
     }
 
     public function test_tokenize_preferExifDateTime()

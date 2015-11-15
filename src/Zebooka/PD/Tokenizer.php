@@ -149,6 +149,7 @@ class Tokenizer
             ) {
                 $datetime = array($token);
                 $shot = $tokens[$index + 1];
+                unset($tokens[$index]);
                 unset($tokens[$index + 1]);
             }
         }
