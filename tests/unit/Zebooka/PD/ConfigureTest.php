@@ -56,7 +56,7 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('/path/list.txt', $configure->listFile);
         $this->assertEquals('/path/dst', $configure->to);
         $this->assertFalse($configure->subDirectoriesStructure);
-        $this->assertEquals('Y/ym00', $configure->subDirectoriesFormat);
+        $this->assertEquals('%Y/%y%m00', $configure->subDirectoriesFormat);
         $this->assertTrue($configure->preferExifDateTime);
         $this->assertTrue($configure->copy);
         $this->assertFalse($configure->deleteDuplicates);
@@ -89,7 +89,7 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($configure->listFile);
         $this->assertEquals('-', $configure->to);
         $this->assertTrue($configure->subDirectoriesStructure);
-        $this->assertEquals('Y/m', $configure->subDirectoriesFormat);
+        $this->assertEquals('%Y/%m', $configure->subDirectoriesFormat);
         $this->assertFalse($configure->preferExifDateTime);
         $this->assertNull($configure->timezone);
         $this->assertFalse($configure->copy);
@@ -227,7 +227,7 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
             '/path/dst',
             '-D',
             '-k',
-            'Y/ym00',
+            '%Y/%y%m00',
             '-c',
             '-Z',
             '-a',

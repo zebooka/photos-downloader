@@ -71,7 +71,7 @@ class Configure
     public $listFile = null;
     public $to = self::KEEP_IN_PLACE;
     public $subDirectoriesStructure = true;
-    public $subDirectoriesFormat = 'Y/m';
+    public $subDirectoriesFormat = '%Y/%m';
     public $copy = false;
     public $deleteDuplicates = true;
     public $author = null;
