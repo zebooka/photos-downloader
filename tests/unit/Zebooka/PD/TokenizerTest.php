@@ -69,6 +69,22 @@ class TokenizerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array('hello', 'world', 'new'), $tokens->tokens);
     }
 
+    public function test_authors()
+    {
+        $configure = $this->configure();
+        $fileBunch = $this->fileBunch('S_BOA_hello_070417_210000,2_k100d_old_world_old_unknown');
+        $tokenizer = new Tokenizer($configure, $this->exifAnalyzer($fileBunch, null, null));
+        $tokens = $tokenizer->tokenize($fileBunch);
+        $this->assertInstanceOf('\\Zebooka\\PD\\Tokens', $tokens);
+        $this->assertEquals('BOA', $tokens->author);
+
+        $fileBunch = $this->fileBunch('S_141101_220000_DUY_BOA_hello_5s');
+        $tokenizer = new Tokenizer($configure, $this->exifAnalyzer($fileBunch, null, null));
+        $tokens = $tokenizer->tokenize($fileBunch);
+        $this->assertInstanceOf('\\Zebooka\\PD\\Tokens', $tokens);
+        $this->assertEquals('DUY', $tokens->author);
+    }
+
     public function test_tokenize_new_shot_format()
     {
         $configure = $this->configure();

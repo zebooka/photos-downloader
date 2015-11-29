@@ -56,7 +56,7 @@ class Tokenizer
     {
         $author = null;
         foreach ($tokens as $index => $token) {
-            if (in_array($token, $this->configure->knownAuthors())) {
+            if (preg_match('/^[A-Z]{3}$/', $token) || in_array($token, $this->configure->knownAuthors())) {
                 unset($tokens[$index]);
                 $author = $token;
                 break;
