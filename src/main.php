@@ -31,8 +31,18 @@ $configure = new \Zebooka\PD\Configure(
 // setup logger
 $logger = \Zebooka\PD\LoggerFactory::logger($configure);
 
+// get locale
+$locale = 'en';
+foreach (array(LC_ALL, LC_COLLATE, LC_CTYPE, LC_MESSAGES) as $lc) {
+    if (preg_match('/^([a-z]{2})(_|$)/i', setlocale($lc, 0))) {
+        $locale = setlocale($lc, 0);
+        break;
+    }
+}
+setlocale(LC_ALL, $locale);
+
 // translations
-$translator = \Zebooka\Translator\TranslatorFactory::translator(__DIR__ . '/../res', setlocale(LC_CTYPE, 0));
+$translator = \Zebooka\Translator\TranslatorFactory::translator(__DIR__ . '/../res', $locale);
 
 $version = trim(file_get_contents(__DIR__ . '/../res/VERSION'));
 $logger->addInfo($translator->translate('appName', array(VERSION, $version)));
