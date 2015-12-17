@@ -56,7 +56,9 @@ class Tokenizer
     {
         $author = null;
         foreach ($tokens as $index => $token) {
-            if (preg_match('/^[A-Z]{3}$/', $token) || in_array($token, $this->configure->knownAuthors())) {
+            if ((preg_match('/^[A-Z]{3}$/', $token) && 'IMG' !== $token)
+                || in_array($token, $this->configure->knownAuthors())
+            ) {
                 unset($tokens[$index]);
                 $author = $token;
                 break;
@@ -73,7 +75,7 @@ class Tokenizer
 
     private function extractCamera(array &$tokens, $exifCamera)
     {
-        $camera = ($exifCamera ? : null);
+        $camera = ($exifCamera ?: null);
         foreach ($tokens as $index => $token) {
             if (in_array($token, $this->configure->knownCameras())) {
                 unset($tokens[$index]);
