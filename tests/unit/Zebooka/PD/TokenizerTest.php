@@ -269,14 +269,16 @@ class TokenizerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('2', $tokens->shot);
     }
 
-    public function test_tokenize_skips_img_token()
+    public function test_tokenize_skips_img_dsc_token()
     {
-        $configure = $this->configure();
-        $fileBunch = $this->fileBunch('IMG_1234');
-        $tokenizer = new Tokenizer($configure, $this->exifAnalyzer($fileBunch, '2015-11-01 22:00:00', null));
-        $tokens = $tokenizer->tokenize($fileBunch);
-        $this->assertInstanceOf('\\Zebooka\\PD\\Tokens', $tokens);
-        $this->assertNull($tokens->author);
-        $this->assertEquals(array('IMG', '1234'), $tokens->tokens);
+        foreach (array('IMG', 'DSC') as $notAuthor) {
+            $configure = $this->configure();
+            $fileBunch = $this->fileBunch($notAuthor . '_1234');
+            $tokenizer = new Tokenizer($configure, $this->exifAnalyzer($fileBunch, '2015-11-01 22:00:00', null));
+            $tokens = $tokenizer->tokenize($fileBunch);
+            $this->assertInstanceOf('\\Zebooka\\PD\\Tokens', $tokens);
+            $this->assertNull($tokens->author);
+            $this->assertEquals(array($notAuthor, '1234'), $tokens->tokens);
+        }
     }
 }

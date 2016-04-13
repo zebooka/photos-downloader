@@ -7,7 +7,7 @@ class Tokenizer
     private $configure;
     private $exifAnalyzer;
 
-    public function  __construct(Configure $configure, ExifAnalyzer $exifAnalyzer)
+    public function __construct(Configure $configure, ExifAnalyzer $exifAnalyzer)
     {
         $this->configure = $configure;
         $this->exifAnalyzer = $exifAnalyzer;
@@ -56,7 +56,7 @@ class Tokenizer
     {
         $author = null;
         foreach ($tokens as $index => $token) {
-            if ((preg_match('/^[A-Z]{3}$/', $token) && 'IMG' !== $token)
+            if ((preg_match('/^[A-Z]{3}$/', $token) && !in_array($token, array('IMG', 'DSC')))
                 || in_array($token, $this->configure->knownAuthors())
             ) {
                 unset($tokens[$index]);
