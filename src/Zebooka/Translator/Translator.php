@@ -41,9 +41,16 @@ class Translator
             return '';
         }
         if (!isset($this->icuTranslations[$hash])) {
-            $icuTranslation = new \MessageFormatter($this->locale, $this->translations[$hash]);
-            if (!$icuTranslation) {
-                throw new \RuntimeException('ICU translation creation failed.', self::ERROR_ICU_CREATION_FAILED);
+            try {
+                $icuTranslation = new \MessageFormatter($this->locale, $this->translations[$hash]);
+                if (!$icuTranslation) {
+                    throw new \RuntimeException(
+                        intl_error_name(intl_get_error_code()),
+                        intl_get_error_code()
+                    );
+                }
+            } catch (\Exception $e) {
+                throw new \RuntimeException('ICU translation creation failed.', self::ERROR_ICU_CREATION_FAILED, $e);
             }
             $this->icuTranslations[$hash] = $icuTranslation;
         }
