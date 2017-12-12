@@ -6,6 +6,7 @@ php:
   - "5.6"
   - "7.0"
   - "7.1"
+  - "7.2"
 before_install:
   - wget http://www.sno.phy.queensu.ca/~phil/exiftool/Image-ExifTool-9.68.tar.gz
   - tar -xzf Image-ExifTool-9.68.tar.gz
