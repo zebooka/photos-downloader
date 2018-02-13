@@ -292,4 +292,26 @@ class TokenizerTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals(array($notAuthor, '1234'), $tokens->tokens);
         }
     }
+
+    public function test_tokenize_zero_shots()
+    {
+        $fileBunch = $this->fileBunch('070417_210000_0');
+        $tokenizer = new Tokenizer($this->configure(), $this->exifAnalyzer($fileBunch, null, null));
+        $tokens = $tokenizer->tokenize($fileBunch);
+        $this->assertInstanceOf('\\Zebooka\\PD\\Tokens', $tokens);
+        $this->assertSame(0, $tokens->shot);
+
+        $fileBunch = $this->fileBunch('070417_210000_00');
+        $tokenizer = new Tokenizer($this->configure(), $this->exifAnalyzer($fileBunch, null, null));
+        $tokens = $tokenizer->tokenize($fileBunch);
+        $this->assertInstanceOf('\\Zebooka\\PD\\Tokens', $tokens);
+        $this->assertSame('00', $tokens->shot);
+
+        $fileBunch = $this->fileBunch('070417_210000_07');
+        $tokenizer = new Tokenizer($this->configure(), $this->exifAnalyzer($fileBunch, null, null));
+        $tokens = $tokenizer->tokenize($fileBunch);
+        $this->assertInstanceOf('\\Zebooka\\PD\\Tokens', $tokens);
+        $this->assertSame('07', $tokens->shot);
+        $this->assertNotSame(7, $tokens->shot);
+    }
 }

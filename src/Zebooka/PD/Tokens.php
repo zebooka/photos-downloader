@@ -4,7 +4,7 @@ namespace Zebooka\PD;
 
 /**
  * @property string $prefix
- * @property int $shot
+ * @property int|string $shot
  * @property string $author
  * @property string $camera
  * @property array $tokens
@@ -56,7 +56,11 @@ class Tokens
         $this->author = strval($author) ?: null;
         $this->camera = strval($camera) ?: null;
         $this->prefix = strval($prefix) ?: null;
-        $this->shot = intval($shot) ?: null;
+        if (intval($shot) . '' === strval($shot)) {
+            $this->shot = intval($shot);
+        } else {
+            $this->shot = strval($shot) ?: null;
+        }
     }
 
     /**
