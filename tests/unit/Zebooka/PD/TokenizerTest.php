@@ -170,6 +170,17 @@ class TokenizerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('H1M2S3', $tokens->time());
     }
 
+    public function test_tokenize_sjcam_date()
+    {
+        $fileBunch = $this->fileBunch('2018_0203_093915_011');
+        $tokenizer = new Tokenizer($this->configure(), $this->exifAnalyzer($fileBunch, null, null));
+        $tokens = $tokenizer->tokenize($fileBunch);
+        $this->assertInstanceOf('\\Zebooka\\PD\\Tokens', $tokens);
+        $this->assertEquals('180203', $tokens->date());
+        $this->assertEquals('093915', $tokens->time());
+        $this->assertEquals('011', $tokens->shot);
+    }
+
     public function test_tokenize_incorrect_date()
     {
         $this->setExpectedException(
