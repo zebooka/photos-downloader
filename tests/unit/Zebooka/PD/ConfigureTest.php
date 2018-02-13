@@ -11,6 +11,7 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
                 Configure::P_VERBOSE_LEVEL,
                 Configure::P_LOG_FILE,
                 Configure::P_LOG_LEVEL,
+                Configure::P_SAVE_COMMANDS_FILE,
                 Configure::P_LIMIT,
                 Configure::P_FROM,
                 Configure::P_LIST_FILE,
@@ -50,6 +51,7 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($configure->help);
         $this->assertEquals(123, $configure->verboseLevel);
         $this->assertTrue($configure->simulate);
+        $this->assertEquals('/tmp/pd.log', $configure->saveCommandsFile);
         $this->assertEquals(42, $configure->limit);
         $this->assertFalse($configure->recursive);
         $this->assertEquals(array('/path/1', '/path/2', '/path/3'), $configure->from);
@@ -83,6 +85,7 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($configure->help);
         $this->assertEquals(100, $configure->verboseLevel);
         $this->assertFalse($configure->simulate);
+        $this->assertNull($configure->saveCommandsFile);
         $this->assertEquals(0, $configure->limit);
         $this->assertTrue($configure->recursive);
         $this->assertEquals(array(), $configure->from);
@@ -135,6 +138,8 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
             '-' . Configure::P_LOG_LEVEL,
             escapeshellarg($configure->logLevel),
             '-' . Configure::P_SIMULATE,
+            '-' . Configure::P_SAVE_COMMANDS_FILE,
+            escapeshellarg($configure->saveCommandsFile),
             '-' . Configure::P_LIMIT,
             escapeshellarg($configure->limit),
             '-' . Configure::P_NO_RECURSIVE,
@@ -255,6 +260,8 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
             '/\\.dng$/i',
             '-p',
             '3.2',
+            '-S',
+            '/tmp/pd.log',
         );
     }
 

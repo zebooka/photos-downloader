@@ -144,6 +144,9 @@ class Processor
         if ($filesTransfered) {
             foreach ($queue as $command) {
                 /** @var Executor\Command $command */
+                if ($this->configure->saveCommandsFile && !$this->configure->simulate) {
+                    file_put_contents($this->configure->saveCommandsFile, $command->command() . PHP_EOL, FILE_APPEND);
+                }
                 if ($this->configure->simulate) {
                     fwrite(STDOUT, $command->command() . PHP_EOL);
                 } elseif (0 !== $this->executor->execute($command->command())) {
