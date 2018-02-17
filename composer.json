@@ -8,12 +8,12 @@
     },
     "require": {
         "ext-intl": "*",
-        "monolog/monolog": "1.7.*",
-        "php": ">=5.3.0"
+        "monolog/monolog": "^1.7",
+        "php": "^5.3|^7.0"
     },
     "require-dev": {
-        "mockery/mockery": "0.9.*",
-        "phpunit/phpunit": "3.7.*"
+        "mockery/mockery": "^0.9",
+        "phpunit/phpunit": "^3.7"
     },
     "minimum-stability": "stable"
 }
