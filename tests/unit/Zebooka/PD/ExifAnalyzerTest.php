@@ -315,7 +315,7 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
 
     public function test_detectTokenIds_multiple()
     {
-        /** @var Exif $exif1 */
+        /** @var Exif $exif */
         $exif = \Mockery::mock('\\Zebooka\\PD\\Exif');
         $exif->TestTag = 'unique-value';
         $exif->AnotherTag = 'OTHER-Value 123';
