@@ -142,8 +142,18 @@ class ExifAnalyzer
         $detected = array();
         foreach ($tokensConfig as $tokenId => $conditions) {
             foreach ($conditions as $condition) {
+                $before = isset($condition['before']) ? strtotime($condition['before']) : null;
+                $after = isset($condition['after']) ? strtotime($condition['after']) : null;
+                unset($condition['before'], $condition['after']);
                 $matched = true;
                 $extracts = array();
+                $dateTimeUnix = strtotime($exif->DateTimeOriginal);
+                if (null !== $before && $dateTimeUnix > $before) {
+                    continue;
+                }
+                if (null !== $after && $dateTimeUnix < $after) {
+                    continue;
+                }
                 foreach ($condition as $tag => $expression) {
                     if (preg_match('#^/.+/[a-z]*$#i', $expression)) {
                         if (preg_match($expression, $exif->{$tag}, $matches)) {
