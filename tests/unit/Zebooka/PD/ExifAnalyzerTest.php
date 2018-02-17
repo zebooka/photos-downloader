@@ -337,4 +337,44 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
         $tokens = ExifAnalyzer::detectTokenIds($exif, $tokensConfig, true);
         $this->assertEquals(array('unique-token', 123), $tokens);
     }
+
+
+    public function test_before_between_after()
+    {
+        $tokensConfigure = array(
+            'between' => array(
+                array('after' => '2018-01-01', 'before' => '2018-02-01'),
+            ),
+            'after' => array(
+                array('after' => '2018-01-01')
+            ),
+            'before' => array(
+                array('before' => '2018-02-01')
+            )
+        );
+
+        /** @var Exif $between */
+        $between = \Mockery::mock('\\Zebooka\\PD\\Exif');
+        $between->DateTimeOriginal = date('Y-m-d H:i:s O', strtotime('2018-01-15'));
+        $tokens = ExifAnalyzer::detectTokenIds($between, $tokensConfigure, true);
+        $this->assertContains('between', $tokens);
+        $this->assertContains('after', $tokens);
+        $this->assertContains('before', $tokens);
+
+        /** @var Exif $after */
+        $after = \Mockery::mock('\\Zebooka\\PD\\Exif');
+        $after->DateTimeOriginal = date('Y-m-d H:i:s O', strtotime('2018-02-02'));
+        $tokens = ExifAnalyzer::detectTokenIds($after, $tokensConfigure, true);
+        $this->assertNotContains('between', $tokens);
+        $this->assertContains('after', $tokens);
+        $this->assertNotContains('before', $tokens);
+
+        /** @var Exif $before */
+        $before = \Mockery::mock('\\Zebooka\\PD\\Exif');
+        $before->DateTimeOriginal = date('Y-m-d H:i:s O', strtotime('2017-12-22'));
+        $tokens = ExifAnalyzer::detectTokenIds($before, $tokensConfigure, true);
+        $this->assertNotContains('between', $tokens);
+        $this->assertNotContains('after', $tokens);
+        $this->assertContains('before', $tokens);
+    }
 }
