@@ -1,4 +1,4 @@
-<phpunit bootstrap="../vendor-dev/autoload.php"
+<phpunit bootstrap="bootstrap.php"
          colors="true"
          convertErrorsToExceptions="true"
          convertNoticesToExceptions="true"
