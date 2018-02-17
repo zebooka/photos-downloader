@@ -85,7 +85,7 @@ class ConfigureTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($configure->help);
         $this->assertEquals(100, $configure->verboseLevel);
         $this->assertFalse($configure->simulate);
-        $this->assertNull($configure->saveCommandsFile);
+        $this->assertNotEmpty($configure->saveCommandsFile);
         $this->assertEquals(0, $configure->limit);
         $this->assertTrue($configure->recursive);
         $this->assertEquals(array(), $configure->from);

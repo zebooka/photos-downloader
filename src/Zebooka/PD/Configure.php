@@ -103,7 +103,9 @@ class Configure
         $this->logFile = (array_key_exists(self::P_LOG_FILE, $argv) ? strval($argv->{self::P_LOG_FILE}) : $this->logFile);
         $this->logLevel = (array_key_exists(self::P_LOG_LEVEL, $argv) ? intval($argv->{self::P_LOG_LEVEL}) : $this->logLevel);
         $this->simulate = !empty($argv->{self::P_SIMULATE});
-        $this->saveCommandsFile = (array_key_exists(self::P_SAVE_COMMANDS_FILE, $argv) ? strval($argv->{self::P_SAVE_COMMANDS_FILE}) : $this->saveCommandsFile);
+        $this->saveCommandsFile = (array_key_exists(self::P_SAVE_COMMANDS_FILE, $argv)
+            ? strval($argv->{self::P_SAVE_COMMANDS_FILE})
+            : sys_get_temp_dir() . '/photos-downloader-' . substr(base64_encode(md5(time() . rand(0, 1000000000))), 0, 7) . '.log');
         $this->limit = (array_key_exists(self::P_LIMIT, $argv) ? intval($argv->{self::P_LIMIT}) : $this->limit);
         $this->recursive = empty($argv->{self::P_NO_RECURSIVE});
         $this->from = (array_key_exists(self::P_FROM, $argv) ? $argv->{self::P_FROM} : $this->from);
