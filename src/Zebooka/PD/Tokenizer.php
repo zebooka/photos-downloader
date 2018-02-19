@@ -149,15 +149,16 @@ class Tokenizer
             } elseif (preg_match('/^([0-9]{4})$/', $token, $matches)
                 && isset($tokens[$index + 1]) && preg_match('/^([0-9]{2})([0-9]{2})$/', $tokens[$index + 1], $matches2)
                 && isset($tokens[$index + 2]) && preg_match('/^([0-9]{2})([0-9]{2})([0-9]{2})$/', $tokens[$index + 2], $matches3)
-                && isset($tokens[$index + 3]) && preg_match('/^[0-9]+?$/', $tokens[$index + 3])
             ) {
                 // 2018_0203_093915_011 SJCAM
                 $datetime = mktime($matches3[1], $matches3[2], $matches3[3], $matches2[1], $matches2[2], $matches[1]);
-                $shot = $tokens[$index + 3];
                 unset($tokens[$index]);
                 unset($tokens[$index + 1]);
                 unset($tokens[$index + 2]);
-                unset($tokens[$index + 3]);
+                if (isset($tokens[$index + 3]) && preg_match('/^[0-9]+?$/', $tokens[$index + 3])) {
+                    $shot = $tokens[$index + 3];
+                    unset($tokens[$index + 3]);
+                }
                 break;
             } elseif (preg_match('/^([1-9][0-9Y]{3}x?)$/', $token, $matches) && isset($tokens[$index + 1])
                 && preg_match('/^([0-9]+)$/', $tokens[$index + 1], $matches2)

@@ -12,7 +12,7 @@ class LoggerFactory
     {
         $id = substr(md5(date('r') . '_' . rand(0, 1000000000)), 0, 5);
         $ttyHandler = new StreamHandler('php://stderr', $configure->verboseLevel);
-        $ttyHandler->setFormatter(new LineFormatter("%message%\n"));
+        $ttyHandler->setFormatter(new LineFormatter("%message%\n", null, true));
         $monolog = new Logger($id);
         $monolog->pushHandler($ttyHandler);
         if (null !== $configure->logFile) {
