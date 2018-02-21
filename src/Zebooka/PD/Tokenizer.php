@@ -29,7 +29,7 @@ class Tokenizer
         if (null === $datetime) {
             throw new TokenizerException('Unable to detect date/time.', TokenizerException::NO_DATE_TIME_DETECTED);
         }
-        $author = $this->extractAuthor($tokens);
+        $author = self::extractAuthor($tokens, $this->configure->knownAuthors(), $this->configure->author);
         $camera = $this->extractCamera($tokens, $exifCamera);
         if ($this->configure->tokensDropUnknown) {
             $tokens = array_intersect($tokens, $this->configure->knownTokens());
@@ -52,22 +52,20 @@ class Tokenizer
         return $prefix;
     }
 
-    private function extractAuthor(array &$tokens)
+    public static function extractAuthor(array &$tokens, array $knownAuthors, $predefinedAuthor = null)
     {
         $author = null;
         foreach ($tokens as $index => $token) {
-            if ((preg_match('/^[A-Z]{3}$/', $token) && !in_array($token, array('IMG', 'DSC')))
-                || in_array($token, $this->configure->knownAuthors())
-            ) {
+            if ((preg_match('/^[A-Z]{3}$/', $token) && !in_array($token, array('IMG', 'DSC'))) || in_array($token, $knownAuthors)) {
                 unset($tokens[$index]);
                 $author = $token;
                 break;
             }
         }
-        if ('' === $this->configure->author) {
+        if ('' === $predefinedAuthor) {
             $author = null;
-        } elseif (is_string($this->configure->author)) {
-            $author = $this->configure->author;
+        } elseif (is_string($predefinedAuthor)) {
+            $author = $predefinedAuthor;
         }
         $tokens = array_values($tokens);
         return $author;
