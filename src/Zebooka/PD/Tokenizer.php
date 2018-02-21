@@ -24,7 +24,7 @@ class Tokenizer
                 }
             )
         );
-        $prefix = $this->extractPrefix($tokens);
+        $prefix = self::extractPrefix($tokens);
         list($datetime, $shot) = $this->extractDateTimeShot($tokens, $exifDateTime);
         if (null === $datetime) {
             throw new TokenizerException('Unable to detect date/time.', TokenizerException::NO_DATE_TIME_DETECTED);
@@ -42,7 +42,7 @@ class Tokenizer
         return new Tokens($datetime, $tokens, $author, $camera, $prefix, $shot);
     }
 
-    private function extractPrefix(array &$tokens)
+    public static function extractPrefix(array &$tokens)
     {
         $prefix = null;
         if (preg_match('/^[A-Z]{1}$/', reset($tokens))) {
