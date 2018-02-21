@@ -30,7 +30,7 @@ class Tokenizer
             throw new TokenizerException('Unable to detect date/time.', TokenizerException::NO_DATE_TIME_DETECTED);
         }
         $author = self::extractAuthor($tokens, $this->configure->knownAuthors(), $this->configure->author);
-        $camera = $this->extractCamera($tokens, $exifCamera);
+        $camera = self::extractCamera($tokens, $this->configure->knownCameras(), $exifCamera);
         if ($this->configure->tokensDropUnknown) {
             $tokens = array_intersect($tokens, $this->configure->knownTokens());
         }
@@ -71,11 +71,11 @@ class Tokenizer
         return $author;
     }
 
-    private function extractCamera(array &$tokens, $exifCamera)
+    public static function extractCamera(array &$tokens,  array $knownCameras, $exifCamera = null)
     {
         $camera = ($exifCamera ?: null);
         foreach ($tokens as $index => $token) {
-            if (in_array($token, $this->configure->knownCameras())) {
+            if (in_array($token, $knownCameras)) {
                 unset($tokens[$index]);
                 $camera = $token;
                 break;
