@@ -8,7 +8,7 @@ set_error_handler(
     }
 );
 set_exception_handler(
-    function (\Exception $e) {
+    function (\Throwable $e) {
         if (isset($GLOBALS['logger']) && $GLOBALS['logger'] instanceof \Monolog\Logger) {
             $GLOBALS['logger']->addCritical($e);
         } else {
