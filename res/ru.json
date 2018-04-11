@@ -1,6 +1,6 @@
 {
-    "appName": "ФОТОСНИМКОВ СКАЧИВАТЕЛЬ 3 | версия: {0} | дата: {1}",
-    "copyrightInfo": "(c) 2014, Антон Бондарь <anton@zebooka.com> http://zebooka.com/soft/LICENSE/",
+    "appName": "ФОТОСНИМКОВ СКАЧИВАТЕЛЬ 4 | версия: {0} | дата: {1}",
+    "copyrightInfo": "(c) 2018, Антон Бондарь <anton@zebooka.com> http://zebooka.com/soft/LICENSE/",
     "createdDestinationDir": "Создана директория ''{0}''.",
     "currentConfiguration": "ТЕКУЩАЯ КОНФИГУРАЦИЯ:",
     "error/exifAnalyzer/differentCameras": "Файлы не обработаны, так как согласно Exif профилям отсняты на разные камеры.",
