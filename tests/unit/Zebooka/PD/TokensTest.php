@@ -2,8 +2,15 @@
 
 namespace Zebooka\PD;
 
-class TokensTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class TokensTest extends TestCase
 {
+    public function tearDown()
+    {
+        \Mockery::close();
+    }
+
     /**
      * @return Configure
      */
@@ -121,10 +128,11 @@ class TokensTest extends \PHPUnit_Framework_TestCase
 
     public function test_failure_with_unsupported_date_time_value_type()
     {
-        $this->setExpectedException(
-            '\\InvalidArgumentException',
-            'Date/time parameter is invalid.',
-            Tokens::ERROR_NO_DATE_TIME
+        $this->expectExceptionObject(
+            new \InvalidArgumentException(
+                'Date/time parameter is invalid.',
+                Tokens::ERROR_NO_DATE_TIME
+            )
         );
         new Tokens(null);
     }

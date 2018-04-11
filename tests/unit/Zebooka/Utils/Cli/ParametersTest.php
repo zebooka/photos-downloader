@@ -2,7 +2,9 @@
 
 namespace Zebooka\Utils\Cli;
 
-class ParametersTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class ParametersTest extends TestCase
 {
     public function test_parameters_parsed()
     {

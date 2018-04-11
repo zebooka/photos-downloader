@@ -2,8 +2,15 @@
 
 namespace Zebooka\PD;
 
-class AssemblerTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class AssemblerTest extends TestCase
 {
+    public function tearDown()
+    {
+        \Mockery::close();
+    }
+
     private function resourceDirectory()
     {
         return realpath(__DIR__ . '/../../../res/assembler');

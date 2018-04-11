@@ -2,8 +2,15 @@
 
 namespace Zebooka\PD;
 
-class LoggerFactoryTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class LoggerFactoryTest extends TestCase
 {
+    public function tearDown()
+    {
+        \Mockery::close();
+    }
+
     public function test_factory()
     {
         $configure = \Mockery::mock('\\Zebooka\\PD\\Configure');

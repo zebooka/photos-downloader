@@ -2,8 +2,15 @@
 
 namespace Zebooka\PD;
 
-class TokenizerIntegrationTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class TokenizerIntegrationTest extends TestCase
 {
+    public function tearDown()
+    {
+        \Mockery::close();
+    }
+
     private function realConfigure()
     {
         return new \Zebooka\PD\Configure(

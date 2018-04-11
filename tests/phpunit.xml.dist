@@ -3,11 +3,13 @@
          convertErrorsToExceptions="true"
          convertNoticesToExceptions="true"
          convertWarningsToExceptions="true"
+         convertDeprecationsToExceptions="true"
          forceCoversAnnotation="false"
          mapTestClassNameToCoveredClassName="false"
          processIsolation="false"
          stopOnError="true"
          stopOnFailure="true"
+         stopOnWarning="true"
          stopOnIncomplete="false"
          stopOnSkipped="false"
          >

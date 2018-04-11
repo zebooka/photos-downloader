@@ -2,9 +2,10 @@
 
 namespace Zebooka\PD\Tokenizer;
 
+use PHPUnit\Framework\TestCase;
 use Zebooka\PD\Tokenizer;
 
-class AuthorTest extends \PHPUnit_Framework_TestCase
+class AuthorTest extends TestCase
 {
     public function test_extractAuthor_long()
     {

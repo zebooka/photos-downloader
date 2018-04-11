@@ -2,7 +2,9 @@
 
 namespace Zebooka\PD;
 
-class ScannerTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class ScannerTest extends TestCase
 {
     private $oldcwd;
 

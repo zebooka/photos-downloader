@@ -4,11 +4,17 @@ namespace Zebooka\PD;
 
 use Mockery\MockInterface;
 use Monolog\Logger;
+use PHPUnit\Framework\TestCase;
 use Zebooka\Translator\Translator;
 use Zebooka\Utils\Executor;
 
-class ProcessorTest extends \PHPUnit_Framework_TestCase
+class ProcessorTest extends TestCase
 {
+    public function tearDown()
+    {
+        \Mockery::close();
+    }
+
     private function resourceDirectory()
     {
         return __DIR__ . '/../../../res/processor';

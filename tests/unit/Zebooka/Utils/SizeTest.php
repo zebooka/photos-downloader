@@ -2,7 +2,9 @@
 
 namespace Zebooka\Utils;
 
-class SizeTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class SizeTest extends TestCase
 {
     public function test_decimal()
     {

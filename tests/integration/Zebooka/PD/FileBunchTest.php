@@ -2,7 +2,9 @@
 
 namespace Zebooka\PD;
 
-class FileBunchTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class FileBunchTest extends TestCase
 {
     private function resourceDirectory()
     {
@@ -80,10 +82,11 @@ class FileBunchTest extends \PHPUnit_Framework_TestCase
 
     public function test_failure_on_empty_extensions()
     {
-        $this->setExpectedException(
-            '\\InvalidArgumentException',
-            'Empty primaryExtensions list passed.',
-            FileBunch::ERROR_EMPTY_EXTENSIONS
+        $this->expectExceptionObject(
+            new \InvalidArgumentException(
+                'Empty primaryExtensions list passed.',
+                FileBunch::ERROR_EMPTY_EXTENSIONS
+            )
         );
         new FileBunch('unique-bunchId', array());
     }

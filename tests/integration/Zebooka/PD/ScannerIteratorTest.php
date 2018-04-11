@@ -2,7 +2,9 @@
 
 namespace Zebooka\PD;
 
-class ScannerIteratorTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class ScannerIteratorTest extends TestCase
 {
     private function resourceDirectory()
     {

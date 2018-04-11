@@ -2,8 +2,15 @@
 
 namespace Zebooka\PD;
 
-class TokenizerTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class TokenizerTest extends TestCase
 {
+    public function tearDown()
+    {
+        \Mockery::close();
+    }
+
     /**
      * @return Configure
      */
@@ -183,10 +190,11 @@ class TokenizerTest extends \PHPUnit_Framework_TestCase
 
     public function test_tokenize_incorrect_date()
     {
-        $this->setExpectedException(
-            '\\Zebooka\\PD\\TokenizerException',
-            'Unable to detect date/time.',
-            TokenizerException::NO_DATE_TIME_DETECTED
+        $this->expectExceptionObject(
+            new TokenizerException(
+                'Unable to detect date/time.',
+                TokenizerException::NO_DATE_TIME_DETECTED
+            )
         );
         $fileBunch = $this->fileBunch('0YM4DD_H1M2S3');
         $tokenizer = new Tokenizer($this->configure(), $this->exifAnalyzer($fileBunch, null, null));
@@ -196,10 +204,11 @@ class TokenizerTest extends \PHPUnit_Framework_TestCase
 
     public function test_tokenize_failure_with_incorrect_dates_with_placeholders()
     {
-        $this->setExpectedException(
-            '\\Zebooka\\PD\\TokenizerException',
-            'Unable to detect date/time.',
-            TokenizerException::NO_DATE_TIME_DETECTED
+        $this->expectExceptionObject(
+            new TokenizerException(
+                'Unable to detect date/time.',
+                TokenizerException::NO_DATE_TIME_DETECTED
+            )
         );
         $fileBunch = $this->fileBunch('YYYY_123');
         $exifAnalyzer = $this->exifAnalyzer($fileBunch, null, null);
@@ -209,10 +218,11 @@ class TokenizerTest extends \PHPUnit_Framework_TestCase
 
     public function test_tokenize_failure_with_incorrect_dates_with_placeholders_2()
     {
-        $this->setExpectedException(
-            '\\Zebooka\\PD\\TokenizerException',
-            'Unable to detect date/time.',
-            TokenizerException::NO_DATE_TIME_DETECTED
+        $this->expectExceptionObject(
+            new TokenizerException(
+                'Unable to detect date/time.',
+                TokenizerException::NO_DATE_TIME_DETECTED
+            )
         );
         $fileBunch = $this->fileBunch('1508DD_123');
         $exifAnalyzer = $this->exifAnalyzer($fileBunch, null, null);

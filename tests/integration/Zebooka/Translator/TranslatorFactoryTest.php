@@ -2,7 +2,9 @@
 
 namespace Zebooka\Translator;
 
-class TranslatorFactoryTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class TranslatorFactoryTest extends TestCase
 {
     private function resourceDirectory()
     {

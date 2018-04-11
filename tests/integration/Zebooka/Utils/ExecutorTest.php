@@ -2,7 +2,9 @@
 
 namespace Zebooka\Utils;
 
-class ExecutorTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class ExecutorTest extends TestCase
 {
     public function test_execute_ok()
     {

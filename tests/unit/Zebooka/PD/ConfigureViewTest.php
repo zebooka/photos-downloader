@@ -2,8 +2,15 @@
 
 namespace Zebooka\PD;
 
-class ConfigureViewTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class ConfigureViewTest extends TestCase
 {
+    public function tearDown()
+    {
+        \Mockery::close();
+    }
+
     public function test_rendering()
     {
         $configure = \Mockery::mock('\\Zebooka\\PD\\Configure')

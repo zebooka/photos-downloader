@@ -2,7 +2,9 @@
 
 namespace Zebooka\PD;
 
-class ConfigureTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class ConfigureTest extends TestCase
 {
     public function test_has_parameters_with_required_values()
     {

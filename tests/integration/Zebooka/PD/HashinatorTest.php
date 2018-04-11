@@ -2,7 +2,9 @@
 
 namespace Zebooka\PD;
 
-class HashinatorTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class HashinatorTest extends TestCase
 {
     private function resourceDirectory()
     {
@@ -27,10 +29,11 @@ class HashinatorTest extends \PHPUnit_Framework_TestCase
 
     public function test_failure_if_file_not_found()
     {
-        $this->setExpectedException(
-            '\\UnexpectedValueException',
-            'One of compared file is not readable.',
-            Hashinator::ERROR_FILE_NOT_READABLE
+        $this->expectExceptionObject(
+            new \UnexpectedValueException(
+                'One of compared file is not readable.',
+                Hashinator::ERROR_FILE_NOT_READABLE
+            )
         );
         $hashinator = new Hashinator();
         $hashinator->equal(

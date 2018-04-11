@@ -2,9 +2,10 @@
 
 namespace Zebooka\PD\Tokenizer;
 
+use PHPUnit\Framework\TestCase;
 use Zebooka\PD\Tokenizer;
 
-class PrefixTest extends \PHPUnit_Framework_TestCase
+class PrefixTest extends TestCase
 {
     public function test_extractPrefix_first_capital_symbol()
     {

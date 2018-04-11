@@ -2,8 +2,15 @@
 
 namespace Zebooka\PD;
 
-class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class ExifAnalyzerTest extends TestCase
 {
+    public function tearDown()
+    {
+        \Mockery::close();
+    }
+
     /**
      * @return Configure
      */
@@ -137,10 +144,11 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
         $exif2->DateTimeOriginal = '2007-04-21 23:00:00';
         $exifs = array($exif1, $exif2);
         $analyzer = new ExifAnalyzer($this->realConfigure());
-        $this->setExpectedException(
-            '\\Zebooka\\PD\\ExifAnalyzerException',
-            'Files have 2 unique date/time values.',
-            ExifAnalyzerException::DIFFERENT_DATES
+        $this->expectExceptionObject(
+            new ExifAnalyzerException(
+                'Files have 2 unique date/time values.',
+                ExifAnalyzerException::DIFFERENT_DATES
+            )
         );
         $analyzer->extractDateTimeCameraTokens($this->fileBunch($exifs));
     }
@@ -155,10 +163,11 @@ class ExifAnalyzerTest extends \PHPUnit_Framework_TestCase
         $exif2->Model = 'NIKON D700';
         $exifs = array($exif1, $exif2);
         $analyzer = new ExifAnalyzer($this->realConfigure());
-        $this->setExpectedException(
-            '\\Zebooka\\PD\\ExifAnalyzerException',
-            'Files have 2 unique detected cameras.',
-            ExifAnalyzerException::DIFFERENT_CAMERAS
+        $this->expectExceptionObject(
+            new ExifAnalyzerException(
+                'Files have 2 unique detected cameras.',
+                ExifAnalyzerException::DIFFERENT_CAMERAS
+            )
         );
         $analyzer->extractDateTimeCameraTokens($this->fileBunch($exifs));
     }

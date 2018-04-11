@@ -2,7 +2,9 @@
 
 namespace Zebooka\Translator;
 
-class TranslatorTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class TranslatorTest extends TestCase
 {
     public function test_en_icu_translations()
     {
@@ -40,7 +42,12 @@ class TranslatorTest extends \PHPUnit_Framework_TestCase
 
     public function test_failure_on_malformed_icu_string()
     {
-        $this->setExpectedException('\\RuntimeException', 'ICU translation creation failed.', Translator::ERROR_ICU_CREATION_FAILED);
+        $this->expectExceptionObject(
+            new \RuntimeException(
+                'ICU translation creation failed.',
+                Translator::ERROR_ICU_CREATION_FAILED
+            )
+        );
         $translator = new Translator(
             array('badTranslation' => 'We have {0, plural, one {# bad translation'),
             'en'

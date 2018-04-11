@@ -2,8 +2,15 @@
 
 namespace Zebooka\PD;
 
-class InfraTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class InfraTest extends TestCase
 {
+    public function tearDown()
+    {
+        \Mockery::close();
+    }
+
     private function exif($strtotime)
     {
         /** @var Exif $exif */

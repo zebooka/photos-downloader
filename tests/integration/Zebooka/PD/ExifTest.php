@@ -2,7 +2,9 @@
 
 namespace Zebooka\PD;
 
-class ExifTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class ExifTest extends TestCase
 {
     private function resourceDirectory()
     {
@@ -12,14 +14,14 @@ class ExifTest extends \PHPUnit_Framework_TestCase
     public function test_not_existing_file()
     {
         $filename = $this->resourceDirectory() . '/not-existing.jpg';
-        $this->setExpectedException('\\InvalidArgumentException', 'File \'' . $filename . '\' not found or is not readable.');
+        $this->expectExceptionObject(new \InvalidArgumentException('File \'' . $filename . '\' not found or is not readable.'));
         new Exif($filename);
     }
 
     public function test_failing_exiftool()
     {
         $filename = $this->resourceDirectory() . '/bad.jpg';
-        $this->setExpectedException('\\RuntimeException', 'ExifTool failed with code #1.');
+        $this->expectExceptionObject(new \RuntimeException('ExifTool failed with code #1.'));
         new Exif($filename);
     }
 
