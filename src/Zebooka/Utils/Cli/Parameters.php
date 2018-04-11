@@ -21,8 +21,10 @@ class Parameters
     public static function createFromArgv(array $argv, array $reqvals = array(), array $multiple = array(), array $aliases = array())
     {
         $parameters = array();
-        reset($argv);
-        while (list(, $p) = each($argv)) {
+        $argv = array_values($argv);
+        for ($k = 0, $l = count($argv); $k < $l; $k++)
+        {
+            $p = $argv[$k];
             if ($p[0] == '-' && $p != '-' && $p != '--') {
                 $pname = substr($p, 1);
                 $value = true;
@@ -38,11 +40,12 @@ class Parameters
                     // replace alias with original name
                     $pname = $aliases[$pname];
                 }
-                $nextparam = current($argv);
+                $nextparam = isset($argv[$k + 1]) ? $argv[$k + 1] : false;
                 if ($value === true && in_array($pname, $reqvals)) {
                     if ($nextparam !== false) {
                         // next param is value
-                        list(, $value) = each($argv);
+                        $k++;
+                        $value = $argv[$k];
                     } else {
                         // required value for option not found
                         $value = false;
@@ -59,8 +62,8 @@ class Parameters
             } else {
                 if ($p == '--') {
                     // all next params are not parsed
-                    while (list(, $p) = each($argv)) {
-                        $parameters[] = $p;
+                    while ($k + 1 < $l) {
+                        $parameters[] = $argv[++$k];
                     }
                 } else {
                     // param doesn't belong to any option
