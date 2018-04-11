@@ -10,7 +10,7 @@ exiftool:
 
 composer:
 	composer -v install --no-dev && \
-	COMPOSER_VENDOR_DIR="vendor-dev" composer -v install --dev
+	COMPOSER_VENDOR_DIR="vendor-dev" composer -v install
 
 test:
 	./tests/run.sh
