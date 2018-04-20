@@ -88,7 +88,18 @@ class Tokenizer
     public static function extractDateTimeShot(array &$tokens, $exifDateTime, $preferExifDateTime = false)
     {
         $datetime = (null !== $exifDateTime ? $exifDateTime : null);
-        $shot = null;
+        $shot = $timeshift = null;
+
+        // if tokes have vlc, drop original extension from tokens and detect timeshift
+        if (self::hasVlcInTokens($tokens)) {
+            $result = self::detectVlcShift($tokens);
+            if (is_array($result) && count($result) == 2) {
+                list($timeshift, $shot) = $result;
+            } elseif (is_array($result) && count($result) == 1) {
+                list($timeshift,) = $result;
+            }
+        }
+
         foreach ($tokens as $index => $token) {
             $result = self::detectClassicDateTime($token, $index, $tokens)
                 ?: self::detectDashedCombinedDateTime($token, $index, $tokens)
@@ -96,12 +107,20 @@ class Tokenizer
                         ?: self::detectSJCamDateShot($token, $index, $tokens)
                             ?: self::detectFilmDateShot($token, $index, $tokens);
 
-            if ($result) {
+            if (is_array($result) && count($result) == 2) {
                 list($datetime, $shot) = $result;
+                break;
+            } elseif (is_array($result) && count($result) == 1) {
+                list($datetime,) = $result;
                 break;
             }
         }
         $tokens = array_values($tokens);
+
+        if (is_numeric($datetime) && $timeshift) {
+            // shift datetime using VLC video timestamp
+            $datetime = strtotime($timeshift, $datetime);
+        }
 
         if (null !== $exifDateTime && $preferExifDateTime) {
             $datetime = $exifDateTime;
@@ -218,5 +237,74 @@ class Tokenizer
             return array($datetime, $shot);
         }
         return false;
+    }
+
+    public static function hasVlcInTokens(array $tokens)
+    {
+        foreach ($tokens as $token) {
+            if (preg_match('/^vlc(snap)?$/i', $token)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static function clearOfVlcTokens(array &$tokens)
+    {
+        foreach ($tokens as $i => $token) {
+            if (preg_match('/^vlc(snap)?$/i', $token)) {
+                unset($tokens[$i]);
+            }
+        }
+        $tokens = array_values($tokens);
+    }
+
+    public static function detectVlcShift(array &$tokens)
+    {
+        // step 1 - rename video files using this tool
+        // step 2 - set VLS configure for snapshots to "vlc_$N_$T_" and continuons nummeration
+        // step 3 - run this tool again
+
+        $timeshift = $shot = $slicePosition = null;
+        $videoExtensionsRegExp = '/^(.*)\.(' . implode('|', array_map('preg_quote', Scanner::supportedVideoExtensions())) . ')$/i';
+        // firstly, clear vlc or vlcsnap token
+        foreach ($tokens as $i => $token) {
+            if (preg_match('/^vlc(snap)?$/i', $token)) {
+                unset($tokens[$i]);
+            }
+        }
+        $tokens = array_values($tokens);
+        // secondly, search for .EXT in tokens
+        foreach ($tokens as $i => $token) {
+            if (preg_match($videoExtensionsRegExp, $token, $matches)) {
+                $tokens[$i] = $matches[1];
+                $slicePosition = $i + 1;
+                break;
+            }
+        }
+        if (isset($slicePosition)) {
+            // if we found video extension inside some token, then all tokens after are purely VLC naming data
+            $vlcTokens = array_values(array_slice($tokens, $slicePosition));
+            $tokens = array_values(array_slice($tokens, 0, $slicePosition));
+
+            foreach ($vlcTokens as $index => $token) {
+                if (isset($vlcTokens[$index + 1]) && isset($vlcTokens[$index + 2])
+                    && preg_match('/^([0-9]{2})$/', $vlcTokens[$index])
+                    && preg_match('/^([0-9]{2})$/', $vlcTokens[$index + 1])
+                    && preg_match('/^([0-9]{2})$/', $vlcTokens[$index + 2])
+                ) {
+                    $timeshift = "+ {$vlcTokens[$index]} hours {$vlcTokens[$index + 1]} minutes {$vlcTokens[$index + 2]} seconds";
+                    if (isset($vlcTokens[$index + 3]) && preg_match('/^([0-9]+)$/', $vlcTokens[$index + 3])) {
+                        $shot = $vlcTokens[$index + 3];
+                    }
+                }
+            }
+        }
+
+        if (isset($shot)) {
+            return array($timeshift, $shot);
+        } else {
+            return array($timeshift);
+        }
     }
 }

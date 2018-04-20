@@ -26,6 +26,14 @@ You need `composer` to build photos downloader tool.
 You need to install `exiftool` (version ≥ 9.33) as well. This program is used to read exif from photos.
 
 
+VLC Media Player (VideoLAN Client)
+----------------------------------
+
+In order to process snapshots from VLC, you need to change its configure slightly. Go to settings and in `Video` section set `Video snapshots -> Prefix` option to `vlc_$N_$T_` and check `Sequential numbering` option.
+
+**Important!** Before taking snapshots you need to process video files with this tool in order to rename them to correct format. This is needed for VLC to save original filename in snapshot file name, because snapshots do not have EXIF metadata and this tool will be unable to detect date/time, camera and author name.
+
+
 Usage
 -----
 
@@ -67,7 +75,7 @@ Algorythm
 
 1. Create two heaps — one for directories list, one for files list.
 2. If one of from paths was dash "-" and both heaps are empty, then read line from STDIN and add this file/directory to its heap.
-3. If files heap is empty, then take directory from directories heap and scan it. Add files/directories to their heaps. Do this until file heap is empty or no more directories left in their hep. If no-recursive option is set, then found directories are not added to their heap. Also directories are added to the beginning of their heap.
+3. If files heap is empty, then take directory from directories heap and scan it. Add files/directories to their heaps. Do this until file heap is empty or no more directories left in their heap. If no-recursive option is set, then found directories are not added to their heap. Also directories are added to the beginning of their heap.
 4. Take file (or photo bunch) from files heap and process it. Photo bunch is a set of files with same basename, but different extensions. They are processed simultaneously and moved/copied at once.
 5. Guess camera and date/time from file exif. If these parameters differ for photos in photo bunch, then issue a warning and skip this photo bunch (unless special -B flag is set).
 6. Analyze basename of file (photo bunch) and guess date/time, shot, author, camera, known tokens, other tokens from it.
