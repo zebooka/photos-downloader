@@ -70,6 +70,8 @@
     "usage/parameters": "PARAMETERS",
     "usage/parameterValue/from": "PATH",
     "usage/parameterValue/to": "PATH",
+    "vlcHeader": "VLC MEDIA PLAYER:",
+    "vlcNotice": "In order to process snapshots from VLC, you need to change its configure slightly. Go to settings and in 'Video' section set 'Video snapshots' -> 'Prefix' option to 'vlc_$N_$T_' and check 'Sequential numbering' option.\n\nIMPORTANT! Before taking snapshots you need to process video files with this tool in order to rename them to correct format. This is needed for VLC to save original filename in snapshot file name, because snapshots do not have EXIF metadata and this tool will be unable to detect date/time, camera and author name.",
     "xBytesProcessed": "{0} processed.",
     "xFilesProcessed": "{0, plural, one {# file} other {# files}} processed.",
     "z": "The End!"

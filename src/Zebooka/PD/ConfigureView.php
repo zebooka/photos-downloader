@@ -26,6 +26,8 @@ class ConfigureView
             $this->parameters() .
             PHP_EOL . PHP_EOL .
             $this->currentConfiguration() .
+            PHP_EOL . PHP_EOL .
+            $this->vlcNotice() .
             PHP_EOL;
     }
 
@@ -71,6 +73,16 @@ class ConfigureView
         return
             $this->translator->translate('currentConfiguration') . PHP_EOL .
             $this->indent() . implode(' ', $this->configure->argv());
+    }
+
+    private function vlcNotice()
+    {
+        $maxWidth = max(0, $this->screenWidth - 2 * mb_strlen($this->indent()));
+        $notice = explode("\n", $this->translator->translate('vlcNotice'));
+        $lines = $this->wrapAndPadList($notice, $maxWidth);
+        return
+            $this->translator->translate('vlcHeader') . PHP_EOL .
+            $this->mergeTwoPaddedLists($lines, [], str_repeat(' ', $maxWidth), '');
     }
 
     private function extractParametersWithDescriptions()
@@ -120,6 +132,11 @@ class ConfigureView
         );
     }
 
+    /**
+     * @param array $list
+     * @param $width
+     * @return array
+     */
     private function wrapAndPadList(array $list, $width)
     {
         return array_map(
@@ -163,6 +180,8 @@ class ConfigureView
             PHP_EOL,
             array_map(
                 function ($a, $b) use ($indent, $aPadString, $bPadString) {
+                    $a = is_array($a) ? $a : [];
+                    $b = is_array($b) ? $b : [];
                     $lines = max(count($a), count($b));
                     while (count($a) < $lines) {
                         $a[] = $aPadString;
