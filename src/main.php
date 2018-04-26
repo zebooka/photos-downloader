@@ -33,7 +33,7 @@ $logger = \Zebooka\PD\LoggerFactory::logger($configure);
 
 // get locale
 $locale = 'en';
-foreach (array(LC_ALL, LC_COLLATE, LC_CTYPE, LC_MESSAGES) as $lc) {
+foreach ([LC_ALL, LC_COLLATE, LC_CTYPE, LC_MESSAGES] as $lc) {
     if (preg_match('/^([a-z]{2})(_|$)/i', setlocale($lc, 0))) {
         $locale = setlocale($lc, 0);
         break;
@@ -47,13 +47,12 @@ $translator = \Zebooka\Translator\TranslatorFactory::translator(__DIR__ . '/../r
 $version = trim(file_get_contents(__DIR__ . '/../res/VERSION'));
 $logger->addInfo($translator->translate('appName', array(VERSION, $version)));
 $logger->addInfo($translator->translate('copyrightInfo'));
+$view = new \Zebooka\PD\ConfigureView($configure, $translator, \Zebooka\Utils\Cli\Size::getTerminalWidth() ?: 80);
 
 if ($configure->help || 1 === count($_SERVER['argv'])) {
-    $view = new \Zebooka\PD\ConfigureView($configure, $translator, \Zebooka\Utils\Cli\Size::getTerminalWidth() ?: 80);
     $logger->addInfo($view->render());
     exit(0);
 } else {
-    $view = new \Zebooka\PD\ConfigureView($configure, $translator, \Zebooka\Utils\Cli\Size::getTerminalWidth() ?: 80);
     $logger->addInfo($view->renderConfiguration());
 }
 

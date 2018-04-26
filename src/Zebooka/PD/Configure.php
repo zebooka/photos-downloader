@@ -105,7 +105,7 @@ class Configure
         $this->simulate = !empty($argv->{self::P_SIMULATE});
         $this->saveCommandsFile = (array_key_exists(self::P_SAVE_COMMANDS_FILE, $argv)
             ? strval($argv->{self::P_SAVE_COMMANDS_FILE})
-            : sys_get_temp_dir() . '/photos-downloader-' . substr(base64_encode(md5(time() . rand(0, 1000000000))), 0, 7) . '.log');
+            : sys_get_temp_dir() . '/photos-downloader-' . date('Ymd-Hi') . substr(base64_encode(md5(time() . rand(0, 1000000000))), 0, 7) . '.log');
         $this->limit = (array_key_exists(self::P_LIMIT, $argv) ? intval($argv->{self::P_LIMIT}) : $this->limit);
         $this->recursive = empty($argv->{self::P_NO_RECURSIVE});
         $this->from = (array_key_exists(self::P_FROM, $argv) ? $argv->{self::P_FROM} : $this->from);
