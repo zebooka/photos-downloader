@@ -16,7 +16,7 @@ class ExifAnalyzerTest extends TestCase
      */
     private function configure()
     {
-        return \Mockery::mock('\\Zebooka\\PD\\Configure');
+        return \Mockery::mock(Configure::class);
     }
 
     private function realConfigure()
@@ -33,7 +33,7 @@ class ExifAnalyzerTest extends TestCase
      */
     private function fileBunch(array $exifs)
     {
-        return \Mockery::mock('\\Zebooka\\PD\\FileBunch')
+        return \Mockery::mock(FileBunch::class)
             ->shouldReceive('exifs')
             ->withNoArgs()
             ->atMost()
@@ -55,7 +55,7 @@ class ExifAnalyzerTest extends TestCase
         );
         foreach ($datetimeProperties as $datetimeProperty) {
             /** @var Exif $exif */
-            $exif = \Mockery::mock('\\Zebooka\\PD\\Exif');
+            $exif = \Mockery::mock(Exif::class);
             $exif->{$datetimeProperty} = $datetime;
             $analyzer = new ExifAnalyzer($this->realConfigure());
             list($detectedDateTime) = $analyzer->extractDateTimeCameraTokens($this->fileBunch(array($exif)));
@@ -69,7 +69,7 @@ class ExifAnalyzerTest extends TestCase
 
         // if difference is not large, we use DateTimeOriginal
         $replacedWithGps = false;
-        $exif = \Mockery::mock('\\Zebooka\\PD\\Exif');
+        $exif = \Mockery::mock(Exif::class);
         $exif->GPSDateTime = '2007-04-17 16:00:00';
         $exif->DateTimeOriginal = $datetime = '2007-04-17 16:00:10';
         list($detectedDateTime, , , $replacedWithGps) = $analyzer->extractDateTimeCameraTokens($this->fileBunch(array($exif)));
@@ -82,7 +82,7 @@ class ExifAnalyzerTest extends TestCase
 
         // if difference is large, we use GPSDateTime
         $replacedWithGps = false;
-        $exif = \Mockery::mock('\\Zebooka\\PD\\Exif');
+        $exif = \Mockery::mock(Exif::class);
         $exif->GPSDateTime = $datetime = '2007-04-17 16:00:00';
         $exif->DateTimeOriginal = '2007-04-17 17:00:00';
         list($detectedDateTime, , , $replacedWithGps) = $analyzer->extractDateTimeCameraTokens($this->fileBunch(array($exif)));
@@ -99,7 +99,7 @@ class ExifAnalyzerTest extends TestCase
         foreach ($this->camerasExifsProperties() as $exifProperiesAndCamera) {
             list ($camera, $exifProperies) = $exifProperiesAndCamera;
             /** @var Exif $exif */
-            $exif = \Mockery::mock('\\Zebooka\\PD\\Exif');
+            $exif = \Mockery::mock(Exif::class);
             foreach ($exifProperies as $property => $value) {
                 $exif->{$property} = $value;
             }
@@ -114,7 +114,7 @@ class ExifAnalyzerTest extends TestCase
         foreach ($this->tokensExifsProperties() as $exifProperiesAndTokens) {
             list ($tokens, $exifProperies) = $exifProperiesAndTokens;
             /** @var Exif $exif */
-            $exif = \Mockery::mock('\\Zebooka\\PD\\Exif');
+            $exif = \Mockery::mock(Exif::class);
             foreach ($exifProperies as $property => $value) {
                 $exif->{$property} = $value;
             }
@@ -127,7 +127,7 @@ class ExifAnalyzerTest extends TestCase
     public function test_detection_array()
     {
         /** @var Exif $exif */
-        $exif = \Mockery::mock('\\Zebooka\\PD\\Exif');
+        $exif = \Mockery::mock(Exif::class);
         $analyzer = new ExifAnalyzer($this->realConfigure());
         $detected = $analyzer->extractDateTimeCameraTokens($this->fileBunch(array($exif)));
         $this->assertInternalType('array', $detected);
@@ -137,10 +137,10 @@ class ExifAnalyzerTest extends TestCase
     public function test_failure_different_datetimes()
     {
         /** @var Exif $exif1 */
-        $exif1 = \Mockery::mock('\\Zebooka\\PD\\Exif');
+        $exif1 = \Mockery::mock(Exif::class);
         $exif1->DateTimeOriginal = '2007-04-17 16:00:00';
         /** @var Exif $exif2 */
-        $exif2 = \Mockery::mock('\\Zebooka\\PD\\Exif');
+        $exif2 = \Mockery::mock(Exif::class);
         $exif2->DateTimeOriginal = '2007-04-21 23:00:00';
         $exifs = array($exif1, $exif2);
         $analyzer = new ExifAnalyzer($this->realConfigure());
@@ -156,10 +156,10 @@ class ExifAnalyzerTest extends TestCase
     public function test_failure_different_cameras()
     {
         /** @var Exif $exif1 */
-        $exif1 = \Mockery::mock('\\Zebooka\\PD\\Exif');
+        $exif1 = \Mockery::mock(Exif::class);
         $exif1->Model = 'HTC Desire S';
         /** @var Exif $exif2 */
-        $exif2 = \Mockery::mock('\\Zebooka\\PD\\Exif');
+        $exif2 = \Mockery::mock(Exif::class);
         $exif2->Model = 'NIKON D700';
         $exifs = array($exif1, $exif2);
         $analyzer = new ExifAnalyzer($this->realConfigure());
@@ -176,10 +176,10 @@ class ExifAnalyzerTest extends TestCase
     {
         foreach (array('a', 'b', 'c', 'd') as $customSettingsBank) {
             /** @var Exif $exif1 */
-            $exif1 = \Mockery::mock('\\Zebooka\\PD\\Exif');
+            $exif1 = \Mockery::mock(Exif::class);
             $exif1->Model = 'NIKON D700';
             /** @var Exif $exif2 */
-            $exif2 = \Mockery::mock('\\Zebooka\\PD\\Exif');
+            $exif2 = \Mockery::mock(Exif::class);
             $exif2->Model = 'NIKON D700';
             $exif2->CustomSettingsBank = $customSettingsBank;
             $exifs = array($exif1, $exif2);
@@ -194,11 +194,11 @@ class ExifAnalyzerTest extends TestCase
         $configure = $this->realConfigure();
         $configure->compareExifs = false;
         /** @var Exif $exif1 */
-        $exif1 = \Mockery::mock('\\Zebooka\\PD\\Exif');
+        $exif1 = \Mockery::mock(Exif::class);
         $exif1->DateTimeOriginal = '2007-04-17 16:00:00';
         $exif1->Model = 'HTC Desire S';
         /** @var Exif $exif2 */
-        $exif2 = \Mockery::mock('\\Zebooka\\PD\\Exif');
+        $exif2 = \Mockery::mock(Exif::class);
         $exif2->DateTimeOriginal = '2007-04-21 23:00:00';
         $exif2->Model = 'NIKON D700';
         $exifs = array($exif1, $exif2);
@@ -211,9 +211,9 @@ class ExifAnalyzerTest extends TestCase
     public function test_no_failure_when_detected_thing_is_null()
     {
         /** @var Exif $exif1 */
-        $exif1 = \Mockery::mock('\\Zebooka\\PD\\Exif');
+        $exif1 = \Mockery::mock(Exif::class);
         /** @var Exif $exif2 */
-        $exif2 = \Mockery::mock('\\Zebooka\\PD\\Exif');
+        $exif2 = \Mockery::mock(Exif::class);
         $exif2->DateTimeOriginal = '2007-04-21 23:00:00';
         $exif2->Model = 'NIKON D700';
         $exif2->Software = 'Snapseed';
@@ -277,7 +277,7 @@ class ExifAnalyzerTest extends TestCase
     public function test_detectTokenIds_null()
     {
         /** @var Exif $exif */
-        $exif = \Mockery::mock('\\Zebooka\\PD\\Exif');
+        $exif = \Mockery::mock(Exif::class);
 
         $tokensConfig = array();
         $token = ExifAnalyzer::detectTokenIds($exif, $tokensConfig, false);
@@ -287,7 +287,7 @@ class ExifAnalyzerTest extends TestCase
     public function test_detectTokenIds_empty()
     {
         /** @var Exif $exif */
-        $exif = \Mockery::mock('\\Zebooka\\PD\\Exif');
+        $exif = \Mockery::mock(Exif::class);
 
         $tokensConfig = array();
         $tokens = ExifAnalyzer::detectTokenIds($exif, $tokensConfig, true);
@@ -297,11 +297,11 @@ class ExifAnalyzerTest extends TestCase
     public function test_detectTokenIds_single()
     {
         /** @var Exif $exif1 */
-        $exif1 = \Mockery::mock('\\Zebooka\\PD\\Exif');
+        $exif1 = \Mockery::mock(Exif::class);
         $exif1->TestTag = 'unique-value';
 
         /** @var Exif $exif2 */
-        $exif2 = \Mockery::mock('\\Zebooka\\PD\\Exif');
+        $exif2 = \Mockery::mock(Exif::class);
         $exif2->AnotherTag = 'OTHER-Value 123';
         $exif2->SomeTag = 'some-value';
 
@@ -325,7 +325,7 @@ class ExifAnalyzerTest extends TestCase
     public function test_detectTokenIds_multiple()
     {
         /** @var Exif $exif */
-        $exif = \Mockery::mock('\\Zebooka\\PD\\Exif');
+        $exif = \Mockery::mock(Exif::class);
         $exif->TestTag = 'unique-value';
         $exif->AnotherTag = 'OTHER-Value 123';
         $exif->SomeTag = 'some-value';
@@ -363,7 +363,7 @@ class ExifAnalyzerTest extends TestCase
         );
 
         /** @var Exif $between */
-        $between = \Mockery::mock('\\Zebooka\\PD\\Exif');
+        $between = \Mockery::mock(Exif::class);
         $between->DateTimeOriginal = date('Y-m-d H:i:s O', strtotime('2018-01-15'));
         $tokens = ExifAnalyzer::detectTokenIds($between, $tokensConfigure, true);
         $this->assertContains('between', $tokens);
@@ -371,7 +371,7 @@ class ExifAnalyzerTest extends TestCase
         $this->assertContains('before', $tokens);
 
         /** @var Exif $after */
-        $after = \Mockery::mock('\\Zebooka\\PD\\Exif');
+        $after = \Mockery::mock(Exif::class);
         $after->DateTimeOriginal = date('Y-m-d H:i:s O', strtotime('2018-02-02'));
         $tokens = ExifAnalyzer::detectTokenIds($after, $tokensConfigure, true);
         $this->assertNotContains('between', $tokens);
@@ -379,7 +379,7 @@ class ExifAnalyzerTest extends TestCase
         $this->assertNotContains('before', $tokens);
 
         /** @var Exif $before */
-        $before = \Mockery::mock('\\Zebooka\\PD\\Exif');
+        $before = \Mockery::mock(Exif::class);
         $before->DateTimeOriginal = date('Y-m-d H:i:s O', strtotime('2017-12-22'));
         $tokens = ExifAnalyzer::detectTokenIds($before, $tokensConfigure, true);
         $this->assertNotContains('between', $tokens);

@@ -25,7 +25,7 @@ class ProcessorTest extends TestCase
      */
     private function fileBunch()
     {
-        return \Mockery::mock('\\Zebooka\\PD\\FileBunch')
+        return \Mockery::mock(FileBunch::class)
             ->shouldReceive('bunchId')
             ->withNoArgs()
             ->andReturn($this->resourceDirectory() . DIRECTORY_SEPARATOR . 'unique-bunchId')
@@ -41,7 +41,7 @@ class ProcessorTest extends TestCase
      */
     private function tokens()
     {
-        return \Mockery::mock('\\Zebooka\\PD\\Tokens');
+        return \Mockery::mock(Tokens::class);
     }
 
     /**
@@ -49,7 +49,7 @@ class ProcessorTest extends TestCase
      */
     private function configure(array $cameras = array())
     {
-        $configure = \Mockery::mock('\\Zebooka\\PD\\Configure');
+        $configure = \Mockery::mock(Configure::class);
         $configure->cameras = $cameras;
         return $configure;
     }
@@ -59,7 +59,7 @@ class ProcessorTest extends TestCase
      */
     private function tokenizer(FileBunch $fileBunch, Tokens $tokens)
     {
-        return \Mockery::mock('\\Zebooka\\PD\\Tokenizer')
+        return \Mockery::mock(Tokenizer::class)
             ->shouldReceive('tokenize')
             ->with($fileBunch)
             ->once()
@@ -72,7 +72,7 @@ class ProcessorTest extends TestCase
      */
     private function tokenizerException(FileBunch $fileBunch, \Exception $exception)
     {
-        return \Mockery::mock('\\Zebooka\\PD\\Tokenizer')
+        return \Mockery::mock(Tokenizer::class)
             ->shouldReceive('tokenize')
             ->with($fileBunch)
             ->once()
@@ -85,7 +85,7 @@ class ProcessorTest extends TestCase
      */
     private function assembler(Tokens $tokens, FileBunch $fileBunch, $newBunchId)
     {
-        return \Mockery::mock('\\Zebooka\\PD\\Assembler')
+        return \Mockery::mock(Assembler::class)
             ->shouldReceive('assemble')
             ->with($tokens, $fileBunch)
             ->once()
@@ -98,7 +98,7 @@ class ProcessorTest extends TestCase
      */
     private function assemblerException(Tokens $tokens, FileBunch $fileBunch, $code)
     {
-        return \Mockery::mock('\\Zebooka\\PD\\Assembler')
+        return \Mockery::mock(Assembler::class)
             ->shouldReceive('assemble')
             ->with($tokens, $fileBunch)
             ->once()
@@ -111,7 +111,7 @@ class ProcessorTest extends TestCase
      */
     private function assemblerNeverCalled()
     {
-        return \Mockery::mock('\\Zebooka\\PD\\Assembler')
+        return \Mockery::mock(Assembler::class)
             ->shouldReceive('assemble')
             ->never()
             ->getMock();
@@ -122,7 +122,7 @@ class ProcessorTest extends TestCase
      */
     private function bunchCache()
     {
-        return \Mockery::mock('\\Zebooka\\PD\\BunchCache');
+        return \Mockery::mock(BunchCache::class);
     }
 
     /**
@@ -130,7 +130,7 @@ class ProcessorTest extends TestCase
      */
     private function executor()
     {
-        return \Mockery::mock('\\Zebooka\\Utils\\Executor')
+        return \Mockery::mock(Executor::class)
             ->shouldReceive('execute')
             ->with(\Mockery::type('string'))
             ->atLeast()
@@ -144,7 +144,7 @@ class ProcessorTest extends TestCase
      */
     private function executorNeverCalled()
     {
-        return \Mockery::mock('\\Zebooka\\Utils\\Executor')
+        return \Mockery::mock(Executor::class)
             ->shouldReceive('execute')
             ->never()
             ->getMock();
@@ -164,7 +164,7 @@ class ProcessorTest extends TestCase
      */
     private function translator()
     {
-        return \Mockery::mock('\\Zebooka\\Translator\\Translator')
+        return \Mockery::mock(Translator::class)
             ->shouldIgnoreMissing();
     }
 

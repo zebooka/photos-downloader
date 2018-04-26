@@ -3,6 +3,7 @@
 namespace Zebooka\PD;
 
 use PHPUnit\Framework\TestCase;
+use Zebooka\Translator\Translator;
 
 class ConfigureViewTest extends TestCase
 {
@@ -13,12 +14,12 @@ class ConfigureViewTest extends TestCase
 
     public function test_rendering()
     {
-        $configure = \Mockery::mock('\\Zebooka\\PD\\Configure')
+        $configure = \Mockery::mock(Configure::class)
             ->shouldReceive('argv')
             ->once()
             ->andReturn(array('unique-usage-example', '123'))
             ->getMock();
-        $translator = \Mockery::mock('\\Zebooka\\Translator\\Translator')
+        $translator = \Mockery::mock(Translator::class)
             ->shouldReceive('translate')
             ->atLeast()
             ->once()

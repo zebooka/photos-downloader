@@ -24,7 +24,7 @@ class TokenizerIntegrationTest extends TestCase
      */
     private function exifAnalyzer(FileBunch $fileBunch, $datetime, $camera, $tokens = array())
     {
-        return \Mockery::mock('\\Zebooka\\PD\\ExifAnalyzer')
+        return \Mockery::mock(ExifAnalyzer::class)
             ->shouldReceive('extractDateTimeCameraTokens')
             ->with($fileBunch)
             ->once()
@@ -37,7 +37,7 @@ class TokenizerIntegrationTest extends TestCase
      */
     private function fileBunch($basename)
     {
-        return \Mockery::mock('\\Zebooka\\PD\\FileBunch')
+        return \Mockery::mock(FileBunch::class)
             ->shouldReceive('basename')
             ->withNoArgs()
             ->once()

@@ -2,6 +2,7 @@
 
 namespace Zebooka\PD;
 
+use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
 
 class LoggerFactoryTest extends TestCase
@@ -13,8 +14,8 @@ class LoggerFactoryTest extends TestCase
 
     public function test_factory()
     {
-        $configure = \Mockery::mock('\\Zebooka\\PD\\Configure');
+        $configure = \Mockery::mock(Configure::class);
         $logger = LoggerFactory::logger($configure);
-        $this->assertInstanceOf('\\Monolog\\Logger', $logger);
+        $this->assertInstanceOf(Logger::class, $logger);
     }
 }

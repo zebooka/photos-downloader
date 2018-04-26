@@ -18,7 +18,7 @@ class AssemblerTest extends TestCase
 
     private function configure($to = Configure::KEEP_IN_PLACE, $subDirectoriesStructure = true, $simulate = false)
     {
-        $configure = \Mockery::mock('\\Zebooka\\PD\\Configure');
+        $configure = \Mockery::mock(Configure::class);
         $configure->to = $to;
         $configure->subDirectoriesStructure = $subDirectoriesStructure;
         $configure->simulate = $simulate;
@@ -30,12 +30,12 @@ class AssemblerTest extends TestCase
 
     private function hashinator()
     {
-        return \Mockery::mock('\\Zebooka\\PD\\Hashinator');
+        return \Mockery::mock(Hashinator::class);
     }
 
     private function tokens($assembledDir = 'assembled-dir', $assembledBasename = 'assembled-basename')
     {
-        $tokens = \Mockery::mock('\\Zebooka\\PD\\Tokens')
+        $tokens = \Mockery::mock(Tokens::class)
             ->shouldReceive('assembleBasename')
             ->withNoArgs()
             ->twice()
@@ -55,7 +55,7 @@ class AssemblerTest extends TestCase
 
     private function fileBunch($originalDir = false)
     {
-        $fileBunch = \Mockery::mock('\\Zebooka\\PD\\FileBunch');
+        $fileBunch = \Mockery::mock(FileBunch::class);
         if (false !== $originalDir) {
             $fileBunch->shouldReceive('directory')
                 ->withNoArgs()

@@ -16,7 +16,7 @@ class TokensTest extends TestCase
      */
     private function configure($subDirectoriesFormat = null)
     {
-        $configure = \Mockery::mock('\\Zebooka\\PD\\Configure');
+        $configure = \Mockery::mock(Configure::class);
         if ($subDirectoriesFormat) {
             $configure->subDirectoriesFormat = $subDirectoriesFormat;
         }

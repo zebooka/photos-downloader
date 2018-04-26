@@ -14,7 +14,7 @@ class InfraTest extends TestCase
     private function exif($strtotime)
     {
         /** @var Exif $exif */
-        $exif = \Mockery::mock('\\Zebooka\\PD\\Exif');
+        $exif = \Mockery::mock(Exif::class);
         $exif->InternalSerialNumber = '(F17) 2010:08:25 no. 0366';
         $exif->DateTimeOriginal = date('Y-m-d H:i:s O', strtotime($strtotime));
         return $exif;
