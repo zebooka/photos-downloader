@@ -1,5 +1,5 @@
 
-all: hooks exiftool composer test install
+all: hooks exiftool composer test install try
 
 hooks:
 	test ! -d .git || cp .git-pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
@@ -17,3 +17,6 @@ test:
 
 install:
 	./build-phar.php
+
+try:
+	./build/photos-downloader.phar -h
