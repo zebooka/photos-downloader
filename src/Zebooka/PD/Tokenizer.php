@@ -71,7 +71,7 @@ class Tokenizer
         return $author;
     }
 
-    public static function extractCamera(array &$tokens,  array $knownCameras, $exifCamera = null)
+    public static function extractCamera(array &$tokens, array $knownCameras, $exifCamera = null)
     {
         $camera = ($exifCamera ?: null);
         foreach ($tokens as $index => $token) {
@@ -105,7 +105,8 @@ class Tokenizer
                 ?: self::detectDashedCombinedDateTime($token, $index, $tokens)
                     ?: self::detectDashedDateTime($token, $index, $tokens)
                         ?: self::detectSJCamDateShot($token, $index, $tokens)
-                            ?: self::detectFilmDateShot($token, $index, $tokens);
+                            ?: self::detectWhatsAppDateTime($token, $index, $tokens)
+                                ?: self::detectFilmDateShot($token, $index, $tokens);
 
             if (is_array($result) && count($result) == 2) {
                 list($datetime, $shot) = $result;
@@ -224,6 +225,18 @@ class Tokenizer
         }
         return false;
     }
+
+    public static function detectWhatsAppDateTime($token, $index, array &$tokens)
+    {
+        // WhatsApp Image YYYY-MM-DD at HH.MM.SS
+        if (preg_match('/^WhatsApp Image ([0-9]{4})-([0-9]{2})-([0-9]{2}) at ([0-9]{2}).([0-9]{2}).([0-9]{2})$/', $token, $matches)) {
+            $datetime = mktime($matches[4], $matches[5], $matches[6], $matches[2], $matches[3], $matches[1]);
+            unset($tokens[$index]);
+            return array($datetime, null);
+        }
+        return false;
+    }
+
 
     public static function detectFilmDateShot($token, $index, array &$tokens)
     {

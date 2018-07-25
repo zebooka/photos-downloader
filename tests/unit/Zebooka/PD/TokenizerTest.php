@@ -346,4 +346,15 @@ class TokenizerTest extends TestCase
             date('r', $tokens->timestamp())
         );
     }
+
+    public function test_tokenize_whatsapp_date()
+    {
+        $fileBunch = $this->fileBunch('WhatsApp Image 2018-07-25 at 09.26.50');
+        $tokenizer = new Tokenizer($this->configure(), $this->exifAnalyzer($fileBunch, null, null));
+        $tokens = $tokenizer->tokenize($fileBunch);
+        $this->assertInstanceOf(Tokens::class, $tokens);
+        $this->assertEquals('180725', $tokens->date());
+        $this->assertEquals('092650', $tokens->time());
+        $this->assertEquals(null, $tokens->shot);
+    }
 }
