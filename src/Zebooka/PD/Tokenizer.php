@@ -87,7 +87,7 @@ class Tokenizer
 
     public static function extractDateTimeShot(array &$tokens, $exifDateTime, $preferExifDateTime = false)
     {
-        $datetime = (null !== $exifDateTime ? $exifDateTime : null);
+        $datetime = $exifDateTime ?? null;
         $shot = $timeshift = null;
 
         // if tokes have vlc, drop original extension from tokens and detect timeshift
@@ -102,11 +102,11 @@ class Tokenizer
 
         foreach ($tokens as $index => $token) {
             $result = self::detectClassicDateTime($token, $index, $tokens)
-                ?: self::detectDashedCombinedDateTime($token, $index, $tokens)
-                    ?: self::detectDashedDateTime($token, $index, $tokens)
-                        ?: self::detectSJCamDateShot($token, $index, $tokens)
-                            ?: self::detectWhatsAppDateTime($token, $index, $tokens)
-                                ?: self::detectFilmDateShot($token, $index, $tokens);
+                ?? self::detectDashedCombinedDateTime($token, $index, $tokens)
+                ?? self::detectDashedDateTime($token, $index, $tokens)
+                ?? self::detectSJCamDateShot($token, $index, $tokens)
+                ?? self::detectWhatsAppDateTime($token, $index, $tokens)
+                ?? self::detectFilmDateShot($token, $index, $tokens);
 
             if (is_array($result) && count($result) == 2) {
                 list($datetime, $shot) = $result;
