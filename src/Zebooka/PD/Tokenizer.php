@@ -177,7 +177,7 @@ class Tokenizer
             }
             return array($datetime, $shot);
         }
-        return false;
+        return null;
     }
 
     public static function detectDashedCombinedDateTime($token, $index, array &$tokens)
@@ -187,7 +187,7 @@ class Tokenizer
             unset($tokens[$index]);
             return array($datetime, null);
         }
-        return false;
+        return null;
     }
 
     public static function detectDashedDateTime($token, $index, array &$tokens)
@@ -201,7 +201,7 @@ class Tokenizer
             unset($tokens[$index + 1]);
             return array($datetime, null);
         }
-        return false;
+        return null;
     }
 
     public static function detectSJCamDateShot($token, $index, array &$tokens)
@@ -223,7 +223,7 @@ class Tokenizer
             }
             return array($datetime, $shot);
         }
-        return false;
+        return null;
     }
 
     public static function detectWhatsAppDateTime($token, $index, array &$tokens)
@@ -234,7 +234,7 @@ class Tokenizer
             unset($tokens[$index]);
             return array($datetime, null);
         }
-        return false;
+        return null;
     }
 
 
@@ -249,7 +249,7 @@ class Tokenizer
             unset($tokens[$index + 1]);
             return array($datetime, $shot);
         }
-        return false;
+        return null;
     }
 
     public static function hasVlcInTokens(array $tokens)
