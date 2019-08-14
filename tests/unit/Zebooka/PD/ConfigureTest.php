@@ -24,8 +24,10 @@ class ConfigureTest extends TestCase
                 Configure::P_TIMEZONE,
                 Configure::P_TOKENS_ADD,
                 Configure::P_TOKENS_DROP,
-                Configure::P_REGEXP_FILTER,
-                Configure::P_REGEXP_NEGATIVE_FILTER,
+                Configure::P_REGEXP_EXIF_FILTER,
+                Configure::P_REGEXP_EXIF_NEGATIVE_FILTER,
+                Configure::P_REGEXP_FILENAME_FILTER,
+                Configure::P_REGEXP_FILENAME_NEGATIVE_FILTER,
                 Configure::P_PANORAMIC_RATIO,
             ),
             Configure::parametersRequiringValues()
@@ -40,6 +42,8 @@ class ConfigureTest extends TestCase
                 Configure::P_CAMERAS,
                 Configure::P_TOKENS_ADD,
                 Configure::P_TOKENS_DROP,
+                Configure::P_REGEXP_EXIF_FILTER,
+                Configure::P_REGEXP_EXIF_NEGATIVE_FILTER,
             ),
             Configure::parametersUsableMultipleTimes()
         );
@@ -75,14 +79,16 @@ class ConfigureTest extends TestCase
         $this->assertEquals($knownData['authors'], $configure->knownAuthors());
         $this->assertEquals(array_keys($knownData['cameras']), $configure->knownCameras());
         $this->assertEquals(array_keys($knownData['tokens']), $configure->knownTokens());
-        $this->assertEquals('/\\.jpe?g$/i', $configure->regexpFilter);
-        $this->assertEquals('/\\.dng$/i', $configure->regexpNegativeFilter);
+        $this->assertEquals(['ColorSpace' => 'sRGB'], $configure->regexpExifFilter);
+        $this->assertEquals(['XMPToolkit' => '/XMP/i'], $configure->regexpExifNegativeFilter);
+        $this->assertEquals('/\\.jpe?g$/i', $configure->regexpFilenameFilter);
+        $this->assertEquals('/\\.dng$/i', $configure->regexpFilenameNegativeFilter);
         $this->assertEquals(3.2, $configure->panoramicRatio);
     }
 
     public function test_empty_configure()
     {
-        $configure = new Configure(array(), array());
+        $configure = new Configure([], []);
         $this->assertNull($configure->executableName);
         $this->assertFalse($configure->help);
         $this->assertEquals(100, $configure->verboseLevel);
@@ -90,7 +96,7 @@ class ConfigureTest extends TestCase
         $this->assertNotEmpty($configure->saveCommandsFile);
         $this->assertEquals(0, $configure->limit);
         $this->assertTrue($configure->recursive);
-        $this->assertEquals(array(), $configure->from);
+        $this->assertEquals([], $configure->from);
         $this->assertNull($configure->listFile);
         $this->assertEquals('-', $configure->to);
         $this->assertTrue($configure->subDirectoriesStructure);
@@ -100,37 +106,39 @@ class ConfigureTest extends TestCase
         $this->assertFalse($configure->copy);
         $this->assertTrue($configure->deleteDuplicates);
         $this->assertNull($configure->author);
-        $this->assertEquals(array(), $configure->cameras);
-        $this->assertEquals(array(), $configure->tokensToAdd);
-        $this->assertEquals(array(), $configure->tokensToDrop);
+        $this->assertEquals([], $configure->cameras);
+        $this->assertEquals([], $configure->tokensToAdd);
+        $this->assertEquals([], $configure->tokensToDrop);
         $this->assertFalse($configure->tokensDropUnknown);
         $this->assertTrue($configure->compareExifs);
         $this->assertNull($configure->logFile);
         $this->assertEquals(250, $configure->logLevel);
-        $this->assertEquals(array(), $configure->knownAuthors());
-        $this->assertEquals(array(), $configure->knownCameras());
-        $this->assertEquals(array(), $configure->knownTokens());
-        $this->assertNull($configure->regexpFilter);
-        $this->assertNull($configure->regexpNegativeFilter);
+        $this->assertEquals([], $configure->knownAuthors());
+        $this->assertEquals([], $configure->knownCameras());
+        $this->assertEquals([], $configure->knownTokens());
+        $this->assertEquals([], $configure->regexpExifFilter);
+        $this->assertEquals([], $configure->regexpExifNegativeFilter);
+        $this->assertNull($configure->regexpFilenameFilter);
+        $this->assertNull($configure->regexpFilenameNegativeFilter);
         $this->assertEquals(2.0, $configure->panoramicRatio);
     }
 
     public function test_timezones()
     {
-        $configure = new Configure(array(1 => '-z', '+06:00'), array());
+        $configure = new Configure(array(1 => '-z', '+06:00'), []);
         $this->assertEquals('+06:00', $configure->timezone);
-        $configure = new Configure(array(1 => '-z', '-0600'), array());
+        $configure = new Configure(array(1 => '-z', '-0600'), []);
         $this->assertEquals('-0600', $configure->timezone);
-        $configure = new Configure(array(1 => '-z', '0600'), array());
+        $configure = new Configure(array(1 => '-z', '0600'), []);
         $this->assertNull($configure->timezone);
-        $configure = new Configure(array(1 => '-z', '+600'), array());
+        $configure = new Configure(array(1 => '-z', '+600'), []);
         $this->assertNull($configure->timezone);
     }
 
     public function test_reassembling_configure()
     {
         $configure = new Configure($this->argv(), $this->knownData());
-        $argv = array(
+        $argv = array_merge([
             escapeshellarg($configure->executableName),
             '-' . Configure::P_HELP,
             '-' . Configure::P_VERBOSE_LEVEL,
@@ -181,14 +189,28 @@ class ConfigureTest extends TestCase
             escapeshellarg($configure->tokensToDrop[1]),
             '-' . Configure::P_TOKENS_DROP_UNKNOWN,
             '-' . Configure::P_NO_COMPARE_EXIFS,
-            '-' . Configure::P_REGEXP_FILTER,
-            escapeshellarg($configure->regexpFilter),
-            '-' . Configure::P_REGEXP_NEGATIVE_FILTER,
-            escapeshellarg($configure->regexpNegativeFilter),
+        ],
+        $this->implodeKeyValueParams(Configure::P_REGEXP_EXIF_FILTER, $configure->regexpExifFilter),
+        $this->implodeKeyValueParams(Configure::P_REGEXP_EXIF_NEGATIVE_FILTER, $configure->regexpExifNegativeFilter),
+        [
+            '-' . Configure::P_REGEXP_FILENAME_FILTER,
+            escapeshellarg($configure->regexpFilenameFilter),
+            '-' . Configure::P_REGEXP_FILENAME_NEGATIVE_FILTER,
+            escapeshellarg($configure->regexpFilenameNegativeFilter),
             '-' . Configure::P_PANORAMIC_RATIO,
             escapeshellarg($configure->panoramicRatio),
-        );
+        ]);
         $this->assertEquals($argv, $configure->argv());
+    }
+
+    private function implodeKeyValueParams($param, array $array)
+    {
+        $result = [];
+        foreach ($array as $key => $value) {
+            $result[] = '-' . $param;
+            $result[] = escapeshellarg($key . '=' . $value);
+        }
+        return $result;
     }
 
     private function knownData()
@@ -199,15 +221,15 @@ class ConfigureTest extends TestCase
                 'unique-author-2',
             ),
             'cameras' => array(
-                'unique-camera-1' => array(),
-                'unique-camera-2' => array(),
-                'unique-camera-3' => array(),
+                'unique-camera-1' => [],
+                'unique-camera-2' => [],
+                'unique-camera-3' => [],
             ),
             'tokens' => array(
-                'unique-token-1' => array(),
-                'unique-token-2' => array(),
-                'unique-token-3' => array(),
-                'unique-token-4' => array(),
+                'unique-token-1' => [],
+                'unique-token-2' => [],
+                'unique-token-3' => [],
+                'unique-token-4' => [],
             ),
         );
     }
@@ -256,6 +278,10 @@ class ConfigureTest extends TestCase
             '-O',
             '321',
             '-B',
+            '-i',
+            'ColorSpace=sRGB',
+            '-I',
+            'XMPToolkit=/XMP/i',
             '-g',
             '/\\.jpe?g$/i',
             '-G',

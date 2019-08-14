@@ -95,13 +95,13 @@ class Parameters
                 if (!in_array($name, $multiple)) {
                     $value = array($value);
                 }
-                foreach ($value as $subValue) {
+                foreach ($value as $subKey => $subValue) {
                     if (false === $subValue || null === $subValue) {
                         continue;
                     }
                     if (in_array($name, $reqvals)) {
                         $argv[] = $dashName;
-                        $argv[] = escapeshellarg(strval($subValue));
+                        $argv[] = escapeshellarg((is_string($subKey) ? $subKey . '=' : '') . strval($subValue));
                     } else {
                         if ($subValue) {
                             $argv[] = $dashName;

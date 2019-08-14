@@ -27,7 +27,7 @@ class ScannerTest extends TestCase
                 $this->assertCount(0, array_intersect($fileBunch->primaryExtensions(), Scanner::supportedPhotoExtensions()));
             }
         }
-        $this->assertEquals(6, $i);
+        $this->assertEquals(8, $i);
     }
 
     public function test_searchForNextFile_not_recursive()
@@ -60,6 +60,24 @@ class ScannerTest extends TestCase
 
         $fileBunch = $scanner->searchForNextFile();
         $this->assertFalse($fileBunch);
+    }
+
+    public function test_files_without_extensions_are_correctly_processed_in_bunches()
+    {
+        $scanner = new Scanner(['d'], false);
+        $fileBunch = $scanner->searchForNextFile();
+        $this->assertInstanceOf('\\Zebooka\\PD\\FileBunch', $fileBunch);
+        $this->assertEquals(['jpg'], $fileBunch->primaryExtensions());
+        $this->assertEquals([''], $fileBunch->secondaryExtensions());
+    }
+
+    public function test_dirs_without_extensions_are_not_processed_in_bunches()
+    {
+        $scanner = new Scanner(['e'], false);
+        $fileBunch = $scanner->searchForNextFile();
+        $this->assertInstanceOf('\\Zebooka\\PD\\FileBunch', $fileBunch);
+        $this->assertEquals(['jpg'], $fileBunch->primaryExtensions());
+        $this->assertEquals([], $fileBunch->secondaryExtensions());
     }
 
     protected function setUp()

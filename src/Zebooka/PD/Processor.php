@@ -75,6 +75,54 @@ class Processor
             return false;
         }
 
+        // filter by regexps of exif (if any matches, then process)
+        if ($this->configure->regexpExifFilter) {
+            $matched = false;
+            foreach ($fileBunch->exifs() as $extension => $exif) {
+                foreach ($this->configure->regexpExifFilter as $key => $value) {
+                    if (@preg_match($value, null) !== false) {
+                        if (preg_match($value, $exif->{$key})) {
+                            $matched = true;
+                            break 2;
+                        }
+                    } elseif ($exif->{$key} == $value) {
+                        $matched = true;
+                        break 2;
+                    }
+                }
+            }
+            if (!$matched) {
+                $this->logger->addNotice(
+                    $this->translator->translate('skipped/filteredByExifRegExp', [$fileBunch])
+                );
+                return false;
+            }
+        }
+
+        // filter by  negative regexps of exif (if any matches, then skipped)
+        if ($this->configure->regexpExifNegativeFilter) {
+            $matched = false;
+            foreach ($fileBunch->exifs() as $extension => $exif) {
+                foreach ($this->configure->regexpExifNegativeFilter as $key => $value) {
+                    if (@preg_match($value, null) !== false) {
+                        if (preg_match($value, $exif->{$key})) {
+                            $matched = true;
+                            break 2;
+                        }
+                    } elseif ($exif->{$key} == $value) {
+                        $matched = true;
+                        break 2;
+                    }
+                }
+            }
+            if ($matched) {
+                $this->logger->addNotice(
+                    $this->translator->translate('skipped/filteredByExifRegExp', [$fileBunch])
+                );
+                return false;
+            }
+        }
+
         // assemble
         try {
             $newBunchId = $this->assembler->assemble($tokens, $fileBunch);
@@ -106,14 +154,14 @@ class Processor
         // move/copy files
         $filesTransfered = false;
         foreach ($fileBunch->extensions() as $extension) {
-            $from = $fileBunch->bunchId() . '.' . $extension;
+            $from = $fileBunch->bunchId() . ($extension ? '.' . $extension : '');
             $this->bytesProcessed += filesize($from);
             // QUESTION: should we lowercase only primary extensions + known ones (xmp, txt) ?
             $to = $newBunchId . '.' . mb_strtolower($extension);
-            if (($this->configure->regexpFilter && !preg_match($this->configure->regexpFilter, $to))
-                || ($this->configure->regexpNegativeFilter && preg_match($this->configure->regexpNegativeFilter, $to))
+            if (($this->configure->regexpFilenameFilter && !preg_match($this->configure->regexpFilenameFilter, $to))
+                || ($this->configure->regexpFilenameNegativeFilter && preg_match($this->configure->regexpFilenameNegativeFilter, $to))
             ) {
-                $this->logger->addNotice($this->translator->translate('skipped/filteredByRegExp', array($to)));
+                $this->logger->addNotice($this->translator->translate('skipped/filteredByFileRegExp', [$to]));
                 continue;
             } elseif (is_file($to) && $this->configure->deleteDuplicates && !$this->configure->copy) {
                 $queue[] = new Executor\Command(

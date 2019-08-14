@@ -4,6 +4,9 @@
 error_reporting(-1);
 set_error_handler(
     function ($errno, $errstr, $errfile, $errline) {
+        if (!error_reporting()) {
+            return;
+        }
         throw new \ErrorException($errstr, $errno, 0, $errfile, $errline);
     }
 );
@@ -58,15 +61,15 @@ if ($configure->help || 1 === count($_SERVER['argv'])) {
 
 // validate regexp
 try {
-    preg_match($configure->regexpFilter ?: '/test/', 'test');
+    preg_match($configure->regexpFilenameFilter ?: '/test/', 'test');
 } catch (\ErrorException $e) {
-    $logger->addCritical($translator->translate('error/regexpInvalid', array($configure->regexpFilter)));
+    $logger->addCritical($translator->translate('error/regexpInvalid', array($configure->regexpFilenameFilter)));
     exit(1);
 }
 try {
-    preg_match($configure->regexpNegativeFilter ?: '/test/', 'test');
+    preg_match($configure->regexpFilenameNegativeFilter ?: '/test/', 'test');
 } catch (\ErrorException $e) {
-    $logger->addCritical($translator->translate('error/regexpInvalid', array($configure->regexpNegativeFilter)));
+    $logger->addCritical($translator->translate('error/regexpInvalid', array($configure->regexpFilenameNegativeFilter)));
     exit(1);
 }
 

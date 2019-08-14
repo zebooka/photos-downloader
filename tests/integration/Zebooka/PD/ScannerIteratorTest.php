@@ -13,6 +13,7 @@ class ScannerIteratorTest extends TestCase
 
     public function test_recursive_iteration()
     {
+        $expected = 7;
         $scannerIterator = new ScannerIterator(array($this->resourceDirectory()), true);
         $this->assertInstanceOf('\\Traversable', $scannerIterator);
         $i = 0;
@@ -20,14 +21,14 @@ class ScannerIteratorTest extends TestCase
             $i++;
             $this->assertInstanceOf('\\Zebooka\\PD\\FileBunch', $fileBunch);
         }
-        $this->assertEquals(5, $i);
+        $this->assertEquals($expected, $i);
         // we can restart iteration
         $i = 0;
         foreach ($scannerIterator as $fileBunch) {
             $i++;
             $this->assertInstanceOf('\\Zebooka\\PD\\FileBunch', $fileBunch);
         }
-        $this->assertEquals(5, $i);
+        $this->assertEquals($expected, $i);
     }
 
     public function test_not_recursive_iteration()

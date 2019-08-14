@@ -58,8 +58,10 @@ class Configure
     const P_TOKENS_DROP = 'y';
     const P_TOKENS_DROP_UNKNOWN = 'Y';
     const P_NO_COMPARE_EXIFS = 'B';
-    const P_REGEXP_FILTER = 'g';
-    const P_REGEXP_NEGATIVE_FILTER = 'G';
+    const P_REGEXP_EXIF_FILTER = 'i';
+    const P_REGEXP_EXIF_NEGATIVE_FILTER = 'I';
+    const P_REGEXP_FILENAME_FILTER = 'g';
+    const P_REGEXP_FILENAME_NEGATIVE_FILTER = 'G';
     const P_PANORAMIC_RATIO = 'p';
 
     public $help = false;
@@ -70,7 +72,7 @@ class Configure
     public $saveCommandsFile = null;
     public $limit = 0;
     public $recursive = true;
-    public $from = array();
+    public $from = [];
     public $listFile = null;
     public $to = self::KEEP_IN_PLACE;
     public $subDirectoriesStructure = true;
@@ -78,21 +80,23 @@ class Configure
     public $copy = false;
     public $deleteDuplicates = true;
     public $author = null;
-    public $cameras = array();
+    public $cameras = [];
     public $preferExifDateTime = false;
     public $timezone = null;
-    public $tokensToAdd = array();
-    public $tokensToDrop = array();
+    public $tokensToAdd = [];
+    public $tokensToDrop = [];
     public $tokensDropUnknown = false;
     public $compareExifs = true;
-    public $regexpFilter = null;
-    public $regexpNegativeFilter = null;
+    public $regexpExifFilter = [];
+    public $regexpExifNegativeFilter = [];
+    public $regexpFilenameFilter = null;
+    public $regexpFilenameNegativeFilter = null;
     public $panoramicRatio = 2.0;
     public $executableName;
 
-    private $knownAuthors = array();
-    private $knownCameras = array();
-    private $knownTokens = array();
+    private $knownAuthors = [];
+    private $knownCameras = [];
+    private $knownTokens = [];
 
     public function __construct(array $argv, array $knownLists)
     {
@@ -123,8 +127,10 @@ class Configure
         $this->tokensToDrop = $this->splitSpaceSeparated(array_key_exists(self::P_TOKENS_DROP, $argv) ? $argv->{self::P_TOKENS_DROP} : $this->tokensToDrop);
         $this->tokensDropUnknown = !empty($argv->{self::P_TOKENS_DROP_UNKNOWN});
         $this->compareExifs = empty($argv->{self::P_NO_COMPARE_EXIFS});
-        $this->regexpFilter = (array_key_exists(self::P_REGEXP_FILTER, $argv) ? strval($argv->{self::P_REGEXP_FILTER}) : $this->regexpFilter);
-        $this->regexpNegativeFilter = (array_key_exists(self::P_REGEXP_NEGATIVE_FILTER, $argv) ? strval($argv->{self::P_REGEXP_NEGATIVE_FILTER}) : $this->regexpNegativeFilter);
+        $this->regexpExifFilter = (array_key_exists(self::P_REGEXP_EXIF_FILTER, $argv) ? $this->splitKeyValues($argv->{self::P_REGEXP_EXIF_FILTER}) : $this->regexpExifFilter);
+        $this->regexpExifNegativeFilter = (array_key_exists(self::P_REGEXP_EXIF_NEGATIVE_FILTER, $argv) ? $this->splitKeyValues($argv->{self::P_REGEXP_EXIF_NEGATIVE_FILTER}) : $this->regexpExifNegativeFilter);
+        $this->regexpFilenameFilter = (array_key_exists(self::P_REGEXP_FILENAME_FILTER, $argv) ? strval($argv->{self::P_REGEXP_FILENAME_FILTER}) : $this->regexpFilenameFilter);
+        $this->regexpFilenameNegativeFilter = (array_key_exists(self::P_REGEXP_FILENAME_NEGATIVE_FILTER, $argv) ? strval($argv->{self::P_REGEXP_FILENAME_NEGATIVE_FILTER}) : $this->regexpFilenameNegativeFilter);
         $this->panoramicRatio = (array_key_exists(self::P_PANORAMIC_RATIO, $argv) ? strval($argv->{self::P_PANORAMIC_RATIO}) : $this->panoramicRatio);
         $this->from = array_unique(array_merge($this->from, array_slice($argv->positionedParameters(), 1)));
         $positionedParameters = $argv->positionedParameters();
@@ -137,11 +143,23 @@ class Configure
 
     private function splitSpaceSeparated(array $values)
     {
-        $splitted = array();
+        $splitted = [];
         foreach ($values as $value) {
             $splitted = array_merge($splitted, preg_split('/[\\s,]+/', $value));
         }
         return array_unique($splitted);
+    }
+
+    private function splitKeyValues(array $values)
+    {
+        $result = [];
+        foreach ($values as $value) {
+            if (strpos($value, '=') !== false) {
+                list ($key, $value) = explode('=', $value);
+                $result[$key] = $value;
+            }
+        }
+        return $result;
     }
 
     private function decodeArgv(array $argv)
@@ -228,8 +246,10 @@ class Configure
             self::P_TOKENS_DROP => $this->tokensToDrop,
             self::P_TOKENS_DROP_UNKNOWN => $this->tokensDropUnknown,
             self::P_NO_COMPARE_EXIFS => !$this->compareExifs,
-            self::P_REGEXP_FILTER => $this->regexpFilter,
-            self::P_REGEXP_NEGATIVE_FILTER => $this->regexpNegativeFilter,
+            self::P_REGEXP_EXIF_FILTER => $this->regexpExifFilter,
+            self::P_REGEXP_EXIF_NEGATIVE_FILTER => $this->regexpExifNegativeFilter,
+            self::P_REGEXP_FILENAME_FILTER => $this->regexpFilenameFilter,
+            self::P_REGEXP_FILENAME_NEGATIVE_FILTER => $this->regexpFilenameNegativeFilter,
             self::P_PANORAMIC_RATIO => $this->panoramicRatio,
         );
     }
@@ -251,8 +271,10 @@ class Configure
             self::P_TIMEZONE,
             self::P_TOKENS_ADD,
             self::P_TOKENS_DROP,
-            self::P_REGEXP_FILTER,
-            self::P_REGEXP_NEGATIVE_FILTER,
+            self::P_REGEXP_EXIF_FILTER,
+            self::P_REGEXP_EXIF_NEGATIVE_FILTER,
+            self::P_REGEXP_FILENAME_FILTER,
+            self::P_REGEXP_FILENAME_NEGATIVE_FILTER,
             self::P_PANORAMIC_RATIO,
         );
     }
@@ -264,6 +286,8 @@ class Configure
             self::P_CAMERAS,
             self::P_TOKENS_ADD,
             self::P_TOKENS_DROP,
+            self::P_REGEXP_EXIF_FILTER,
+            self::P_REGEXP_EXIF_NEGATIVE_FILTER,
         );
     }
 }
