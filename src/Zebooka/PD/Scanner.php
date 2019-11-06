@@ -180,6 +180,7 @@ class Scanner
             'jpeg',
             'tiff',
             'tif',
+            'png',
         );
     }
 
