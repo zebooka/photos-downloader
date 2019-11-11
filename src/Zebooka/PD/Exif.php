@@ -28,11 +28,29 @@ class Exif
             throw new \InvalidArgumentException('File \'' . $filename . '\' not found or is not readable.');
         }
 
+        $exif0 = [];
+        $exif1 = $this->readExif($filename, '');
+        $exif2 = $this->readExif($filename, '-d "%Y-%m-%d %H:%M:%S %z"');
+        foreach ($exif1 as $key => $value) {
+            if (isset($exif2[$key]) && $exif1[$key] !== $exif2[$key]) {
+                $exif0[$key] = self::decodeDateTime($exif1[$key]) ?: self::decodeDateTime($exif2[$key]);
+            } else {
+                $exif0[$key] = $value;
+            }
+        }
+
+        foreach ($exif0 as $property => $value) {
+            $this->{$property} = $value;
+        }
+    }
+
+    private function readExif($filename, $flags)
+    {
         $output = array();
         $code = 0;
         // -d "%Y-%m-%d %H:%M:%S %z" - we no longer use this format because it will output current timezone
         // if date does not have one. But we need to distinguish between local tz and no tz.
-        exec('exiftool -j -d "%Y-%m-%d %H:%M:%S %z" -fast ' . escapeshellarg($filename), $output, $code);
+        exec("exiftool -j -fast {$flags} " . escapeshellarg($filename), $output, $code);
         if ($code) {
             throw new \RuntimeException('ExifTool failed with code #' . $code . '.');
         }
@@ -51,9 +69,20 @@ class Exif
             throw new \UnexpectedValueException('Unable to decode ExifTool json output.');
         }
         $exif = reset($data);
-        foreach ($exif as $property => $value) {
-            $this->{$property} = $value;
+
+        return $exif;
+    }
+
+    private static function decodeDateTime($string)
+    {
+        if ($tms = strtotime($string)) {
+            return date('Y-m-d H:i:s', $tms);
+        } elseif (preg_match('/(\d+)[:\\.-](\d+)[:\\.-](\d+) (\d+)[:\\.-](\d+)[:\\.-](\d+)(?:\\.(\d+))?([+-]\d+:?\d*)?/', $string, $m)) {
+            return "{$m[1]}-{$m[2]}-{$m[3]} {$m[4]}:{$m[5]}:{$m[6]}" . (isset($m[8]) ? " {$m[8]}" : '');
+        } else {
+            return null;
         }
+        // 2019:11:08 12:41:43.259+07:00
     }
 
     /**

@@ -37,6 +37,8 @@ class ExifTest extends TestCase
         $this->assertObjectHasAttribute('Model', $exif);
         $this->assertObjectHasAttribute('DateTimeOriginal', $exif);
         $this->assertObjectHasAttribute('Software', $exif);
-        $this->assertEquals(date('Y-m-d H:i:s O', strtotime('2012-12-21 16:16:37')), $exif->DateTimeOriginal);
+        $this->assertEquals('2012-12-21 16:16:37', $exif->DateTimeOriginal);
+        $this->assertObjectHasAttribute('CreateDate', $exif);
+        $this->assertEquals('2012-12-21 20:16:37 +04:00', $exif->CreateDate);
     }
 }
