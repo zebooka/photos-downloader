@@ -32,7 +32,9 @@ class Exif
         $exif1 = $this->readExif($filename, '');
         $exif2 = $this->readExif($filename, '-d "%Y-%m-%d %H:%M:%S %z"');
         foreach ($exif1 as $key => $value) {
-            if (isset($exif2[$key]) && $exif1[$key] !== $exif2[$key]) {
+            if ('0000:00:00 00:00:00' == $value) {
+                // nothing
+            } elseif (isset($exif2[$key]) && $exif1[$key] !== $exif2[$key]) {
                 $exif0[$key] = self::decodeDateTime($exif1[$key]) ?: self::decodeDateTime($exif2[$key]);
             } else {
                 $exif0[$key] = $value;
@@ -75,10 +77,12 @@ class Exif
 
     private static function decodeDateTime($string)
     {
-        if ($tms = strtotime($string)) {
-            return date('Y-m-d H:i:s', $tms);
-        } elseif (preg_match('/(\d+)[:\\.-](\d+)[:\\.-](\d+) (\d+)[:\\.-](\d+)[:\\.-](\d+)(?:\\.(\d+))?([+-]\d+:?\d*)?/', $string, $m)) {
+        if (preg_match('/^(\d+)[:\\.-](\d+)[:\\.-](\d+) (\d+)[:\\.-](\d+)[:\\.-](\d+)(?:\\.(\d+))?([+-]\d+:?\d*)?$/', $string, $m)) {
             return "{$m[1]}-{$m[2]}-{$m[3]} {$m[4]}:{$m[5]}:{$m[6]}" . (isset($m[8]) ? " {$m[8]}" : '');
+        } elseif (preg_match('/([+-][0-9]{1,2}:?([0-9]{1,2})?)$/', $string, $m) && $tms = strtotime($string)) {
+            return date('Y-m-d H:i:s O', $tms);
+        }elseif ($tms = strtotime($string)) {
+            return date('Y-m-d H:i:s', $tms);
         } else {
             return null;
         }

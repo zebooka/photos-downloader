@@ -28,20 +28,31 @@ class ExifAnalyzer
     {
         $datetimes = $gpsDatetimes = array();
         $datePropertiesNames = array(
-            'CreationDate',
             'DateTimeOriginal',
             'TrackCreateDate',
             'MediaCreateDate',
             'DateCreated',
             'CreateDate',
+            'CreationDate',
             'ModifyDate',
             'GPSDateTime',
         );
         foreach ($this->exifs($fileBunch) as $extension => $exif) {
+            // search for all dates
             foreach ($datePropertiesNames as $datePropertyName) {
                 if ($exif->{$datePropertyName}) {
                     $datetimes[$extension] = strtotime($exif->{$datePropertyName});
                     break;
+                }
+            }
+            // search only for dates with TZ
+            foreach ($datePropertiesNames as $datePropertyName) {
+                if ($exif->{$datePropertyName}) {
+                    $timestamp = strtotime($exif->{$datePropertyName});
+                    if ($timestamp && date('Y-m-d H:i:s', $timestamp) != $exif->{$datePropertyName}) {
+                        $datetimes[$extension] = $timestamp;
+                        break;
+                    }
                 }
             }
             if ($exif->GPSDateTime && $gpsDatetime = strtotime($exif->GPSDateTime)) {

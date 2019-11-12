@@ -386,4 +386,24 @@ class ExifAnalyzerTest extends TestCase
         $this->assertNotContains('after', $tokens);
         $this->assertContains('before', $tokens);
     }
+
+    public function test_tz_dates_preferred()
+    {
+        $datetimeProperties = array(
+            'DateTimeOriginal' => '2015-11-01 15:00:00',
+            'TrackCreateDate' => '2015-11-01 15:00:00',
+            'MediaCreateDate' => '2015-11-01 15:00:00',
+            'CreateDate' => '2015-11-01 15:00:00',
+            'CreationDate' => '2015-11-01 21:00:00 +06:00',  // only this value should be used
+        );
+        /** @var Exif $exif */
+        $exif = \Mockery::mock(Exif::class);
+        foreach ($datetimeProperties as $exifTag => $exifValue) {
+            $exif->{$exifTag} = $exifValue;
+        }
+
+        $analyzer = new ExifAnalyzer($this->realConfigure());
+        list($detectedDateTime) = $analyzer->extractDateTimeCameraTokens($this->fileBunch(array($exif)));
+        $this->assertEquals(date('r', strtotime('2015-11-01 21:00:00 +06:00')), date('r', $detectedDateTime));
+    }
 }
