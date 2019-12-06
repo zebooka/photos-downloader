@@ -50,7 +50,12 @@ $phar->buildFromIterator(
         $dirs,
         function (&$iterator, $dir) {
             /** @var \AppendIterator $iterator */
-            $iterator->append(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir)));
+            $array = [];
+            foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir)) as $path) {
+                /** @var SplFileInfo $path */
+                if ($path->isFile()) $array[] = $path->getRealPath();
+            }
+            $iterator->append(new ArrayIterator($array));
             return $iterator;
         },
         new \AppendIterator()
