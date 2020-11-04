@@ -133,9 +133,19 @@ class Tokenizer
     public static function detectClassicDateTime($token, $index, array &$tokens)
     {
         if (preg_match('/^([0-9]{2}[0-9]{2}[0-9]{2}|[0-9Y]{4}[0-9M]{2}[0-9D]{2})$/', $token)) {
+            if (preg_match('/^([0-9]{2})([0-9]{2})([0-9]{2})$/', $token, $dateMatches)) {
+                if (!checkdate($dateMatches[2], $dateMatches[3], 2000 + $dateMatches[1])) {
+                    return null;
+                }
+            } elseif (preg_match('/^([0-9]{4})([0-9]{2})([0-9]{2})$/', $token, $dateMatches)) {
+                if (!checkdate($dateMatches[2], $dateMatches[3], $dateMatches[1])) {
+                    return null;
+                }
+            }
+
             $datetime = array($token);
             $shot = false;
-            unset($tokens[$index]);
+
             if (isset($tokens[$index + 1])
                 && preg_match('/^([0-9H]{2}[0-9M]{2}[0-9S]{2})(?:' . Tokens::TIME_SHOT_SEPARATOR . '([0-9]+))?$/', $tokens[$index + 1], $matches)
             ) {
@@ -170,11 +180,13 @@ class Tokenizer
                     $shot = $tokens[$index + 2];
                     unset($tokens[$index + 2]);
                 }
-                unset($tokens[$index + 1]);
             } elseif (isset($tokens[$index + 1]) && preg_match('/^[0-9]+?$/', $tokens[$index + 1])) {
                 $shot = $tokens[$index + 1];
-                unset($tokens[$index + 1]);
+            } else {
+                // date without time and/or shot is not allowed
+                return null;
             }
+            unset($tokens[$index], $tokens[$index + 1]);
             return array($datetime, $shot);
         }
         return null;
