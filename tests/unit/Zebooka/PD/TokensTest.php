@@ -66,7 +66,7 @@ class TokensTest extends TestCase
         $this->assertEquals('070417_210000', $tokens->assembleBasename());
     }
 
-    public function test_creation_with_different_datetime_argument()
+    public function test_unixtimestamp()
     {
         // unix timestamp
         $timestamp = mktime(21, 0, 0, 4, 17, 2007);
@@ -77,7 +77,10 @@ class TokensTest extends TestCase
         $this->assertEquals('2007/04', $tokens->assembleDirectory($this->configure()));
         $this->assertEquals('2007/070400', $tokens->assembleDirectory($this->configure('%Y/%y%m00')));
         $this->assertEquals('070417_210000', $tokens->assembleBasename());
+    }
 
+    public function test_strtotime()
+    {
         // strtotime
         $timestr = '2007-04-17 16:00:00';
         $tokens = new Tokens($timestr);
@@ -87,7 +90,10 @@ class TokensTest extends TestCase
         $this->assertEquals('2007/04', $tokens->assembleDirectory($this->configure()));
         $this->assertEquals('2007/070400', $tokens->assembleDirectory($this->configure('%Y/%y%m00')));
         $this->assertEquals('070417_160000', $tokens->assembleBasename());
+    }
 
+    public function test_array_of_date()
+    {
         // array of date
         $tokens = new Tokens(array('unique-date'));
         $this->assertEquals('unique-date', $tokens->date());
@@ -96,7 +102,10 @@ class TokensTest extends TestCase
         $this->assertNull($tokens->assembleDirectory($this->configure()));
         $this->assertNull($tokens->assembleDirectory($this->configure('%Y/%y%m00')));
         $this->assertEquals('unique-date', $tokens->assembleBasename());
+    }
 
+    public function test_array_of_date_and_time()
+    {
         // array of date and time
         $tokens = new Tokens(array('unique-date', 'unique-time'));
         $this->assertEquals('unique-date', $tokens->date());
@@ -105,7 +114,10 @@ class TokensTest extends TestCase
         $this->assertNull($tokens->assembleDirectory($this->configure()));
         $this->assertNull($tokens->assembleDirectory($this->configure('%Y/%y%m00')));
         $this->assertEquals('unique-date_unique-time', $tokens->assembleBasename());
+    }
 
+    public function test_DateTime_class()
+    {
         // DateTime class
         $datetime = new \DateTime('2007-04-17 16:00:00');
         $tokens = new Tokens($datetime);
@@ -115,7 +127,10 @@ class TokensTest extends TestCase
         $this->assertEquals('2007/04', $tokens->assembleDirectory($this->configure()));
         $this->assertEquals('2007/070400', $tokens->assembleDirectory($this->configure('%Y/%y%m00')));
         $this->assertEquals('070417_160000', $tokens->assembleBasename());
+    }
 
+    public function test_film_YYYYx()
+    {
         // scanned film photo with date and shot
         $tokens = new Tokens(array('1985x'), array('test'), null, null, null, 123);
         $this->assertEquals('1985x', $tokens->date());
