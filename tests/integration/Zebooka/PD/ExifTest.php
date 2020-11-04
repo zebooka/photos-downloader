@@ -20,6 +20,7 @@ class ExifTest extends TestCase
 
     public function test_failing_exiftool()
     {
+        $this->markTestSkipped('ExifTool since some version supports regular files and no longer issues error reading exif.');
         $filename = $this->resourceDirectory() . '/bad.jpg';
         $this->expectExceptionObject(new \RuntimeException('ExifTool failed with code #1.'));
         new Exif($filename);
