@@ -26,6 +26,14 @@ class ExifTest extends TestCase
         new Exif($filename);
     }
 
+    public function test_exif_not_fails_on_file_with_array_data()
+    {
+        $filename = $this->resourceDirectory() . '/array_exif.jpg';
+        $exif = new Exif($filename);
+        $this->assertInstanceOf(Exif::class, $exif);
+        $this->assertEquals('2020-11-04 14:48:00', $exif->CreateDate);
+    }
+
     public function test_exif_read()
     {
         $filename = $this->resourceDirectory() . '/cubie.jpg';

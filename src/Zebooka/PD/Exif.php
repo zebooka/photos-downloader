@@ -75,13 +75,15 @@ class Exif
         return $exif;
     }
 
-    private static function decodeDateTime($string)
+    private static function decodeDateTime($mixed)
     {
-        if (preg_match('/^(\d+)[:\\.-](\d+)[:\\.-](\d+) (\d+)[:\\.-](\d+)[:\\.-](\d+)(?:\\.(\d+))?([+-]\d+:?\d*)?$/', $string, $m)) {
+        if (!is_string($mixed)) {
+            return null;
+        } elseif (preg_match('/^(\d+)[:\\.-](\d+)[:\\.-](\d+) (\d+)[:\\.-](\d+)[:\\.-](\d+)(?:\\.(\d+))?([+-]\d+:?\d*)?$/', $mixed, $m)) {
             return "{$m[1]}-{$m[2]}-{$m[3]} {$m[4]}:{$m[5]}:{$m[6]}" . (isset($m[8]) ? " {$m[8]}" : '');
-        } elseif (preg_match('/([+-][0-9]{1,2}:?([0-9]{1,2})?)$/', $string, $m) && $tms = strtotime($string)) {
+        } elseif (preg_match('/([+-][0-9]{1,2}:?([0-9]{1,2})?)$/', $mixed, $m) && $tms = strtotime($mixed)) {
             return date('Y-m-d H:i:s O', $tms);
-        }elseif ($tms = strtotime($string)) {
+        } elseif ($tms = strtotime($mixed)) {
             return date('Y-m-d H:i:s', $tms);
         } else {
             return null;
