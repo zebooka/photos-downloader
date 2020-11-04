@@ -126,6 +126,13 @@ class TokensTest extends TestCase
         $this->assertEquals('1985x_123_test', $tokens->assembleBasename());
     }
 
+    public function test_single_date_YYMMDD()
+    {
+        $tokens = new Tokens(array('201104'));
+        $this->assertEquals('201104', $tokens->date());
+        $this->assertEquals('2020/11', $tokens->assembleDirectory($this->configure()));
+    }
+
     public function test_failure_with_unsupported_date_time_value_type()
     {
         $this->expectExceptionObject(
