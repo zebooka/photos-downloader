@@ -48,7 +48,7 @@ $dirs = array(
 $phar->buildFromIterator(
     array_reduce(
         $dirs,
-        function (&$iterator, $dir) {
+        function ($iterator, $dir) {
             /** @var \AppendIterator $iterator */
             $array = [];
             foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir)) as $path) {
