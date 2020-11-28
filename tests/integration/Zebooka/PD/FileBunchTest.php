@@ -95,7 +95,7 @@ class FileBunchTest extends TestCase
     {
         $fileBunch = new FileBunch($this->resourceDirectory() . '/cubie', array('jpg'));
         $exifs = $fileBunch->exifs();
-        $this->assertInternalType('array', $exifs);
+        $this->assertIsArray($exifs);
         $this->assertCount(1, $exifs);
         $this->assertArrayHasKey('jpg', $exifs);
         $this->assertInstanceOf('\\Zebooka\\PD\\Exif', $exifs['jpg']);

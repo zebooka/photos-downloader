@@ -49,7 +49,7 @@ class TranslationsInAllLanguagesTest extends TestCase
         foreach ($this->locales() as $locale) {
             $translator = TranslatorFactory::translator($this->resourceDirectory(), $locale);
             foreach ($hashes as $hash)
-            $this->assertNotContains($hash, $translator->translate($hash));
+            $this->assertStringNotContainsString($hash, $translator->translate($hash));
         }
     }
 }

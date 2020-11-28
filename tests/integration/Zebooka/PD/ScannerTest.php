@@ -44,9 +44,9 @@ class ScannerTest extends TestCase
     public function test_supportedExtensions()
     {
         $extensions = Scanner::supportedExtensions();
-        $this->assertInternalType('array', $extensions);
+        $this->assertIsArray($extensions);
         foreach ($extensions as $extension) {
-            $this->assertInternalType('string', $extension);
+            $this->assertIsString($extension);
         }
     }
 
@@ -80,13 +80,13 @@ class ScannerTest extends TestCase
         $this->assertEquals([], $fileBunch->secondaryExtensions());
     }
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->oldcwd = getcwd();
         chdir($this->resourceDirectory());
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         chdir($this->oldcwd);
     }

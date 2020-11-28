@@ -71,7 +71,7 @@ class ParametersTest extends TestCase
     {
         $reqvals = $multiple = array('param1');
         $params = Parameters::createFromArgv(array('-param1', 'value1'), $reqvals, $multiple);
-        $this->assertInternalType('array', $params->param1);
+        $this->assertIsArray($params->param1);
         $this->assertEquals(array('value1'), $params->param1);
         $this->assertEquals(array('-param1', escapeshellarg('value1')), $params->argv($reqvals, $multiple));
     }
@@ -80,7 +80,7 @@ class ParametersTest extends TestCase
     {
         $multiple = array('param1');
         $params = Parameters::createFromArgv(array('-param1', '-param1'), array(), $multiple);
-        $this->assertInternalType('array', $params->param1);
+        $this->assertIsArray($params->param1);
         $this->assertCount(2, $params->param1);
         $this->assertEquals(array(true, true), $params->param1);
         $this->assertEquals(array('-param1', '-param1'), $params->argv(array(), $multiple));

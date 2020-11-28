@@ -98,7 +98,7 @@ class ConfigureView
         $translator = $this->translator;
         $parameters = array_reduce(
             $constants,
-            function (&$parameters, $constant) use ($configureClass, $translator) {
+            function ($parameters, $constant) use ($configureClass, $translator) {
                 $constantValue = constant($configureClass . '::' . $constant);
                 $parameter = '-' . $constantValue;
                 if (in_array($constantValue, Configure::parametersRequiringValues())) {
@@ -116,7 +116,7 @@ class ConfigureView
     {
         $parameterMaxWidth = array_reduce(
             array_keys($parameters),
-            function (&$max, $parameter) {
+            function ($max, $parameter) {
                 return max($max, mb_strlen($parameter));
             },
             0

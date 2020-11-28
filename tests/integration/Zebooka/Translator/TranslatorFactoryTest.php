@@ -15,7 +15,7 @@ class TranslatorFactoryTest extends TestCase
     {
         $translator = TranslatorFactory::translator($this->resourceDirectory(), 'en');
         $this->assertEquals('notTranslated', $translator->translate('notTranslated'));
-        $this->assertRegExp('/^notTranslatedWithParams\\(.+\\)$/', $translator->translate('notTranslatedWithParams', array('abc', '123')));
+        $this->assertMatchesRegularExpression('/^notTranslatedWithParams\\(.+\\)$/', $translator->translate('notTranslatedWithParams', array('abc', '123')));
         $this->assertEquals('This is a test', $translator->translate('test'));
         $this->assertEquals('Another test #2', $translator->translate('anotherTest', array(2)));
     }

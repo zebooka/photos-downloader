@@ -7,7 +7,7 @@ use Zebooka\Translator\Translator;
 
 class ConfigureViewTest extends TestCase
 {
-    public function tearDown()
+    public function tearDown(): void
     {
         \Mockery::close();
     }
@@ -27,9 +27,9 @@ class ConfigureViewTest extends TestCase
             ->getMock();
         $view = new ConfigureView($configure, $translator);
         $text = $view->render();
-        $this->assertInternalType('string', $text);
-        $this->assertContains('unique-string', $text);
-        $this->assertContains('unique-usage-example', $text);
-        $this->assertContains('123', $text);
+        $this->assertIsString($text);
+        $this->assertStringContainsString('unique-string', $text);
+        $this->assertStringContainsString('unique-usage-example', $text);
+        $this->assertStringContainsString('123', $text);
     }
 }

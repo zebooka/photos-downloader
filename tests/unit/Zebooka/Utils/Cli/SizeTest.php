@@ -11,6 +11,6 @@ class SizeTest extends TestCase
         $size = Size::getTerminalWidth();
         $this->assertNotEquals(false, $size);
         $this->assertNotEquals(null, $size);
-        $this->assertInternalType('int', $size);
+        $this->assertIsInt($size);
     }
 }

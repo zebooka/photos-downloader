@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 class LoggerFactoryTest extends TestCase
 {
-    public function tearDown()
+    public function tearDown(): void
     {
         \Mockery::close();
     }

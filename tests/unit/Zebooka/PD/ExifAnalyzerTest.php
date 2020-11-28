@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 class ExifAnalyzerTest extends TestCase
 {
-    public function tearDown()
+    public function tearDown(): void
     {
         \Mockery::close();
     }
@@ -130,7 +130,7 @@ class ExifAnalyzerTest extends TestCase
         $exif = \Mockery::mock(Exif::class);
         $analyzer = new ExifAnalyzer($this->realConfigure());
         $detected = $analyzer->extractDateTimeCameraTokens($this->fileBunch(array($exif)));
-        $this->assertInternalType('array', $detected);
+        $this->assertIsArray($detected);
         $this->assertCount(4, $detected);
     }
 
