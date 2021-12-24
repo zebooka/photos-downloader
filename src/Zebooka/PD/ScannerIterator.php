@@ -19,6 +19,7 @@ class ScannerIterator implements \Iterator
         $this->recursive = $recursive;
     }
 
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         $this->scanner = new Scanner($this->originalSourcePaths, $this->recursive);
@@ -26,6 +27,7 @@ class ScannerIterator implements \Iterator
         $this->value = $this->scanner->searchForNextFile();
     }
 
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         return (false !== $this->value);
@@ -34,16 +36,19 @@ class ScannerIterator implements \Iterator
     /**
      * @return false|FileBunch
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return $this->value;
     }
 
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return $this->key;
     }
 
+    #[\ReturnTypeWillChange]
     public function next()
     {
         $this->key++;

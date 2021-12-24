@@ -80,8 +80,8 @@ class Processor
             $matched = false;
             foreach ($fileBunch->exifs() as $extension => $exif) {
                 foreach ($this->configure->regexpExifFilter as $key => $value) {
-                    if (@preg_match($value, null) !== false) {
-                        if (preg_match($value, $exif->{$key})) {
+                    if (@preg_match($value, '') !== false) {
+                        if (preg_match($value, (string)$exif->{$key})) {
                             $matched = true;
                             break 2;
                         }
@@ -104,8 +104,8 @@ class Processor
             $matched = false;
             foreach ($fileBunch->exifs() as $extension => $exif) {
                 foreach ($this->configure->regexpExifNegativeFilter as $key => $value) {
-                    if (@preg_match($value, null) !== false) {
-                        if (preg_match($value, $exif->{$key})) {
+                    if (@preg_match($value, '') !== false) {
+                        if (preg_match($value, (string)$exif->{$key})) {
                             $matched = true;
                             break 2;
                         }

@@ -9,7 +9,7 @@
     "require": {
         "ext-intl": "*",
         "monolog/monolog": "^1.7",
-        "php": "^7.0|^8.0"
+        "php": "^7.3|~8.0.0|~8.1.0"
     },
     "require-dev": {
         "mockery/mockery": "^1.4",

@@ -124,12 +124,12 @@ class Tokens
     {
         $dir = null;
         if (null !== $this->timestamp()) {
-            $dir = strftime($configure->subDirectoriesFormat, $this->timestamp())
-                ?: strftime('%Y/%m', $this->timestamp());
+            $dir = @strftime($configure->subDirectoriesFormat, $this->timestamp())
+                ?: @strftime('%Y/%m', $this->timestamp());
         } elseif ($date = $this->date()) {
             if (preg_match('/^([0-9]{2})([0-9]{2})([0-9]{2})$/i', $date, $matches)) {
                 $year = 2000 + intval(ltrim($matches[1], '0'));
-                $dir = strftime($configure->subDirectoriesFormat, mktime(0, 0, 0, $matches[2], $matches[3], $year))
+                $dir = @strftime($configure->subDirectoriesFormat, mktime(0, 0, 0, $matches[2], $matches[3], $year))
                     ?: $year . DIRECTORY_SEPARATOR . $matches[2];
             } elseif (preg_match('/^([0-9Y]{4})([0-9M]{2})([0-9D]{2})$/i', $date, $matches)) {
                 $dir = $matches[1];

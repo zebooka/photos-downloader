@@ -158,7 +158,7 @@ class ExifAnalyzer
                 unset($condition['before'], $condition['after']);
                 $matched = true;
                 $extracts = array();
-                $dateTimeUnix = strtotime($exif->DateTimeOriginal);
+                $dateTimeUnix = strtotime((string)$exif->DateTimeOriginal);
                 if (null !== $before && $dateTimeUnix > $before) {
                     continue;
                 }
@@ -166,8 +166,8 @@ class ExifAnalyzer
                     continue;
                 }
                 foreach ($condition as $tag => $expression) {
-                    if (preg_match('#^/.+/[a-z]*$#i', $expression)) {
-                        if (preg_match($expression, $exif->{$tag}, $matches)) {
+                    if (preg_match('#^/.+/[a-z]*$#i', (string)$expression)) {
+                        if (preg_match($expression, (string)$exif->{$tag}, $matches)) {
                             if (count($matches) > 1) {
                                 $extracts = array_merge($extracts, array_slice($matches, 1));
                             }
