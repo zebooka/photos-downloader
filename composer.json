@@ -1,19 +1,21 @@
 {
     "name": "zebooka/photos-downloader",
     "description": "If your pictures aren't good enough, you're not close enough. — Robert Capa",
+    "minimum-stability": "stable",
     "autoload": {
-        "psr-0": {
-            "Zebooka": "src/"
+        "psr-4": {
+            "Zebooka\\": "src/",
+            "Test\\Zebooka\\": "tests/unit/"
         }
     },
     "require": {
+        "php": "^7.3|~8.0.0|~8.1.0",
         "ext-intl": "*",
-        "monolog/monolog": "^1.7",
-        "php": "^7.3|~8.0.0|~8.1.0"
+        "ext-mbstring": "*",
+        "monolog/monolog": "^1.7"
     },
     "require-dev": {
-        "mockery/mockery": "^1.4",
-        "phpunit/phpunit": "^9.4"
-    },
-    "minimum-stability": "stable"
+        "phpunit/phpunit": "^9.5",
+        "mockery/mockery": "^1.5"
+    }
 }

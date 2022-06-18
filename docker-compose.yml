@@ -1,0 +1,38 @@
+version: "3.9"
+services:
+  php73:
+    build:
+      context: .
+      dockerfile: docker/php73/Dockerfile
+    volumes:
+      - "./:/app/"
+      - "./log/php73/:/var/log/"
+      - "~/.ssh:/root/.ssh/"
+      - "./docker/php73/php.ini:/usr/local/etc/php/php.ini"
+  php74:
+    build:
+      context: .
+      dockerfile: docker/php74/Dockerfile
+    volumes:
+      - "./:/app/"
+      - "./log/php74/:/var/log/"
+      - "~/.ssh:/root/.ssh/"
+      - "./docker/php74/php.ini:/usr/local/etc/php/php.ini"
+  php80:
+    build:
+      context: .
+      dockerfile: docker/php80/Dockerfile
+    volumes:
+      - "./:/app/"
+      - "./log/php80/:/var/log/"
+      - "~/.ssh:/root/.ssh/"
+      - "./docker/php80/php.ini:/usr/local/etc/php/php.ini"
+  php81:
+    build:
+      context: .
+      dockerfile: docker/php81/Dockerfile
+    volumes:
+      - "./:/app/"
+      - "./log/php81/:/var/log/"
+      - "~/.ssh:/root/.ssh/"
+      - "./docker/php81/php.ini:/usr/local/etc/php/php.ini"

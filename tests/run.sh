@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 [ $# -eq 0 ] && set "."
 cd "$(dirname "$0")" &&
