@@ -5,7 +5,7 @@
     "autoload": {
         "psr-4": {
             "Zebooka\\": "src/",
-            "Test\\Zebooka\\": "tests/unit/"
+            "Test\\Zebooka\\": ["tests/unit/","tests/integration/"]
         }
     },
     "require": {
