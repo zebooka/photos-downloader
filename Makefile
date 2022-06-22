@@ -1,4 +1,4 @@
-.PHONY: help all composer docker-images start stop test build clean purge
+.PHONY: help all composer docker-images start stop sh test build clean purge
 .DEFAULT := help
 
 MAKEFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
@@ -31,6 +31,10 @@ stop: ## Stop services
 stop:
 	docker-compose stop
 
+sh: ## Open shell in container
+sh:
+	docker-compose exec -- php73 /bin/sh
+
 test: ## Run tests
 test:
 	docker-compose run --rm -- php73 /app/tests/run.sh
@@ -39,11 +43,11 @@ test:
 	docker-compose run --rm -- php81 /app/tests/run.sh
 
 build:
-	docker-compose run --rm -e PHAR_SKELETON_ALIAS="phar-skeleton.phar" -e PHAR_SKELETON_NAMESPACE="Zebooka" -- php73 /app/build-phar.php
+	docker-compose run --rm -e PHAR_SKELETON_ALIAS="photos-downloader.phar" -e PHAR_SKELETON_NAMESPACE="Zebooka" -- php73 /app/build-phar.php
 
 clean: ## Clean built PHAR
 clean:
-	cd "${CURRENT_DIR}" && rm -fv ./build/phar-skeleton.phar
+	cd "${CURRENT_DIR}" && rm -fv ./build/photos-downloader.phar
 
 purge: ## Stop, clean and remove all docker-images/logs/vendor files
 purge: stop clean
