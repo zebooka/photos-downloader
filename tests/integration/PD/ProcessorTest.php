@@ -17,7 +17,7 @@ class ProcessorTest extends TestCase
 
     private function resourceDirectory()
     {
-        return __DIR__ . '/../../../res/processor';
+        return __DIR__ . '/../../res/processor';
     }
 
     /**

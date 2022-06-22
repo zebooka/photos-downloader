@@ -8,7 +8,7 @@ class ScannerIteratorTest extends TestCase
 {
     private function resourceDirectory()
     {
-        return __DIR__ . '/../../../res/scanner';
+        return __DIR__ . '/../../res/scanner';
     }
 
     public function test_recursive_iteration()

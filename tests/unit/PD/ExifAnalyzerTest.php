@@ -23,7 +23,7 @@ class ExifAnalyzerTest extends TestCase
     {
         return new \Zebooka\PD\Configure(
             array(1 => '-T'),
-            json_decode(file_get_contents(__DIR__ . '/../../../../res/tokens.json'), true)
+            json_decode(file_get_contents(__DIR__ . '/../../../res/tokens.json'), true)
         );
     }
 

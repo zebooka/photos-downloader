@@ -10,7 +10,7 @@ class ScannerTest extends TestCase
 
     private function resourceDirectory()
     {
-        return __DIR__ . '/../../../res/scanner';
+        return __DIR__ . '/../../res/scanner';
     }
 
     public function test_searchForNextFile_recursive()

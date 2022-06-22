@@ -8,7 +8,7 @@ class TranslatorFactoryTest extends TestCase
 {
     private function resourceDirectory()
     {
-        return __DIR__ . '/../../../res/translator';
+        return __DIR__ . '/../../res/translator';
     }
 
     public function test_en_locale()

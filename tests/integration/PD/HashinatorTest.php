@@ -8,7 +8,7 @@ class HashinatorTest extends TestCase
 {
     private function resourceDirectory()
     {
-        return __DIR__ . '/../../../res/hashinator';
+        return __DIR__ . '/../../res/hashinator';
     }
 
     public function test_hashinator()

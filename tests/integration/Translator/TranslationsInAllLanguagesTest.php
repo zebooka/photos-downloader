@@ -8,7 +8,7 @@ class TranslationsInAllLanguagesTest extends TestCase
 {
     private function resourceDirectory()
     {
-        return __DIR__ . '/../../../../res';
+        return __DIR__ . '/../../../res';
     }
 
     private function localesFiles()
@@ -48,8 +48,9 @@ class TranslationsInAllLanguagesTest extends TestCase
         $hashes = $this->hashes();
         foreach ($this->locales() as $locale) {
             $translator = TranslatorFactory::translator($this->resourceDirectory(), $locale);
-            foreach ($hashes as $hash)
-            $this->assertStringNotContainsString($hash, $translator->translate($hash));
+            foreach ($hashes as $hash) {
+                $this->assertStringNotContainsString($hash, $translator->translate($hash));
+            }
         }
     }
 }

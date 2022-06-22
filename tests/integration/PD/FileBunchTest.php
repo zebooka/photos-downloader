@@ -8,7 +8,7 @@ class FileBunchTest extends TestCase
 {
     private function resourceDirectory()
     {
-        return __DIR__ . '/../../../res/exif';
+        return __DIR__ . '/../../res/exif';
     }
 
     public function test_creation()

@@ -13,7 +13,7 @@ class AssemblerTest extends TestCase
 
     private function resourceDirectory()
     {
-        return realpath(__DIR__ . '/../../../res/assembler');
+        return realpath(__DIR__ . '/../../res/assembler');
     }
 
     private function configure($to = Configure::KEEP_IN_PLACE, $subDirectoriesStructure = true, $simulate = false)
@@ -149,7 +149,6 @@ class AssemblerTest extends TestCase
             ->once()
             ->andReturn(false)
             ->getMock();
-
 
         $assembler = new Assembler(
             $this->configure($this->resourceDirectory(), false, true),
