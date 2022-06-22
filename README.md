@@ -13,7 +13,8 @@ Author
 Installation
 ------------
 
-Run `make` to build phar package.
+Run `make` to get list of all commands.
+`make all` will create environment, run tests and build application.
 Add `build/photos-downloader.phar` to directory within your executable path.
 For example, add it to `/usr/local/bin/` directory.
 Set executable flag — `chmod +x photos-downloader.phar`.
@@ -22,7 +23,7 @@ Set executable flag — `chmod +x photos-downloader.phar`.
 Requirements
 ------------
 
-You need `composer` to build photos downloader tool.
+You need `Docker` to build photos-downloader tool.
 You need to install `exiftool` (version ≥ 9.33) as well. This program is used to read exif from photos.
 
 
