@@ -2,6 +2,8 @@
 
 namespace Zebooka\PD;
 
+use function PHP81_BC\strftime;
+
 /**
  * @property string $prefix
  * @property int|string $shot

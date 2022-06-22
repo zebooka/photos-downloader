@@ -12,7 +12,8 @@
         "php": "^7.3|~8.0.0|~8.1.0",
         "ext-intl": "*",
         "ext-mbstring": "*",
-        "monolog/monolog": "^1.7"
+        "monolog/monolog": "^1.7",
+        "php81_bc/strftime": "^0.5.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5",

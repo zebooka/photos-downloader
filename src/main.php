@@ -2,14 +2,6 @@
 
 // setup errors handling
 error_reporting(-1);
-set_error_handler(
-    function ($errno, $errstr, $errfile, $errline) {
-        if (!error_reporting()) {
-            return;
-        }
-        throw new \ErrorException($errstr, $errno, 0, $errfile, $errline);
-    }
-);
 set_exception_handler(
     function (\Throwable $e) {
         if (isset($GLOBALS['logger']) && $GLOBALS['logger'] instanceof \Monolog\Logger) {
