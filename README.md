@@ -7,7 +7,7 @@ README
 Author
 ------
 
-* "Anton Bondar" <anton@zebooka.com> — http://zebooka.com
+* "Anton Bondar" <zebooka@gmail.com> — https://zebooka.com/
 
 
 Installation
@@ -48,9 +48,9 @@ License
 
 Standard MIT License — http://opensource.org/licenses/MIT
 
-http://zebooka.com/soft/LICENSE/
+https://zebooka.com/soft/LICENSE/
 
-Copyright (c) 2015, Anton Bondar.
+Copyright (c) 2022, Anton Bondar <zebooka@gmail.com> — https://zebooka.com/
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

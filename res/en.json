@@ -1,6 +1,6 @@
 {
     "appName": "PHOTOS DOWNLOADER 4 | version: {0} | date: {1}",
-    "copyrightInfo": "(c) Copyright 2019, Anton Bondar <anton@zebooka.com> http://zebooka.com/soft/LICENSE/",
+    "copyrightInfo": "(c) Copyright 2022, Anton Bondar <zebooka@gmail.com> https://zebooka.com/",
     "createdDestinationDir": "Created directory ''{0}''.",
     "currentConfiguration": "CURRENT CONFIGURATION:",
     "error/exifAnalyzer/differentCameras": "Unable to process, because files have different cameras in Exif profiles.",

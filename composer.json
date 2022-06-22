@@ -1,6 +1,14 @@
 {
     "name": "zebooka/photos-downloader",
     "description": "If your pictures aren't good enough, you're not close enough. — Robert Capa",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Anton Bondar",
+            "email": "zebooka@gmail.com",
+            "homepage": "https://zebooka.com/"
+        }
+    ],
     "minimum-stability": "stable",
     "autoload": {
         "psr-4": {
@@ -9,7 +17,7 @@
         }
     },
     "require": {
-        "php": "^7.3|~8.0.0|~8.1.0",
+        "php": "~7.3.0|~7.4.0|~8.0.0|~8.1.0",
         "ext-intl": "*",
         "ext-mbstring": "*",
         "monolog/monolog": "^1.7",
