@@ -1,4 +1,4 @@
-.PHONY: help all composer docker-images start stop sh test build clean purge
+.PHONY: help all docker-images composer start stop sh test build clean purge
 .DEFAULT := help
 
 MAKEFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
@@ -9,19 +9,21 @@ help:
 	/^[a-zA-Z0-9_-]+:.*?##/ { printf "  \033[36m%-40s\033[0m %s\n", $$1, $$2 } /^##@/ \
 	{ printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
 
+
+
 ##@ Development
 
 all: ## Setup, test & build phar
 all: docker-images composer test build
 
+docker-images: ## Create docker images
+docker-images:
+	docker-compose up --no-start --build
+
 composer: ## Install composer dependencies
 composer:
 	docker-compose run --rm -e COMPOSER_NO_DEV=1 -- php73 composer install -v -n -d /app
 	docker-compose run --rm -e COMPOSER_VENDOR_DIR=vendor-dev -- php73 composer install -v -n -d /app
-
-docker-images: ## Create docker images
-docker-images:
-	docker-compose up --no-start --build
 
 start: ## Start services in background
 start:
@@ -42,6 +44,7 @@ test:
 	docker-compose run --rm -- php80 /app/tests/run.sh
 	docker-compose run --rm -- php81 /app/tests/run.sh
 
+build: ## Build PHAR
 build:
 	docker-compose run --rm -e PHAR_SKELETON_ALIAS="photos-downloader.phar" -e PHAR_SKELETON_NAMESPACE="Zebooka" -- php73 /app/build-phar.php
 
