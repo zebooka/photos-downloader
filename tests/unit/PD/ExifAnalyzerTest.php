@@ -153,6 +153,21 @@ class ExifAnalyzerTest extends TestCase
         $analyzer->extractDateTimeCameraTokens($this->fileBunch($exifs));
     }
 
+    public function test_success_1_sec_different_datetimes()
+    {
+        /** @var Exif $exif1 */
+        $exif1 = \Mockery::mock(Exif::class);
+        $exif1->DateTimeOriginal = '2007-04-17 16:00:01';
+        /** @var Exif $exif2 */
+        $exif2 = \Mockery::mock(Exif::class);
+        $exif2->DateTimeOriginal = '2007-04-17 16:00:00';
+        $exifs = array($exif1, $exif2);
+        $analyzer = new ExifAnalyzer($this->realConfigure());
+        list($dt, $c, $t, $g) = $analyzer->extractDateTimeCameraTokens($this->fileBunch($exifs));
+        $this->assertEquals(strtotime($exif2->DateTimeOriginal), $dt);
+        $this->assertNotEquals(strtotime($exif1->DateTimeOriginal), $dt);
+    }
+
     public function test_failure_different_cameras()
     {
         /** @var Exif $exif1 */

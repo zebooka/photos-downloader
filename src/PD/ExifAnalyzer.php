@@ -64,11 +64,14 @@ class ExifAnalyzer
             }
         }
         $datetimes = array_unique($datetimes);
+        sort($datetimes);
         if ($this->configure->compareExifs && count($datetimes) > 1) {
-            throw new ExifAnalyzerException(
-                'Files have ' . count($datetimes) . ' unique date/time values.',
-                ExifAnalyzerException::DIFFERENT_DATES
-            );
+            if (count($datetimes) != 2 || abs($datetimes[0] - $datetimes[1]) > 1) {
+                throw new ExifAnalyzerException(
+                    'Files have ' . count($datetimes) . ' unique date/time values.',
+                    ExifAnalyzerException::DIFFERENT_DATES
+                );
+            }
         }
         $datetime = ($datetimes ? reset($datetimes) : null);
         $gpsDatetimes = array_unique($gpsDatetimes);
