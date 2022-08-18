@@ -40,7 +40,7 @@ class TokenizerIntegrationTest extends TestCase
         return \Mockery::mock(FileBunch::class)
             ->shouldReceive('basename')
             ->withNoArgs()
-            ->once()
+            ->twice()
             ->andReturn($basename)
             ->getMock();
     }

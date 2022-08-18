@@ -52,7 +52,7 @@ class TokenizerTest extends TestCase
         return \Mockery::mock(FileBunch::class)
             ->shouldReceive('basename')
             ->withNoArgs()
-            ->once()
+            ->twice()
             ->andReturn($basename)
             ->getMock();
     }
@@ -135,6 +135,18 @@ class TokenizerTest extends TestCase
         $this->assertEquals('210000', $tokens->time());
         $this->assertEquals('unique-camera', $tokens->camera);
         $this->assertEquals(array('IMGP1234'), $tokens->tokens);
+    }
+
+    public function test_tokenize_dji_photo()
+    {
+        $fileBunch = $this->fileBunch('DJI_1234');
+        $tokenizer = new Tokenizer($this->configure(), $this->exifAnalyzer($fileBunch, strtotime('2007-04-17 21:00:00'), 'unique-camera'));
+        $tokens = $tokenizer->tokenize($fileBunch);
+        $this->assertInstanceOf(Tokens::class, $tokens);
+        $this->assertEquals('070417', $tokens->date());
+        $this->assertEquals('210000', $tokens->time());
+        $this->assertEquals('unique-camera', $tokens->camera);
+        $this->assertEquals(array('DJI-1234'), $tokens->tokens);
     }
 
     public function test_tokenize_lengthy_date()
@@ -292,14 +304,14 @@ class TokenizerTest extends TestCase
 
     public function test_tokenize_skips_img_dsc_token()
     {
-        foreach (array('IMG', 'DSC') as $notAuthor) {
+        foreach (array('IMG', 'DSC', 'DJI', 'ANY') as $notAuthor) {
             $configure = $this->configure();
             $fileBunch = $this->fileBunch($notAuthor . '_1234');
             $tokenizer = new Tokenizer($configure, $this->exifAnalyzer($fileBunch, '2015-11-01 22:00:00', null));
             $tokens = $tokenizer->tokenize($fileBunch);
             $this->assertInstanceOf(Tokens::class, $tokens);
             $this->assertNull($tokens->author);
-            $this->assertEquals(array($notAuthor, '1234'), $tokens->tokens);
+            $this->assertEquals(array("{$notAuthor}-1234"), $tokens->tokens);
         }
     }
 

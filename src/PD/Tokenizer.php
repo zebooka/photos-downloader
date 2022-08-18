@@ -16,14 +16,20 @@ class Tokenizer
     public function tokenize(FileBunch $fileBunch)
     {
         list($exifDateTime, $exifCamera, $exifTokens) = $this->exifAnalyzer->extractDateTimeCameraTokens($fileBunch);
-        $tokens = array_values(
-            array_filter(
-                explode(Tokens::SEPARATOR, $fileBunch->basename()),
-                function ($value) {
-                    return '' !== $value;
-                }
-            )
-        );
+        if (preg_match('/^([A-Z]{4}|[A-Z]{3}_)[0-9]{4}$/', $fileBunch->basename())) {
+            $tokens = [
+                str_replace('_', '-', $fileBunch->basename()),
+            ];
+        } else {
+            $tokens = array_values(
+                array_filter(
+                    explode(Tokens::SEPARATOR, $fileBunch->basename()),
+                    function ($value) {
+                        return '' !== $value;
+                    }
+                )
+            );
+        }
         $prefix = self::extractPrefix($tokens);
         list($datetime, $shot) = self::extractDateTimeShot($tokens, $exifDateTime, $this->configure->preferExifDateTime);
         if (null === $datetime) {
