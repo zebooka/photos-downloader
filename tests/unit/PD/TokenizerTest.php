@@ -159,6 +159,17 @@ class TokenizerTest extends TestCase
         $this->assertEquals('210000', $tokens->time());
     }
 
+    public function test_tokenize_lengthy_date_2()
+    {
+        $fileBunch = $this->fileBunch('PHOTO-2007-04-17-21-00-00 2');
+        $tokenizer = new Tokenizer($this->configure(), $this->exifAnalyzer($fileBunch, null, null));
+        $tokens = $tokenizer->tokenize($fileBunch);
+        $this->assertInstanceOf(Tokens::class, $tokens);
+        $this->assertEquals('070417', $tokens->date());
+        $this->assertEquals('210000', $tokens->time());
+        $this->assertEquals('2', $tokens->shot);
+    }
+
     public function test_tokenize_lengthy_separated_date()
     {
         $fileBunch = $this->fileBunch('2007-04-17_21-00-00');

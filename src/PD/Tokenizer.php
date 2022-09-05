@@ -200,10 +200,11 @@ class Tokenizer
 
     public static function detectDashedCombinedDateTime($token, $index, array &$tokens)
     {
-        if (preg_match('/^([0-9]{4})-([0-9]{1,2})-([0-9]{1,2})[ -]([0-9]{1,2})[\\.-]([0-9]{1,2})[\\.-]([0-9]{1,2})$/', $token, $matches)) {
+        // YYYY-MM-DD-HH-MM-SS
+        if (preg_match('/^(?:[A-Z]+-)?([0-9]{4})-([0-9]{1,2})-([0-9]{1,2})[ -]([0-9]{1,2})[\\.-]([0-9]{1,2})[\\.-]([0-9]{1,2})(?: (\d+))?$/', $token, $matches)) {
             $datetime = mktime($matches[4], $matches[5], $matches[6], $matches[2], $matches[3], $matches[1]);
             unset($tokens[$index]);
-            return array($datetime, null);
+            return array($datetime, isset($matches[7]) ? $matches[7] : null);
         }
         return null;
     }
