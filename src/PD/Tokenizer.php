@@ -260,7 +260,7 @@ class Tokenizer
     public static function detectFilmDateShot($token, $index, array &$tokens)
     {
         if (preg_match('/^([1-9][0-9Y]{3}x?)$/', $token, $matches) && isset($tokens[$index + 1])
-            && preg_match('/^([0-9]+)$/', $tokens[$index + 1], $matches2)
+            && preg_match('/^((?:[A-Z]{1,2})?[0-9]+)$/', $tokens[$index + 1], $matches2)
         ) {
             $datetime = array($token);
             $shot = $tokens[$index + 1];

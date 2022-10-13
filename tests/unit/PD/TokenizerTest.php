@@ -290,14 +290,41 @@ class TokenizerTest extends TestCase
 
     public function test_tokenize_short_scanned_film_photo()
     {
-        $fileBunch = $this->fileBunch('1980x_123');
+        $fileBunch = $this->fileBunch('1980x_A123');
         $exifAnalyzer = $this->exifAnalyzer($fileBunch, null, null);
         $tokenizer = new Tokenizer($this->configure(), $exifAnalyzer);
         $tokens = $tokenizer->tokenize($fileBunch);
         $this->assertInstanceOf(Tokens::class, $tokens);
         $this->assertEquals('1980x', $tokens->date());
-        $this->assertEquals('123', $tokens->shot);
+        $this->assertEquals('A123', $tokens->shot);
         $this->assertEquals(array(), $tokens->tokens);
+    }
+
+    public function test_tokenize_short_scanned_film_photo_2()
+    {
+        $fileBunch = $this->fileBunch('1980x_AZ123');
+        $exifAnalyzer = $this->exifAnalyzer($fileBunch, null, null);
+        $tokenizer = new Tokenizer($this->configure(), $exifAnalyzer);
+        $tokens = $tokenizer->tokenize($fileBunch);
+        $this->assertInstanceOf(Tokens::class, $tokens);
+        $this->assertEquals('1980x', $tokens->date());
+        $this->assertEquals('AZ123', $tokens->shot);
+        $this->assertEquals(array(), $tokens->tokens);
+    }
+
+    public function test_tokenize_short_scanned_film_photo_3()
+    {
+        $this->expectExceptionObject(
+            new TokenizerException(
+                'Unable to detect date/time.',
+                TokenizerException::NO_DATE_TIME_DETECTED
+            )
+        );
+
+        $fileBunch = $this->fileBunch('1984_ABC123');
+        $exifAnalyzer = $this->exifAnalyzer($fileBunch, null, null);
+        $tokenizer = new Tokenizer($this->configure(), $exifAnalyzer);
+        $tokens = $tokenizer->tokenize($fileBunch);
     }
 
     public function test_tokenize_preferExifDateTime()
