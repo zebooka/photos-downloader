@@ -11,8 +11,14 @@ namespace Zebooka\PD;
  * @property string $Model
  * @property string $DateTimeOriginal
  * @property string $CreateDate
+ * @property string $OffsetTime
+ * @property string $OffsetTimeOriginal
+ * @property string $OffsetTimeDigitized
  * @property string $ModifyDate
  * @property string $GPSDateTime
+ * @property string $SubSecCreateDate
+ * @property string $SubSecDateTimeOriginal
+ * @property string $SubSecModifyDate
  * @property string $CreationDate
  * @property string $TrackCreateDate
  * @property string $MediaCreateDate
@@ -30,7 +36,7 @@ class Exif
 
         $exif0 = [];
         $exif1 = $this->readExif($filename, '');
-        $exif2 = $this->readExif($filename, '-d "%Y-%m-%d %H:%M:%S %z"');
+        $exif2 = $this->readExif($filename, '-d "%Y-%m-%d %H:%M:%S.%f %z"');
         foreach ($exif1 as $key => $value) {
             if ('0000:00:00 00:00:00' == $value) {
                 // nothing
@@ -80,7 +86,7 @@ class Exif
         if (!is_string($mixed)) {
             return null;
         } elseif (preg_match('/^(\d+)[:\\.-](\d+)[:\\.-](\d+) (\d+)[:\\.-](\d+)[:\\.-](\d+)(?:\\.(\d+))?([+-]\d+:?\d*)?$/', $mixed, $m)) {
-            return "{$m[1]}-{$m[2]}-{$m[3]} {$m[4]}:{$m[5]}:{$m[6]}" . (isset($m[8]) ? " {$m[8]}" : '');
+            return "{$m[1]}-{$m[2]}-{$m[3]} {$m[4]}:{$m[5]}:{$m[6]}" . (!empty($m[7]) ? ".{$m[7]}" : '') . (!empty($m[8]) ? " {$m[8]}" : '');
         } elseif (preg_match('/([+-][0-9]{1,2}:?([0-9]{1,2})?)$/', $mixed, $m) && $tms = strtotime($mixed)) {
             return date('Y-m-d H:i:s O', $tms);
         } elseif ($tms = strtotime($mixed)) {

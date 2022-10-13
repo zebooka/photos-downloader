@@ -28,12 +28,15 @@ class ExifAnalyzer
     {
         $datetimes = $gpsDatetimes = array();
         $datePropertiesNames = array(
+            'SubSecDateTimeOriginal',
+            'SubSecCreateDate',
             'DateTimeOriginal',
             'TrackCreateDate',
             'MediaCreateDate',
             'DateCreated',
             'CreateDate',
             'CreationDate',
+            'SubSecModifyDate',
             'ModifyDate',
             'GPSDateTime',
         );

@@ -50,7 +50,7 @@ class ExifTest extends TestCase
         $this->assertEquals('2012-12-21 16:16:37', $exif->DateTimeOriginal);
 
         $this->assertObjectHasAttribute('CreateDate', $exif);
-        $this->assertEquals('2012-12-21 20:16:37 +04:00', $exif->CreateDate);
+        $this->assertEquals('2012-12-21 20:16:37.555 +04:00', $exif->CreateDate);
 
         $this->assertObjectNotHasAttribute('ModifyDate', $exif);
         $this->assertNull($exif->ModifyDate);
