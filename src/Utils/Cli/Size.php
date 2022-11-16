@@ -8,7 +8,7 @@ class Size
     {
         $code = 0;
         $output = array();
-        exec('stty -a | grep columns', $output, $code);
+        exec('stty -a 2>/dev/null | grep columns', $output, $code);
         if ($code) {
             return false;
         }
