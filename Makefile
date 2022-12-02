@@ -43,6 +43,7 @@ test:
 	docker-compose run --rm -- php74 /app/tests/run.sh
 	docker-compose run --rm -- php80 /app/tests/run.sh
 	docker-compose run --rm -- php81 /app/tests/run.sh
+	docker-compose run --rm -- php82 /app/tests/run.sh
 
 build: ## Build PHAR
 build:

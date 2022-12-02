@@ -28,6 +28,8 @@ namespace Zebooka\PD;
  */
 class Exif
 {
+    private $data = [];
+
     public function __construct($filename)
     {
         if (!is_file($filename) || !is_readable($filename)) {
@@ -104,6 +106,21 @@ class Exif
      */
     public function __get($property)
     {
-        return null;
+        return $this->data[$property] ?? null;
+    }
+
+    public function __set($property, $value)
+    {
+        $this->data[$property] = $value;
+    }
+
+    public function __isset($property)
+    {
+        return isset($this->data[$property]);
+    }
+
+    public function __unset($property)
+    {
+        unset($this->data[$property]);
     }
 }

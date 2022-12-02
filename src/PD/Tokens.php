@@ -19,6 +19,12 @@ class Tokens
     const TIME_FORMAT = 'His';
     const ERROR_NO_DATE_TIME = 1;
 
+    public $prefix;
+    public $shot;
+    public $author;
+    public $camera;
+    public $tokens;
+
     private $timestamp = null;
     private $date = null;
     private $time = null;

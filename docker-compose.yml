@@ -36,3 +36,12 @@ services:
       - "./log/php81/:/var/log/"
       - "~/.ssh:/root/.ssh/"
       - "./docker/php81/php.ini:/usr/local/etc/php/php.ini"
+  php82:
+    build:
+      context: .
+      dockerfile: docker/php82/Dockerfile
+    volumes:
+      - "./:/app/"
+      - "./log/php82/:/var/log/"
+      - "~/.ssh:/root/.ssh/"
+      - "./docker/php82/php.ini:/usr/local/etc/php/php.ini"
