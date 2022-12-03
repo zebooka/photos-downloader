@@ -38,21 +38,21 @@ class ExifTest extends TestCase
     {
         $filename = $this->resourceDirectory() . '/cubie.jpg';
         $exif = new Exif($filename);
-        $this->assertObjectHasAttribute('SourceFile', $exif);
-        $this->assertObjectHasAttribute('FileName', $exif);
-        $this->assertObjectHasAttribute('FileModifyDate', $exif);
-        $this->assertObjectHasAttribute('MIMEType', $exif);
-        $this->assertObjectHasAttribute('Make', $exif);
-        $this->assertObjectHasAttribute('Model', $exif);
-        $this->assertObjectHasAttribute('Software', $exif);
+        $this->assertTrue(isset($exif->SourceFile));
+        $this->assertTrue(isset($exif->FileName));
+        $this->assertTrue(isset($exif->FileModifyDate));
+        $this->assertTrue(isset($exif->MIMEType));
+        $this->assertTrue(isset($exif->Make));
+        $this->assertTrue(isset($exif->Model));
+        $this->assertTrue(isset($exif->Software));
 
-        $this->assertObjectHasAttribute('DateTimeOriginal', $exif);
+        $this->assertTrue(isset($exif->DateTimeOriginal));
         $this->assertEquals('2012-12-21 16:16:37', $exif->DateTimeOriginal);
 
-        $this->assertObjectHasAttribute('CreateDate', $exif);
+        $this->assertTrue(isset($exif->CreateDate));
         $this->assertEquals('2012-12-21 20:16:37.555 +04:00', $exif->CreateDate);
 
-        $this->assertObjectNotHasAttribute('ModifyDate', $exif);
+        $this->assertFalse(isset($exif->ModifyDate));
         $this->assertNull($exif->ModifyDate);
     }
 }

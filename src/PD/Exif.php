@@ -99,11 +99,6 @@ class Exif
         // 2019:11:08 12:41:43.259+07:00
     }
 
-    /**
-     * Magic getter for not set properties. Always returns null.
-     * @param $property
-     * @return null
-     */
     public function __get($property)
     {
         return $this->data[$property] ?? null;

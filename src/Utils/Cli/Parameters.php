@@ -4,10 +4,12 @@ namespace Zebooka\Utils\Cli;
 
 class Parameters
 {
+    private $data = [];
+
     public function __construct(array $parameters)
     {
         foreach ($parameters as $name => $value) {
-            $this->{$name} = $value;
+            $this->data[$name] = $value;
         }
     }
 
@@ -83,7 +85,7 @@ class Parameters
     {
         $argv = array();
         $positioned = array();
-        foreach ($this as $name => $value) {
+        foreach ($this->data as $name => $value) {
             if (is_numeric($name)) {
                 $positioned[$name] = $value;
             } else {
@@ -130,7 +132,7 @@ class Parameters
     public function positionedParameters()
     {
         $positioned = array();
-        foreach ($this as $name => $value) {
+        foreach ($this->data as $name => $value) {
             if (is_numeric($name)) {
                 $positioned[$name] = $value;
             }
@@ -138,13 +140,23 @@ class Parameters
         return $positioned;
     }
 
-    /**
-     * Magic getter for not set properties. Always returns null.
-     * @param $property
-     * @return null
-     */
     public function __get($property)
     {
-        return null;
+        return $this->data[$property] ?? null;
+    }
+
+    public function __set($property, $value)
+    {
+        $this->data[$property] = $value;
+    }
+
+    public function __isset($property)
+    {
+        return isset($this->data[$property]);
+    }
+
+    public function __unset($property)
+    {
+        unset($this->data[$property]);
     }
 }
