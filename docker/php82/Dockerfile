@@ -1,4 +1,4 @@
-FROM php:8.2.0RC7-fpm-alpine
+FROM php:8.2-fpm-alpine
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 RUN apk update && apk add \
     ca-certificates \
