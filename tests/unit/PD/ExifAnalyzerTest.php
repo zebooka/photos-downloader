@@ -421,4 +421,33 @@ class ExifAnalyzerTest extends TestCase
         list($detectedDateTime) = $analyzer->extractDateTimeCameraTokens($this->fileBunch(array($exif)));
         $this->assertEquals(date('r', strtotime('2015-11-01 21:00:00 +06:00')), date('r', $detectedDateTime));
     }
+
+    public function test_offset_datetime_detection()
+    {
+        $exif = new Exif(
+            json_decode(file_get_contents(__DIR__ . '/../../res/exif/offset_exif1.json'), true),
+            json_decode(file_get_contents(__DIR__ . '/../../res/exif/offset_exif2.json'), true)
+        );
+        $bunch = \Mockery::mock(FileBunch::class)
+            ->shouldReceive('exifs')
+            ->andReturn(['jpg' => $exif])
+            ->getMock();
+
+        $c = $this->realConfigure();
+        $analyzer = new ExifAnalyzer($c);
+        list($detectedDateTime) = $analyzer->extractDateTimeCameraTokens($bunch);
+        $this->assertEquals(date('r', strtotime('Tue, 23 May 2023 19:26:45')), date('r', $detectedDateTime));
+
+        $c = $this->realConfigure();
+        $c->timezone = '+0100';
+        $analyzer = new ExifAnalyzer($c);
+        list($detectedDateTime) = $analyzer->extractDateTimeCameraTokens($bunch);
+        $this->assertEquals(date('r', strtotime('Tue, 23 May 2023 18:26:45')), date('r', $detectedDateTime));
+
+        $c = $this->realConfigure();
+        $analyzer = new ExifAnalyzer($c);
+        $c->timezone = '+0200';
+        list($detectedDateTime) = $analyzer->extractDateTimeCameraTokens($bunch);
+        $this->assertEquals(date('r', strtotime('Tue, 23 May 2023 19:26:45')), date('r', $detectedDateTime));
+    }
 }

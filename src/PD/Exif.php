@@ -30,15 +30,23 @@ class Exif
 {
     private $data = [];
 
-    public function __construct($filename)
+    /**
+     * @param string|array $filenameOrExif1
+     * @param null|array $exif2
+     */
+    public function __construct($filenameOrExif1, $exif2 = null)
     {
-        if (!is_file($filename) || !is_readable($filename)) {
-            throw new \InvalidArgumentException('File \'' . $filename . '\' not found or is not readable.');
+        $exif0 = [];
+        if (is_array($filenameOrExif1)) {
+            $exif1 = $filenameOrExif1;
+        } else {
+            if (!is_file($filenameOrExif1) || !is_readable($filenameOrExif1)) {
+                throw new \InvalidArgumentException('File \'' . $filenameOrExif1 . '\' not found or is not readable.');
+            }
+            $exif1 = $this->readExif($filenameOrExif1, '');
+            $exif2 = $this->readExif($filenameOrExif1, '-d "%Y-%m-%d %H:%M:%S.%f %z"');
         }
 
-        $exif0 = [];
-        $exif1 = $this->readExif($filename, '');
-        $exif2 = $this->readExif($filename, '-d "%Y-%m-%d %H:%M:%S.%f %z"');
         foreach ($exif1 as $key => $value) {
             if ('0000:00:00 00:00:00' == $value) {
                 // nothing

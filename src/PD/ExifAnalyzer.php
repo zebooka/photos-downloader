@@ -41,6 +41,7 @@ class ExifAnalyzer
             'GPSDateTime',
         );
         foreach ($this->exifs($fileBunch) as $extension => $exif) {
+            $fileTimezone = $exif->OffsetTimeOriginal ?? $exif->OffsetTime ?? null;
             // search for all dates
             foreach ($datePropertiesNames as $datePropertyName) {
                 if ($exif->{$datePropertyName}) {
@@ -53,6 +54,11 @@ class ExifAnalyzer
                 if ($exif->{$datePropertyName}) {
                     $timestamp = strtotime($exif->{$datePropertyName});
                     if ($timestamp && date('Y-m-d H:i:s', $timestamp) != $exif->{$datePropertyName}) {
+                        if ($this->configure->timezone) {
+                            $timestamp += time() - strtotime($this->configure->timezone);
+                        } elseif ($fileTimezone) {
+                            $timestamp += time() - strtotime($fileTimezone);
+                        }
                         $datetimes[$extension] = $timestamp;
                         break;
                     }
