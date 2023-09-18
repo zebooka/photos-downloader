@@ -407,4 +407,17 @@ class TokenizerTest extends TestCase
         $this->assertEquals('092650', $tokens->time());
         $this->assertEquals(null, $tokens->shot);
     }
+
+    public function test_tokenize_telegram_date()
+    {
+        foreach (['IMAGE 2023-09-18 10:08:51', 'IMAGE 2023-09-18 10/08/51'] as $basename) {
+            $fileBunch = $this->fileBunch($basename);
+            $tokenizer = new Tokenizer($this->configure(), $this->exifAnalyzer($fileBunch, null, null));
+            $tokens = $tokenizer->tokenize($fileBunch);
+            $this->assertInstanceOf(Tokens::class, $tokens);
+            $this->assertEquals('230918', $tokens->date());
+            $this->assertEquals('100851', $tokens->time());
+            $this->assertEquals(null, $tokens->shot);
+        }
+    }
 }

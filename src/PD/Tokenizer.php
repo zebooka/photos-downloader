@@ -112,6 +112,7 @@ class Tokenizer
                 ?? self::detectDashedDateTime($token, $index, $tokens)
                 ?? self::detectSJCamDateShot($token, $index, $tokens)
                 ?? self::detectWhatsAppDateTime($token, $index, $tokens)
+                ?? self::detectTelegramDateTime($token, $index, $tokens)
                 ?? self::detectFilmDateShot($token, $index, $tokens);
 
             if (is_array($result) && count($result) == 2) {
@@ -256,6 +257,18 @@ class Tokenizer
         return null;
     }
 
+    public static function detectTelegramDateTime($token, $index, array &$tokens)
+    {
+        // IMAGE YYYY-MM-DD HH:MM:SS
+        if (preg_match('/^IMAGE ([0-9]{4})-([0-9]{2})-([0-9]{2}) ([0-9]{2}):([0-9]{2}):([0-9]{2})$/', $token, $matches)
+            || preg_match(':^IMAGE ([0-9]{4})-([0-9]{2})-([0-9]{2}) ([0-9]{2})/([0-9]{2})/([0-9]{2})$:', $token, $matches)
+        ) {
+            $datetime = mktime($matches[4], $matches[5], $matches[6], $matches[2], $matches[3], $matches[1]);
+            unset($tokens[$index]);
+            return array($datetime, null);
+        }
+        return null;
+    }
 
     public static function detectFilmDateShot($token, $index, array &$tokens)
     {
