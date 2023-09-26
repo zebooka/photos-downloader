@@ -176,6 +176,8 @@ class Scanner
 
             'dng', // Adobe & Leica & Pentax
 
+            'heic', // Apple
+
             'jpg',
             'jpeg',
             'tiff',
