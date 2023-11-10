@@ -35,7 +35,7 @@ class Processor
         $this->translator = $translator;
     }
 
-    public function process(FileBunch $fileBunch)
+    public function process(FileBunch $fileBunch): bool
     {
         $this->logger->addNotice($this->translator->translate('originalFileBunchPath', array($fileBunch)));
 
@@ -152,7 +152,7 @@ class Processor
         }
 
         // move/copy files
-        $filesTransfered = false;
+        $filesTransferred = false;
         foreach ($fileBunch->extensions() as $extension) {
             $from = $fileBunch->bunchId() . ($extension ? '.' . $extension : '');
             $this->bytesProcessed += filesize($from);
@@ -162,34 +162,32 @@ class Processor
                 || ($this->configure->regexpFilenameNegativeFilter && preg_match($this->configure->regexpFilenameNegativeFilter, $to))
             ) {
                 $this->logger->addNotice($this->translator->translate('skipped/filteredByFileRegExp', [$to]));
-                continue;
             } elseif (is_file($to) && $this->configure->deleteDuplicates && !$this->configure->copy) {
                 $queue[] = new Executor\Command(
                     'rm ' . escapeshellarg($from),
                     $this->translator->translate('error/unableToDelete', array($from)),
                     $this->translator->translate('fileDuplicateWasRemoved', array($extension))
                 );
-                $filesTransfered = true;
+                $filesTransferred = true;
             } elseif (is_file($to) && (!$this->configure->deleteDuplicates || $this->configure->copy)) {
                 $this->logger->addNotice($this->translator->translate('skipped/targetAlreadyExists', array($extension)));
-                continue;
             } elseif ($this->configure->copy) {
                 $queue[] = new Executor\Command(
                     'cp ' . escapeshellarg($from) . ' ' . escapeshellarg($to),
                     $this->translator->translate('error/unableToCopy', array($from, $to)),
                     $this->translator->translate('newFilePath', array($to))
                 );
-                $filesTransfered = true;
+                $filesTransferred = true;
             } else {
                 $queue[] = new Executor\Command(
                     'mv ' . escapeshellarg($from) . ' ' . escapeshellarg($to),
                     $this->translator->translate('error/unableToMove', array($from, $to)),
                     $this->translator->translate('newFilePath', array($to))
                 );
-                $filesTransfered = true;
+                $filesTransferred = true;
             }
         }
-        if ($filesTransfered) {
+        if ($filesTransferred) {
             foreach ($queue as $command) {
                 /** @var Executor\Command $command */
                 if ($this->configure->saveCommandsFile && !$this->configure->simulate) {
@@ -208,8 +206,8 @@ class Processor
         return true;
     }
 
-    public function bytesProcessed()
+    public function bytesProcessed(): int
     {
-        return intval($this->bytesProcessed);
+        return $this->bytesProcessed;
     }
 }
