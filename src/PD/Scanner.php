@@ -198,4 +198,14 @@ class Scanner
             '3gp',
         );
     }
+
+    public function dirsLeft(): int
+    {
+        return count($this->dirs);
+    }
+
+    public function filesLeft(): int
+    {
+        return count($this->files);
+    }
 }

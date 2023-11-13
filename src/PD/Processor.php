@@ -35,9 +35,9 @@ class Processor
         $this->translator = $translator;
     }
 
-    public function process(FileBunch $fileBunch): bool
+    public function process(FileBunch $fileBunch, string $progress = ''): bool
     {
-        $this->logger->addNotice($this->translator->translate('originalFileBunchPath', array($fileBunch)));
+        $this->logger->addNotice(trim($progress . ' ' . $this->translator->translate('originalFileBunchPath', array($fileBunch))));
 
         // tokenize
         try {

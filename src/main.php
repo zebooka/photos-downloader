@@ -76,9 +76,14 @@ $processor = new \Zebooka\PD\Processor(
     $translator
 );
 $i = 0;
-foreach (new \Zebooka\PD\ScannerIterator($configure->from, $configure->recursive) as $fileBunch) {
-    $processor->process($fileBunch);
+$scannerIterator = new \Zebooka\PD\ScannerIterator($configure->from, $configure->recursive);
+foreach ($scannerIterator as $fileBunch) {
     $i++;
+    $processor->process(
+        $fileBunch,
+        "{$i} >> {$scannerIterator->getScanner()->dirsLeft()}:{$scannerIterator->getScanner()->filesLeft()}"
+    );
+
     if ($configure->limit && $i >= $configure->limit) {
         $logger->addInfo($translator->translate('processedFilesLimitWasReached', array($configure->limit)));
         break;

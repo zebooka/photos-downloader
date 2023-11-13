@@ -54,4 +54,9 @@ class ScannerIterator implements \Iterator
         $this->key++;
         $this->value = $this->scanner->searchForNextFile();
     }
+
+    public function getScanner(): Scanner
+    {
+        return $this->scanner;
+    }
 }
