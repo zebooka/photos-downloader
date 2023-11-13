@@ -21,7 +21,8 @@
         "ext-json": "*",
         "ext-mbstring": "*",
         "monolog/monolog": "^1.7",
-        "php81_bc/strftime": "^0.5.0"
+        "php81_bc/strftime": "^0.5.0",
+        "symfony/console": "^5.4"
     },
     "autoload-dev": {
         "psr-4": {
