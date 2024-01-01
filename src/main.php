@@ -1,30 +1,24 @@
 <?php
 
-// setup errors handling
-error_reporting(-1);
-set_exception_handler(
-    function (\Throwable $e) {
-        if (isset($GLOBALS['logger']) && $GLOBALS['logger'] instanceof \Monolog\Logger) {
-            $GLOBALS['logger']->addCritical($e);
-        } else {
-            error_log($e);
-        }
-        exit(1);
-    }
-);
-mb_internal_encoding('UTF-8');
+//// setup errors handling
+//error_reporting(-1);
+//set_exception_handler(
+//    function (\Throwable $e) {
+//        if (isset($GLOBALS['logger']) && $GLOBALS['logger'] instanceof \Monolog\Logger) {
+//            $GLOBALS['logger']->addCritical($e);
+//        } else {
+//            error_log($e);
+//        }
+//        exit(1);
+//    }
+//);
+//mb_internal_encoding('UTF-8');
 
 // autoloader
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
-// read configure
-$configure = new \Zebooka\PD\Configure(
-    $_SERVER['argv'],
-    json_decode(file_get_contents(__DIR__ . '/../res/tokens.json'), true)
-);
-
-// setup logger
-$logger = \Zebooka\PD\LoggerFactory::logger($configure);
+use Symfony\Component\Console\Application;
+use Zebooka\PD\Command;
 
 // get locale
 $locale = 'en';
@@ -39,67 +33,10 @@ setlocale(LC_ALL, $locale);
 // translations
 $translator = \Zebooka\Translator\TranslatorFactory::translator(__DIR__ . '/../res', $locale);
 
-$version = trim(file_get_contents(__DIR__ . '/../res/VERSION'));
-$logger->addInfo($translator->translate('appName', array(VERSION, $version)));
-$logger->addInfo($translator->translate('copyrightInfo'));
-$view = new \Zebooka\PD\ConfigureView($configure, $translator, \Zebooka\Utils\Cli\Size::getTerminalWidth() ?: 80);
+// symfony console application
+$application = new Application($translator->translate('appName'), VERSION);
+$command = new Command($_SERVER['argv'][0], $locale);
+$application->add($command);
+$application->setDefaultCommand($command->getName(), true);
+$application->run();
 
-if ($configure->help || 1 === count($_SERVER['argv'])) {
-    $logger->addInfo($view->render());
-    exit(0);
-} else {
-    $logger->addInfo($view->renderConfiguration());
-}
-
-// validate regexp
-try {
-    preg_match($configure->regexpFilenameFilter ?: '/test/', 'test');
-} catch (\ErrorException $e) {
-    $logger->addCritical($translator->translate('error/regexpInvalid', array($configure->regexpFilenameFilter)));
-    exit(1);
-}
-try {
-    preg_match($configure->regexpFilenameNegativeFilter ?: '/test/', 'test');
-} catch (\ErrorException $e) {
-    $logger->addCritical($translator->translate('error/regexpInvalid', array($configure->regexpFilenameNegativeFilter)));
-    exit(1);
-}
-
-// processing
-$processor = new \Zebooka\PD\Processor(
-    $configure,
-    new \Zebooka\PD\Tokenizer($configure, new \Zebooka\PD\ExifAnalyzer($configure)),
-    new \Zebooka\PD\Assembler($configure, new \Zebooka\PD\Hashinator()),
-    new \Zebooka\PD\BunchCache(),
-    new \Zebooka\Utils\Executor(),
-    $logger,
-    $translator
-);
-$i = 0;
-$scannerIterator = new \Zebooka\PD\ScannerIterator($configure->from, $configure->recursive);
-foreach ($scannerIterator as $fileBunch) {
-    $i++;
-    $processor->process(
-        $fileBunch,
-        "{$i} >> {$scannerIterator->getScanner()->dirsLeft()}:{$scannerIterator->getScanner()->filesLeft()}"
-    );
-
-    if ($configure->limit && $i >= $configure->limit) {
-        $logger->addInfo($translator->translate('processedFilesLimitWasReached', array($configure->limit)));
-        break;
-    }
-}
-
-$logger->addInfo($translator->translate('xFilesProcessed', array($i)));
-$logger->addInfo(
-    $translator->translate(
-        'xBytesProcessed',
-        array(\Zebooka\Utils\Size::humanReadableSize($processor->bytesProcessed()))
-    )
-);
-$logger->addInfo(
-    $translator->translate(
-        'peakMemoryUsage',
-        array(\Zebooka\Utils\Size::humanReadableSize(memory_get_peak_usage(true)))
-    )
-);

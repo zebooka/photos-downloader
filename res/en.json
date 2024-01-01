@@ -1,8 +1,8 @@
 {
-    "appName": "PHOTOS DOWNLOADER 4 | version: {0} | date: {1}",
-    "copyrightInfo": "(c) Copyright 2022, Anton Bondar <zebooka@gmail.com> https://zebooka.com/",
+    "appName": "PHOTOS DOWNLOADER",
+    "copyrightInfo": "(c) Copyright 2023, <fg=bright-green>Anton Bondar</> <fg=gray><zebooka@gmail.com></> <fg=cyan>https://zebooka.com/</>",
     "createdDestinationDir": "Created directory ''{0}''.",
-    "currentConfiguration": "CURRENT CONFIGURATION:",
+    "currentConfiguration": "CURRENT CONFIGURATION: <fg=green>{0}</> <fg=bright-blue>{1}</>",
     "error/exifAnalyzer/differentCameras": "Unable to process, because files have different cameras in Exif profiles.",
     "error/exifAnalyzer/differentDates": "Unable to process, because files have different timestamps in Exif profiles.",
     "error/exifAnalyzer/exifException": "Unable to process, because of Exif reading failure.",
@@ -65,7 +65,6 @@
     "parameters/value/P_TOKENS_ADD": "TOKENS",
     "parameters/value/P_TOKENS_DROP": "TOKENS",
     "parameters/value/P_VERBOSE_LEVEL": "LEVEL",
-    "peakMemoryUsage": "Peak memory usage: {0}",
     "processedFilesLimitWasReached": "Processed files limit was reached ({0, plural, one {# file} other {# files}} limit).",
     "skipped/filteredByExifRegExp": " --> skipped ''{0}'' file bunch (filtered by EXIF regexp)",
     "skipped/filteredByFileRegExp": " --> skipped ''{0}'' file (filtered by resulting name regexp)",
@@ -77,7 +76,6 @@
     "usage/parameterValue/to": "PATH",
     "vlcHeader": "VLC MEDIA PLAYER:",
     "vlcNotice": "In order to process snapshots from VLC, you need to change its configure slightly. Go to settings and in 'Video' section set 'Video snapshots' -> 'Prefix' option to 'vlc_$N_$T_' and check 'Sequential numbering' option.\n\nIMPORTANT! Before taking snapshots you need to process video files with this tool in order to rename them to correct format. This is needed for VLC to save original filename in snapshot file name, because snapshots do not have EXIF metadata and this tool will be unable to detect date/time, camera and author name.",
-    "xBytesProcessed": "{0} processed.",
-    "xFilesProcessed": "{0, plural, one {# file} other {# files}} processed.",
+    "xUsageStatistics": "{0, plural, one {<fg=cyan>#</> file} other {<fg=cyan>#</> files}} and <fg=cyan>{1}</> processed. Peak memory usage: <fg=cyan>{2}</>",
     "z": "The End!"
 }

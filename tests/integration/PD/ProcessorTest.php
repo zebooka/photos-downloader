@@ -5,6 +5,8 @@ namespace Zebooka\PD;
 use Mockery\MockInterface;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 use Zebooka\Translator\Translator;
 use Zebooka\Utils\Executor;
 
@@ -213,11 +215,31 @@ class ProcessorTest extends TestCase
             ->shouldIgnoreMissing();
     }
 
+    /**
+     * @return \Mockery\LegacyMockInterface|MockInterface|InputInterface|(InputInterface&\Mockery\LegacyMockInterface)|(InputInterface&MockInterface)
+     */
+    private function inputInterface()
+    {
+        return \Mockery::mock(InputInterface::class)
+            ->shouldIgnoreMissing();
+    }
+
+    /**
+     * @return \Mockery\LegacyMockInterface|MockInterface|OutputInterface|(OutputInterface&\Mockery\LegacyMockInterface)|(OutputInterface&MockInterface)
+     */
+    private function outputInterface()
+    {
+        return \Mockery::mock(OutputInterface::class)
+            ->shouldIgnoreMissing();
+    }
+
     public function test_process()
     {
         $fileBunch = $this->fileBunch();
         $tokens = $this->tokens();
         $processor = new Processor(
+            $this->inputInterface(),
+            $this->outputInterface(),
             $this->configure(),
             $this->tokenizer($fileBunch, $tokens),
             $this->assembler($tokens, $fileBunch, $this->resourceDirectory() . DIRECTORY_SEPARATOR . 'new-unique-bunchId'),
@@ -236,6 +258,8 @@ class ProcessorTest extends TestCase
         $fileBunch = $this->fileBunchWithEmptyExtension();
         $tokens = $this->tokens();
         $processor = new Processor(
+            $this->inputInterface(),
+            $this->outputInterface(),
             $this->configure(),
             $this->tokenizer($fileBunch, $tokens),
             $this->assembler($tokens, $fileBunch, $this->resourceDirectory() . DIRECTORY_SEPARATOR . 'new-unique-bunchId'),
@@ -261,6 +285,8 @@ class ProcessorTest extends TestCase
             $fileBunch = $this->fileBunch();
             $tokens = $this->tokens();
             $processor = new Processor(
+                $this->inputInterface(),
+                $this->outputInterface(),
                 $this->configure(),
                 $this->tokenizerException($fileBunch, $exception),
                 $this->assemblerNeverCalled(),
@@ -280,6 +306,8 @@ class ProcessorTest extends TestCase
         $fileBunch = $this->fileBunch();
         $tokens = $this->tokens();
         $processor = new Processor(
+            $this->inputInterface(),
+            $this->outputInterface(),
             $this->configure(array('camera-1', 'camera-2')),
             $this->tokenizer($fileBunch, $tokens),
             $this->assemblerNeverCalled(),
@@ -298,6 +326,8 @@ class ProcessorTest extends TestCase
         $fileBunch = $this->fileBunch();
         $tokens = $this->tokens();
         $processor = new Processor(
+            $this->inputInterface(),
+            $this->outputInterface(),
             $this->configure(),
             $this->tokenizer($fileBunch, $tokens),
             $this->assemblerException($tokens, $fileBunch, AssemblerException::TEST),
@@ -316,6 +346,8 @@ class ProcessorTest extends TestCase
         $fileBunch = $this->fileBunch();
         $tokens = $this->tokens();
         $processor = new Processor(
+            $this->inputInterface(),
+            $this->outputInterface(),
             $this->configure(),
             $this->tokenizer($fileBunch, $tokens),
             $this->assembler($tokens, $fileBunch, $this->resourceDirectory() . DIRECTORY_SEPARATOR . 'unique-bunchId'),
@@ -347,6 +379,8 @@ class ProcessorTest extends TestCase
             ->andReturn('unique-message')
             ->getMock();
         $processor = new Processor(
+            $this->inputInterface(),
+            $this->outputInterface(),
             $configure,
             $this->tokenizer($fileBunch, $tokens),
             $this->assembler($tokens, $fileBunch, 'unique-bunchId2'),
@@ -377,6 +411,8 @@ class ProcessorTest extends TestCase
             ->andReturn('unique-message')
             ->getMock();
         $processor = new Processor(
+            $this->inputInterface(),
+            $this->outputInterface(),
             $configure,
             $this->tokenizer($fileBunch, $tokens),
             $this->assembler($tokens, $fileBunch, 'unique-bunchId2'),
@@ -397,6 +433,8 @@ class ProcessorTest extends TestCase
         $tokens = $this->tokens();
         $translator = $this->translator();
         $processor = new Processor(
+            $this->inputInterface(),
+            $this->outputInterface(),
             $configure,
             $this->tokenizer($fileBunch, $tokens),
             $this->assembler($tokens, $fileBunch, 'unique-bunchId2'),
@@ -435,6 +473,8 @@ class ProcessorTest extends TestCase
             ->andReturn('unique-message')
             ->getMock();
         $processor = new Processor(
+            $this->inputInterface(),
+            $this->outputInterface(),
             $configure,
             $this->tokenizer($fileBunch, $tokens),
             $this->assemblerNeverCalled(),

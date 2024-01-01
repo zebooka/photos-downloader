@@ -3,21 +3,45 @@
 namespace Zebooka\PD;
 
 use Monolog\Logger;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 use Zebooka\Translator\Translator;
 use Zebooka\Utils\Executor;
 
 class Processor
 {
+    /** @var InputInterface */
+    private $input;
+
+    /** @var OutputInterface */
+    private $output;
+
     private $configure;
+
+    /** @var Tokenizer */
     private $tokenizer;
+
+    /** @var Assembler */
     private $assembler;
+
+    /** @var BunchCache */
     private $bunchCache;
+
+    /** @var Executor  */
     private $executor;
+
+    /** @var Logger  */
     private $logger;
+
+    /** @var Translator  */
     private $translator;
+
+    /** @var int */
     private $bytesProcessed = 0;
 
     public function __construct(
+        InputInterface $input,
+        OutputInterface $output,
         Configure $configure,
         Tokenizer $tokenizer,
         Assembler $assembler,
@@ -26,6 +50,8 @@ class Processor
         Logger $logger,
         Translator $translator
     ) {
+        $this->input = $input;
+        $this->output = $output;
         $this->configure = $configure;
         $this->tokenizer = $tokenizer;
         $this->assembler = $assembler;

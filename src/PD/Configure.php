@@ -9,7 +9,7 @@ use Zebooka\Utils\Cli\Parameters;
  * @property bool $verboseLevel
  * @property null|string $logFile
  * @property int $logLevel
- * @property bool $simulate
+ * @property bool $simulate //
  * @property null|string $saveCommandsFile
  * @property int $limit
  * @property bool $recursive
@@ -35,23 +35,23 @@ class Configure
     const PATHS_FROM_STDIN = '-';
     const KEEP_IN_PLACE = '-';
 
-    const P_HELP = 'h';
-    const P_VERBOSE_LEVEL = 'E';
-    const P_LOG_FILE = 'o';
-    const P_LOG_LEVEL = 'O';
-    const P_SIMULATE = 's';
-    const P_SAVE_COMMANDS_FILE = 'S';
-    const P_LIMIT = 'l';
-    const P_NO_RECURSIVE = 'R';
-    const P_FROM = 'f';
-    const P_LIST_FILE = 'F';
-    const P_TO = 't';
-    const P_NO_SUBDIRS = 'D';
-    const P_SUBDIRS_FORMAT = 'k';
-    const P_COPY = 'c';
-    const P_NO_DELETE_DUPLICATES = 'Z';
-    const P_AUTHOR = 'a';
-    const P_CAMERAS = 'd';
+    const P_HELP = 'h'; //
+    const P_VERBOSE_LEVEL = 'E'; // ?
+    const P_LOG_FILE = 'o'; //  ?
+    const P_LOG_LEVEL = 'O'; // ?
+    const P_SIMULATE = 's'; //
+    const P_SAVE_COMMANDS_FILE = 'S'; // ?
+    const P_LIMIT = 'l'; //
+    const P_NO_RECURSIVE = 'R'; //
+    const P_FROM = 'f'; //
+    const P_LIST_FILE = 'F'; //
+    const P_TO = 't'; //
+    const P_NO_SUBDIRS = 'D'; //
+    const P_SUBDIRS_FORMAT = 'k'; // ?
+    const P_COPY = 'c'; //
+    const P_NO_DELETE_DUPLICATES = 'Z'; //
+    const P_AUTHOR = 'a'; //
+    const P_CAMERAS = 'd'; // ?
     const P_PREFER_EXIF_DT = 'T';
     const P_TIMEZONE = 'z';
     const P_TOKENS_ADD = 'x';
