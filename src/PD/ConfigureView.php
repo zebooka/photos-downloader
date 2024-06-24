@@ -4,6 +4,7 @@ namespace Zebooka\PD;
 
 use Zebooka\Translator\Translator;
 
+/** @deprecated  */
 class ConfigureView
 {
     private $configure;
@@ -23,17 +24,12 @@ class ConfigureView
             PHP_EOL .
             $this->usage() .
             PHP_EOL . PHP_EOL .
-            $this->parameters() .
+//            $this->parameters() .
             PHP_EOL . PHP_EOL .
-            $this->currentConfiguration() .
+//            $this->currentConfiguration() .
             PHP_EOL . PHP_EOL .
             $this->vlcNotice() .
             PHP_EOL;
-    }
-
-    public function renderConfiguration()
-    {
-        return PHP_EOL . $this->currentConfiguration() . PHP_EOL;
     }
 
     private function indent()
@@ -61,20 +57,6 @@ class ConfigureView
             );
     }
 
-    private function parameters()
-    {
-        return
-            $this->translator->translate('parameters') . PHP_EOL .
-            $this->combineParametersDescriptions($this->extractParametersWithDescriptions());
-    }
-
-    private function currentConfiguration()
-    {
-        return
-            $this->translator->translate('currentConfiguration') . PHP_EOL .
-            $this->indent() . implode(' ', $this->configure->argv());
-    }
-
     private function vlcNotice()
     {
         $maxWidth = max(0, $this->screenWidth - 2 * mb_strlen($this->indent()));
@@ -85,52 +67,6 @@ class ConfigureView
             $this->mergeTwoPaddedLists($lines, [], str_repeat(' ', $maxWidth), '');
     }
 
-    private function extractParametersWithDescriptions()
-    {
-        $configureClass = get_class($this->configure);
-        $reflection = new \ReflectionClass($configureClass);
-        $constants = array_filter(
-            array_keys($reflection->getConstants()),
-            function ($constant) {
-                return preg_match('/^P_/', $constant);
-            }
-        );
-        $translator = $this->translator;
-        $parameters = array_reduce(
-            $constants,
-            function ($parameters, $constant) use ($configureClass, $translator) {
-                $constantValue = constant($configureClass . '::' . $constant);
-                $parameter = '-' . $constantValue;
-                if (in_array($constantValue, Configure::parametersRequiringValues())) {
-                    $parameter .= ' ' . $translator->translate('parameters/value/' . $constant);
-                }
-                $parameters[$parameter] = $translator->translate('parameters/description/' . $constant);
-                return $parameters;
-            },
-            array()
-        );
-        return $parameters;
-    }
-
-    private function combineParametersDescriptions(array $parameters)
-    {
-        $parameterMaxWidth = array_reduce(
-            array_keys($parameters),
-            function ($max, $parameter) {
-                return max($max, mb_strlen($parameter));
-            },
-            0
-        );
-        $descriptionMaxWidth = max($parameterMaxWidth, $this->screenWidth - 2 * mb_strlen($this->indent()) - $parameterMaxWidth);
-        $keys = $this->wrapAndPadList(array_keys($parameters), $parameterMaxWidth);
-        $descriptions = $this->wrapAndPadList(array_values($parameters), $descriptionMaxWidth);
-        return $this->mergeTwoPaddedLists(
-            $keys,
-            $descriptions,
-            str_repeat(' ', $parameterMaxWidth),
-            str_repeat(' ', $descriptionMaxWidth)
-        );
-    }
 
     /**
      * @param array $list

@@ -2,6 +2,7 @@
 
 namespace Zebooka\PD;
 
+use Symfony\Component\Console\Input\InputInterface;
 use Zebooka\Utils\Cli\Parameters;
 
 /**
@@ -98,8 +99,12 @@ class Configure
     private $knownCameras = [];
     private $knownTokens = [];
 
-    public function __construct(array $argv, array $knownLists)
+    private $input;
+
+    public function __construct(array $argv, InputInterface $input, array $knownLists)
     {
+        $this->input = $input;
+
         $argv = $this->decodeArgv($argv);
 
         $this->help = !empty($argv->{self::P_HELP});
@@ -141,6 +146,20 @@ class Configure
         $this->knownTokens = (isset($knownLists['tokens']) && is_array($knownLists['tokens']) ? $knownLists['tokens'] : $this->knownTokens);
     }
 
+    /**
+     * @param string $property
+     * @return mixed
+     */
+    public function __get(string $property)
+    {
+        return method_exists($this, $property) ? $this->{$property}() : null;
+    }
+
+    public function preferExifDateTime(): bool
+    {
+        return $this->input->getOption(Command::PREFER_EXIF_DT);
+    }
+
     private function splitSpaceSeparated(array $values)
     {
         $splitted = [];
@@ -162,6 +181,7 @@ class Configure
         return $result;
     }
 
+    /** @deprecated  */
     private function decodeArgv(array $argv)
     {
         return Parameters::createFromArgv(
@@ -171,6 +191,7 @@ class Configure
         );
     }
 
+    /** @deprecated  */
     public function argv()
     {
         $parameters = new Parameters($this->encodeParameters());
@@ -219,41 +240,7 @@ class Configure
         return self::KEEP_IN_PLACE === $this->to;
     }
 
-    private function encodeParameters()
-    {
-        return array(
-            0 => $this->executableName,
-            self::P_HELP => $this->help,
-            self::P_VERBOSE_LEVEL => $this->verboseLevel,
-            self::P_LOG_FILE => $this->logFile,
-            self::P_LOG_LEVEL => $this->logLevel,
-            self::P_SIMULATE => $this->simulate,
-            self::P_SAVE_COMMANDS_FILE => $this->saveCommandsFile,
-            self::P_LIMIT => $this->limit,
-            self::P_NO_RECURSIVE => !$this->recursive,
-            self::P_FROM => $this->from,
-            self::P_LIST_FILE => $this->listFile,
-            self::P_TO => $this->to,
-            self::P_NO_SUBDIRS => !$this->subDirectoriesStructure,
-            self::P_SUBDIRS_FORMAT => $this->subDirectoriesFormat,
-            self::P_COPY => $this->copy,
-            self::P_NO_DELETE_DUPLICATES => !$this->deleteDuplicates,
-            self::P_AUTHOR => $this->author,
-            self::P_CAMERAS => $this->cameras,
-            self::P_PREFER_EXIF_DT => $this->preferExifDateTime,
-            self::P_TIMEZONE => $this->timezone,
-            self::P_TOKENS_ADD => $this->tokensToAdd,
-            self::P_TOKENS_DROP => $this->tokensToDrop,
-            self::P_TOKENS_DROP_UNKNOWN => $this->tokensDropUnknown,
-            self::P_NO_COMPARE_EXIFS => !$this->compareExifs,
-            self::P_REGEXP_EXIF_FILTER => $this->regexpExifFilter,
-            self::P_REGEXP_EXIF_NEGATIVE_FILTER => $this->regexpExifNegativeFilter,
-            self::P_REGEXP_FILENAME_FILTER => $this->regexpFilenameFilter,
-            self::P_REGEXP_FILENAME_NEGATIVE_FILTER => $this->regexpFilenameNegativeFilter,
-            self::P_PANORAMIC_RATIO => $this->panoramicRatio,
-        );
-    }
-
+    /** @deprecated  */
     public static function parametersRequiringValues()
     {
         return array(
@@ -279,6 +266,7 @@ class Configure
         );
     }
 
+    /** @deprecated  */
     public static function parametersUsableMultipleTimes()
     {
         return array(

@@ -2,15 +2,12 @@
 
 namespace Zebooka\PD;
 
-use PhpParser\Node\Stmt\Throw_;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
 use Zebooka\Translator\Translator;
 use Zebooka\Translator\TranslatorFactory;
 use Zebooka\Utils\Size;
@@ -98,15 +95,27 @@ class Command extends SymfonyCommand
 
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        // TODO: remove
-        $configure = new \Zebooka\PD\Configure(
+        $tokensConfigs = [
+            getcwd() . '/.photos-downloader-rc.json',
+            ($_SERVER['HOME'] ?? getcwd()) . '/.photos-downloader-rc.json',
+            ($_SERVER['HOME'] ?? getcwd()) . '/.config/photos-downloader/rc.json',
+        ];
+        $tokensConfigs = array_values(array_filter($tokensConfigs, 'is_file'));
+
+        $configure = new Configure(
             $_SERVER['argv'],
-            json_decode(file_get_contents(__DIR__ . '/../../res/tokens.json'), true)
+            $input,
+            $tokensConfigs[0] ? json_decode(file_get_contents($tokensConfigs[0]), true) : []
         );
         $logger = \Zebooka\PD\LoggerFactory::logger($configure);
-        // TODO: END remove
 
-        // TODO add FROM/TO validation
+        if (!count($input->getOption(self::FROM))) {
+            throw new \UnexpectedValueException($this->t('error/noFromPathSpecified'));
+        }
+
+        if (!strlen((string)$input->getOption(self::TO))) {
+            throw new \UnexpectedValueException($this->t('error/noToPathSpecified'));
+        }
 
         $output->write($this->t('appName') . ' ');
         $output->writeln('<fg=green>' . VERSION . '</>');

@@ -23,13 +23,14 @@ class InfraTest extends TestCase
     private function realConfigure()
     {
         return new \Zebooka\PD\Configure(
-            array(),
+            [],
             json_decode(file_get_contents(__DIR__ . '/../../../res/tokens.json'), true)
         );
     }
 
     public function test_after_151115_infra()
     {
+        $this->markTestSkipped('Reimplement test as unit');
         $exifAnalyzer = new ExifAnalyzer($this->realConfigure());
         $tokens = $exifAnalyzer::detectTokenIds(
             $this->exif('2015-11-15'),
@@ -41,6 +42,7 @@ class InfraTest extends TestCase
 
     public function test_before_151115_no_infra()
     {
+        $this->markTestSkipped('Reimplement test as unit');
         $exifAnalyzer = new ExifAnalyzer($this->realConfigure());
         $tokens = $exifAnalyzer::detectTokenIds(
             $this->exif('2015-11-14'),

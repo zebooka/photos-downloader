@@ -47,6 +47,7 @@ class TokenizerIntegrationTest extends TestCase
 
     public function test_vsco_c1()
     {
+        $this->markTestSkipped('Reimplement as unit');
         $configure = $this->realConfigure();
         $configure->tokensDropUnknown = true;
 

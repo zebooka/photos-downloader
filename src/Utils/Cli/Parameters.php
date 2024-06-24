@@ -2,6 +2,7 @@
 
 namespace Zebooka\Utils\Cli;
 
+/** @deprecated  */
 class Parameters
 {
     private $data = [];

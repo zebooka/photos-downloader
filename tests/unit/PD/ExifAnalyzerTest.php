@@ -3,6 +3,8 @@
 namespace Zebooka\PD;
 
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Console\Input\ArgvInput;
+use Symfony\Component\Console\Input\InputInterface;
 
 class ExifAnalyzerTest extends TestCase
 {
@@ -22,7 +24,8 @@ class ExifAnalyzerTest extends TestCase
     private function realConfigure()
     {
         return new \Zebooka\PD\Configure(
-            array(1 => '-T'),
+            [1 => '-T'],
+            new ArgvInput([1 => '-T'], (new Command())->getDefinition()),
             json_decode(file_get_contents(__DIR__ . '/../../../res/tokens.json'), true)
         );
     }
@@ -86,11 +89,11 @@ class ExifAnalyzerTest extends TestCase
         $exif->GPSDateTime = $datetime = '2007-04-17 16:00:00';
         $exif->DateTimeOriginal = '2007-04-17 17:00:00';
         list($detectedDateTime, , , $replacedWithGps) = $analyzer->extractDateTimeCameraTokens($this->fileBunch(array($exif)));
-        $this->assertEquals(strtotime($datetime), $detectedDateTime);
+        $this->assertEquals($datetime, date('Y-m-d H:i:s', $detectedDateTime));
         $this->assertTrue($replacedWithGps);
         $replacedWithGps = false;
         $detectedDateTime = $analyzer->extractDateTime($this->fileBunch(array($exif)), $replacedWithGps);
-        $this->assertEquals(strtotime($datetime), $detectedDateTime);
+        $this->assertEquals($datetime, date('Y-m-d H:i:s', $detectedDateTime));
         $this->assertTrue($replacedWithGps);
     }
 

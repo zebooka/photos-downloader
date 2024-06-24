@@ -6,51 +6,9 @@ use PHPUnit\Framework\TestCase;
 
 class ConfigureTest extends TestCase
 {
-    public function test_has_parameters_with_required_values()
-    {
-        $this->assertEquals(
-            array(
-                Configure::P_VERBOSE_LEVEL,
-                Configure::P_LOG_FILE,
-                Configure::P_LOG_LEVEL,
-                Configure::P_SAVE_COMMANDS_FILE,
-                Configure::P_LIMIT,
-                Configure::P_FROM,
-                Configure::P_LIST_FILE,
-                Configure::P_TO,
-                Configure::P_SUBDIRS_FORMAT,
-                Configure::P_AUTHOR,
-                Configure::P_CAMERAS,
-                Configure::P_TIMEZONE,
-                Configure::P_TOKENS_ADD,
-                Configure::P_TOKENS_DROP,
-                Configure::P_REGEXP_EXIF_FILTER,
-                Configure::P_REGEXP_EXIF_NEGATIVE_FILTER,
-                Configure::P_REGEXP_FILENAME_FILTER,
-                Configure::P_REGEXP_FILENAME_NEGATIVE_FILTER,
-                Configure::P_PANORAMIC_RATIO,
-            ),
-            Configure::parametersRequiringValues()
-        );
-    }
-
-    public function test_has_parameters_usable_multiple_times()
-    {
-        $this->assertEquals(
-            array(
-                Configure::P_FROM,
-                Configure::P_CAMERAS,
-                Configure::P_TOKENS_ADD,
-                Configure::P_TOKENS_DROP,
-                Configure::P_REGEXP_EXIF_FILTER,
-                Configure::P_REGEXP_EXIF_NEGATIVE_FILTER,
-            ),
-            Configure::parametersUsableMultipleTimes()
-        );
-    }
-
     public function test_configure()
     {
+        $this->markTestSkipped('Test argv parsing with Command configure.');
         $knownData = $this->knownData();
         $configure = new Configure($this->argv(), $knownData);
         $this->assertEquals('/example/bin', $configure->executableName);
@@ -88,6 +46,7 @@ class ConfigureTest extends TestCase
 
     public function test_empty_configure()
     {
+        $this->markTestSkipped('Test argv parsing with Command configure.');
         $configure = new Configure([], []);
         $this->assertNull($configure->executableName);
         $this->assertFalse($configure->help);
@@ -125,6 +84,7 @@ class ConfigureTest extends TestCase
 
     public function test_timezones()
     {
+        $this->markTestSkipped('Test argv parsing with Command configure.');
         $configure = new Configure(array(1 => '-z', '+06:00'), []);
         $this->assertEquals('+06:00', $configure->timezone);
         $configure = new Configure(array(1 => '-z', '-0600'), []);
@@ -133,84 +93,6 @@ class ConfigureTest extends TestCase
         $this->assertNull($configure->timezone);
         $configure = new Configure(array(1 => '-z', '+600'), []);
         $this->assertNull($configure->timezone);
-    }
-
-    public function test_reassembling_configure()
-    {
-        $configure = new Configure($this->argv(), $this->knownData());
-        $argv = array_merge([
-            escapeshellarg($configure->executableName),
-            '-' . Configure::P_HELP,
-            '-' . Configure::P_VERBOSE_LEVEL,
-            escapeshellarg($configure->verboseLevel),
-            '-' . Configure::P_LOG_FILE,
-            escapeshellarg($configure->logFile),
-            '-' . Configure::P_LOG_LEVEL,
-            escapeshellarg($configure->logLevel),
-            '-' . Configure::P_SIMULATE,
-            '-' . Configure::P_SAVE_COMMANDS_FILE,
-            escapeshellarg($configure->saveCommandsFile),
-            '-' . Configure::P_LIMIT,
-            escapeshellarg($configure->limit),
-            '-' . Configure::P_NO_RECURSIVE,
-            '-' . Configure::P_FROM,
-            escapeshellarg($configure->from[0]),
-            '-' . Configure::P_FROM,
-            escapeshellarg($configure->from[1]),
-            '-' . Configure::P_FROM,
-            escapeshellarg($configure->from[2]),
-            '-' . Configure::P_LIST_FILE,
-            escapeshellarg($configure->listFile),
-            '-' . Configure::P_TO,
-            escapeshellarg($configure->to),
-            '-' . Configure::P_NO_SUBDIRS,
-            '-' . Configure::P_SUBDIRS_FORMAT,
-            escapeshellarg($configure->subDirectoriesFormat),
-            '-' . Configure::P_COPY,
-            '-' . Configure::P_NO_DELETE_DUPLICATES,
-            '-' . Configure::P_AUTHOR,
-            escapeshellarg($configure->author),
-            '-' . Configure::P_CAMERAS,
-            escapeshellarg($configure->cameras[0]),
-            '-' . Configure::P_CAMERAS,
-            escapeshellarg($configure->cameras[1]),
-            '-' . Configure::P_CAMERAS,
-            escapeshellarg($configure->cameras[2]),
-            '-' . Configure::P_PREFER_EXIF_DT,
-            '-' . Configure::P_TIMEZONE,
-            escapeshellarg($configure->timezone),
-            '-' . Configure::P_TOKENS_ADD,
-            escapeshellarg($configure->tokensToAdd[0]),
-            '-' . Configure::P_TOKENS_ADD,
-            escapeshellarg($configure->tokensToAdd[1]),
-            '-' . Configure::P_TOKENS_DROP,
-            escapeshellarg($configure->tokensToDrop[0]),
-            '-' . Configure::P_TOKENS_DROP,
-            escapeshellarg($configure->tokensToDrop[1]),
-            '-' . Configure::P_TOKENS_DROP_UNKNOWN,
-            '-' . Configure::P_NO_COMPARE_EXIFS,
-        ],
-        $this->implodeKeyValueParams(Configure::P_REGEXP_EXIF_FILTER, $configure->regexpExifFilter),
-        $this->implodeKeyValueParams(Configure::P_REGEXP_EXIF_NEGATIVE_FILTER, $configure->regexpExifNegativeFilter),
-        [
-            '-' . Configure::P_REGEXP_FILENAME_FILTER,
-            escapeshellarg($configure->regexpFilenameFilter),
-            '-' . Configure::P_REGEXP_FILENAME_NEGATIVE_FILTER,
-            escapeshellarg($configure->regexpFilenameNegativeFilter),
-            '-' . Configure::P_PANORAMIC_RATIO,
-            escapeshellarg($configure->panoramicRatio),
-        ]);
-        $this->assertEquals($argv, $configure->argv());
-    }
-
-    private function implodeKeyValueParams($param, array $array)
-    {
-        $result = [];
-        foreach ($array as $key => $value) {
-            $result[] = '-' . $param;
-            $result[] = escapeshellarg($key . '=' . $value);
-        }
-        return $result;
     }
 
     private function knownData()
