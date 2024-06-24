@@ -6,6 +6,8 @@
     "error/exifAnalyzer/differentCameras": "Unable to process, because files have different cameras in Exif profiles.",
     "error/exifAnalyzer/differentDates": "Unable to process, because files have different timestamps in Exif profiles.",
     "error/exifAnalyzer/exifException": "Unable to process, because of Exif reading failure.",
+    "error/noFromPathSpecified": "No FROM path specified.",
+    "error/noToPathSpecified": "No TO path specified.",
     "error/regexpInvalid": "Invalid regular expression: ''{0}''.",
     "error/tokenize/datetime": "Unable to tokenize file bunch — date/time detection error.",
     "error/unableToAssembleTokens": "Unable to assemble tokens into new filename.",
