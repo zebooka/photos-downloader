@@ -2,18 +2,26 @@
 
 namespace Zebooka\PD;
 
+use Symfony\Component\Console\Input\InputInterface;
+
 class Assembler
 {
+    /** @var Configure */
     private $configure;
-    private $hashinator;
-    /**
-     * @var FileBunch[]
-     */
-    private $simulated = array();
 
-    public function  __construct(Configure $configure, Hashinator $hashinator)
+    /** @var InputInterface */
+    private $input;
+
+    /** @var Hashinator */
+    private $hashinator;
+
+    /** @var FileBunch[] */
+    private $simulated = [];
+
+    public function  __construct(Configure $configure, InputInterface $input, Hashinator $hashinator)
     {
         $this->configure = $configure;
+        $this->input = $input;
         $this->hashinator = $hashinator;
     }
 
@@ -36,7 +44,7 @@ class Assembler
             $tokens->increaseShot();
         }
 
-        if ($this->configure->simulate) {
+        if (Configure::simulate($this->input)) {
             $this->simulated[$newBunchId] = $fileBunch;
         }
         return $newBunchId;
@@ -44,10 +52,10 @@ class Assembler
 
     private function assembleNewBunchId(Tokens $tokens, FileBunch $fileBunch)
     {
-        $to = ((!$this->configure->isKeepInPlace() && file_exists($this->configure->to)) ? realpath($this->configure->to) : $this->configure->to);
-        if (Configure::KEEP_IN_PLACE === $this->configure->to) {
+        $to = ((!Configure::isKeepInPlace($this->input) && file_exists(Configure::to($this->input))) ? realpath(Configure::to($this->input)) : Configure::to($this->input));
+        if (Configure::isKeepInPlace($this->input)) {
             return $fileBunch->directory() . DIRECTORY_SEPARATOR . $tokens->assembleBasename();
-        } elseif ($this->configure->subDirectoriesStructure && $dir = $tokens->assembleDirectory($this->configure)) {
+        } elseif (Configure::subDirectoriesStructure($this->input) && $dir = $tokens->assembleDirectory($this->configure)) {
             return $to . DIRECTORY_SEPARATOR . $dir . DIRECTORY_SEPARATOR . $tokens->assembleBasename();
         } else {
             return $to . DIRECTORY_SEPARATOR . $tokens->assembleBasename();
@@ -122,7 +130,7 @@ class Assembler
                 }
             }
         }
-        if ($this->configure->simulate && isset($this->simulated[$bunchId])) {
+        if (Configure::simulate($this->input) && isset($this->simulated[$bunchId])) {
             $extensions = array_unique(array_merge($extensions, $this->simulated[$bunchId]->extensions()));
         }
         return $extensions;

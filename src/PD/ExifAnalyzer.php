@@ -2,13 +2,20 @@
 
 namespace Zebooka\PD;
 
+use Symfony\Component\Console\Input\InputInterface;
+
 class ExifAnalyzer
 {
+    /** @var Configure */
     private $configure;
 
-    public function __construct(Configure $configure)
+    /** @var InputInterface */
+    private $input;
+
+    public function __construct(Configure $configure, InputInterface $input)
     {
         $this->configure = $configure;
+        $this->input = $input;
     }
 
     private function exifs(FileBunch $fileBunch)
@@ -54,8 +61,8 @@ class ExifAnalyzer
                 if ($exif->{$datePropertyName}) {
                     $timestamp = strtotime($exif->{$datePropertyName});
                     if ($timestamp && date('Y-m-d H:i:s', $timestamp) != $exif->{$datePropertyName}) {
-                        if ($this->configure->timezone) {
-                            $timestamp += time() - strtotime($this->configure->timezone);
+                        if (Configure::timezone($this->input)) {
+                            $timestamp += time() - strtotime(Configure::timezone($this->input));
                         } elseif ($fileTimezone) {
                             $timestamp += time() - strtotime($fileTimezone);
                         }
@@ -65,16 +72,16 @@ class ExifAnalyzer
                 }
             }
             if ($exif->GPSDateTime && $gpsDatetime = strtotime($exif->GPSDateTime)) {
-                if ($this->configure->timezone) {
+                if (Configure::timezone($this->input)) {
                     // correct GPS timestamp from specified TZ to local TZ
-                    $gpsDatetime += time() - strtotime($this->configure->timezone);
+                    $gpsDatetime += time() - strtotime(Configure::timezone($this->input));
                 }
                 $gpsDatetimes[$extension] = $gpsDatetime;
             }
         }
         $datetimes = array_unique($datetimes);
         sort($datetimes);
-        if ($this->configure->compareExifs && count($datetimes) > 1) {
+        if (Configure::compareExifs($this->input) && count($datetimes) > 1) {
             if (count($datetimes) != 2 || abs($datetimes[0] - $datetimes[1]) > 1) {
                 throw new ExifAnalyzerException(
                     'Files have ' . count($datetimes) . ' unique date/time values.',
@@ -85,7 +92,7 @@ class ExifAnalyzer
         $datetime = ($datetimes ? reset($datetimes) : null);
         $gpsDatetimes = array_unique($gpsDatetimes);
         $gpsDatetime = ($gpsDatetimes ? reset($gpsDatetimes) : null);
-        if ($this->configure->preferExifDateTime && $gpsDatetime && abs($datetime - $gpsDatetime) > 60) {
+        if (Configure::preferExifDateTime($this->input) && $gpsDatetime && abs($datetime - $gpsDatetime) > 60) {
             // clock difference larger than 60 seconds
             $datetime = $gpsDatetime;
             $replacedWithGps = true;
@@ -109,7 +116,7 @@ class ExifAnalyzer
                 break;
             }
         }
-        if ($this->configure->compareExifs && count($cameras) > 1) {
+        if (Configure::compareExifs($this->input) && count($cameras) > 1) {
             throw new ExifAnalyzerException(
                 'Files have ' . count($cameras) . ' unique detected cameras.',
                 ExifAnalyzerException::DIFFERENT_CAMERAS
@@ -148,7 +155,7 @@ class ExifAnalyzer
         $tags = self::detectTokenIds($exif, $this->configure->tokensConfigure(), true);
         $min = min($exif->ImageWidth, $exif->ImageHeight);
         $max = max($exif->ImageWidth, $exif->ImageHeight);
-        if ($min > 0 && $max / $min >= $this->configure->panoramicRatio) {
+        if ($min > 0 && $max / $min >= Configure::panoramicRatio($this->input)) {
             $tags[] = 'pano';
         }
         return array_unique($tags);

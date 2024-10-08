@@ -2,14 +2,23 @@
 
 namespace Zebooka\PD;
 
+use Symfony\Component\Console\Input\InputInterface;
+
 class Tokenizer
 {
+    /** @var Configure */
     private $configure;
+
+    /** @var InputInterface */
+    private $input;
+
+    /** @var ExifAnalyzer */
     private $exifAnalyzer;
 
-    public function __construct(Configure $configure, ExifAnalyzer $exifAnalyzer)
+    public function __construct(Configure $configure, InputInterface $input, ExifAnalyzer $exifAnalyzer)
     {
         $this->configure = $configure;
+        $this->input = $input;
         $this->exifAnalyzer = $exifAnalyzer;
     }
 
@@ -31,20 +40,23 @@ class Tokenizer
             );
         }
         $prefix = self::extractPrefix($tokens);
-        list($datetime, $shot) = self::extractDateTimeShot($tokens, $exifDateTime, $this->configure->preferExifDateTime);
+        list($datetime, $shot) = self::extractDateTimeShot($tokens, $exifDateTime, Configure::preferExifDateTime($this->input));
         if (null === $datetime) {
             throw new TokenizerException('Unable to detect date/time.', TokenizerException::NO_DATE_TIME_DETECTED);
         }
-        $author = self::extractAuthor($tokens, $this->configure->knownAuthors(), $this->configure->author);
+        $author = self::extractAuthor($tokens, $this->configure->knownAuthors(), Configure::author($this->input));
         $camera = self::extractCamera($tokens, $this->configure->knownCameras(), $exifCamera);
-        if ($this->configure->tokensDropUnknown) {
+        if (Configure::tokensDropUnknown($this->input)) {
             $tokens = array_intersect($tokens, $this->configure->knownTokens());
         }
         $tokens = array_merge($tokens, $exifTokens);
-        $tokens = array_diff($tokens, $this->configure->tokensToDrop);
-        $tokens = array_merge($tokens, $this->configure->tokensToAdd);
+        $tokens = array_diff($tokens, Configure::tokensToDrop($this->input));
+        $tokens = array_merge($tokens, Configure::tokensToAdd($this->input));
         $tokens = array_values(array_unique($tokens));
-        $tokens = array_merge(array_intersect($tokens, $this->configure->knownTokens()), array_diff($tokens, $this->configure->knownTokens()));
+        $tokens = array_merge(
+            array_intersect($tokens, $this->configure->knownTokens()),
+            array_diff($tokens, $this->configure->knownTokens())
+        );
         return new Tokens($datetime, $tokens, $author, $camera, $prefix, $shot);
     }
 
@@ -141,7 +153,7 @@ class Tokenizer
     {
         if (preg_match('/^([0-9]{2}[0-9]{2}[0-9]{2}|[0-9Y]{4}[0-9M]{2}[0-9D]{2})$/', $token)) {
             if (preg_match('/^([0-9]{2})([0-9]{2})([0-9]{2})$/', $token, $dateMatches)) {
-                if (!checkdate($dateMatches[2], $dateMatches[3], 2000 + $dateMatches[1])) {
+                if (!checkdate($dateMatches[2], $dateMatches[3], 2000 + (int)$dateMatches[1])) {
                     return null;
                 }
             } elseif (preg_match('/^([0-9]{4})([0-9]{2})([0-9]{2})$/', $token, $dateMatches)) {
@@ -199,7 +211,7 @@ class Tokenizer
         return null;
     }
 
-    public static function detectDashedCombinedDateTime($token, $index, array &$tokens)
+    public static function detectDashedCombinedDateTime($token, $index, array &$tokens): ?array
     {
         // YYYY-MM-DD-HH-MM-SS
         if (preg_match('/^(?:[A-Z]+-)?([0-9]{4})-([0-9]{1,2})-([0-9]{1,2})[ -]([0-9]{1,2})[\\.-]([0-9]{1,2})[\\.-]([0-9]{1,2})(?: (\d+))?$/', $token, $matches)) {
@@ -210,7 +222,7 @@ class Tokenizer
         return null;
     }
 
-    public static function detectDashedDateTime($token, $index, array &$tokens)
+    public static function detectDashedDateTime($token, $index, array &$tokens): ?array
     {
         // YYYY-MM-DD_HH-MM-SS + YYYY-MM-DD_HH.MM.SS
         if (preg_match('/^([0-9]{4})-([0-9]{1,2})-([0-9]{1,2})$/', $token, $matches) && isset($tokens[$index + 1])
@@ -224,7 +236,7 @@ class Tokenizer
         return null;
     }
 
-    public static function detectSJCamDateShot($token, $index, array &$tokens)
+    public static function detectSJCamDateShot($token, $index, array &$tokens): ?array
     {
         // YYYY_MMDD_HHMMSS_SHOT
         if (preg_match('/^([0-9]{4})$/', $token, $matches)
@@ -246,7 +258,7 @@ class Tokenizer
         return null;
     }
 
-    public static function detectWhatsAppDateTime($token, $index, array &$tokens)
+    public static function detectWhatsAppDateTime($token, $index, array &$tokens): ?array
     {
         // WhatsApp Image YYYY-MM-DD at HH.MM.SS
         if (preg_match('/^WhatsApp Image ([0-9]{4})-([0-9]{2})-([0-9]{2}) at ([0-9]{2}).([0-9]{2}).([0-9]{2})$/', $token, $matches)) {
@@ -257,7 +269,7 @@ class Tokenizer
         return null;
     }
 
-    public static function detectTelegramDateTime($token, $index, array &$tokens)
+    public static function detectTelegramDateTime($token, $index, array &$tokens): ?array
     {
         // IMAGE YYYY-MM-DD HH:MM:SS
         if (preg_match('/^IMAGE ([0-9]{4})-([0-9]{2})-([0-9]{2}) ([0-9]{2}):([0-9]{2}):([0-9]{2})$/', $token, $matches)
@@ -270,7 +282,7 @@ class Tokenizer
         return null;
     }
 
-    public static function detectFilmDateShot($token, $index, array &$tokens)
+    public static function detectFilmDateShot($token, $index, array &$tokens): ?array
     {
         if (preg_match('/^([1-9][0-9Y]{3}x?)$/', $token, $matches) && isset($tokens[$index + 1])
             && preg_match('/^((?:[A-Z]{1,2})?[0-9]+)$/', $tokens[$index + 1], $matches2)
@@ -284,7 +296,7 @@ class Tokenizer
         return null;
     }
 
-    public static function hasVlcInTokens(array $tokens)
+    public static function hasVlcInTokens(array $tokens): bool
     {
         foreach ($tokens as $token) {
             if (preg_match('/^vlc(snap)?$/i', $token)) {
@@ -294,7 +306,7 @@ class Tokenizer
         return false;
     }
 
-    public static function clearOfVlcTokens(array &$tokens)
+    public static function clearOfVlcTokens(array &$tokens): void
     {
         foreach ($tokens as $i => $token) {
             if (preg_match('/^vlc(snap)?$/i', $token)) {
@@ -304,10 +316,10 @@ class Tokenizer
         $tokens = array_values($tokens);
     }
 
-    public static function detectVlcShift(array &$tokens)
+    public static function detectVlcShift(array &$tokens): array
     {
         // step 1 - rename video files using this tool
-        // step 2 - set VLS configure for snapshots to "vlc_$N_$T_" and continuons nummeration
+        // step 2 - set VLC configure for snapshots to "vlc_$N_$T_" and continuons nummeration
         // step 3 - run this tool again
 
         $timeshift = $shot = $slicePosition = null;

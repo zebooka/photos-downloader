@@ -10,6 +10,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Zebooka\Translator\Translator;
 use Zebooka\Translator\TranslatorFactory;
+use Zebooka\Utils\Executor;
 use Zebooka\Utils\Size;
 
 class Command extends SymfonyCommand
@@ -102,11 +103,9 @@ class Command extends SymfonyCommand
         ];
         $tokensConfigs = array_values(array_filter($tokensConfigs, 'is_file'));
 
-        $configure = new Configure(
-            $_SERVER['argv'],
-            $input,
-            $tokensConfigs[0] ? json_decode(file_get_contents($tokensConfigs[0]), true) : []
-        );
+        $configure = $tokensConfigs[0]
+            ? Configure::constructFromConfigFilename($tokensConfigs[0])
+            : Configure::constructEmpty();
         $logger = \Zebooka\PD\LoggerFactory::logger($configure);
 
         if (!count($input->getOption(self::FROM))) {
@@ -138,14 +137,14 @@ class Command extends SymfonyCommand
         }
 
         // processing
-        $processor = new \Zebooka\PD\Processor(
+        $processor = new Processor(
             $input,
             $output,
             $configure,
-            new \Zebooka\PD\Tokenizer($configure, new \Zebooka\PD\ExifAnalyzer($configure)),
-            new \Zebooka\PD\Assembler($configure, new \Zebooka\PD\Hashinator()),
-            new \Zebooka\PD\BunchCache(),
-            new \Zebooka\Utils\Executor(),
+            new Tokenizer($configure, $input, new ExifAnalyzer($configure)),
+            new Assembler($configure, $input, new Hashinator()),
+            new BunchCache(),
+            new Executor(),
             $logger,
             $this->translator
         );

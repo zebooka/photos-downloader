@@ -18,16 +18,40 @@ class ExifAnalyzerTest extends TestCase
      */
     private function configure()
     {
-        return \Mockery::mock(Configure::class);
+        return \Mockery::mock(Configure::class)
+            ->shouldReceive('camerasConfigure')
+            ->andReturn([
+                '5s' => [['Make' => 'Apple', 'Model' => 'iPhone 5s']],
+                'htc' => [['Make' => 'HTC', 'Model' => 'Desire S'], ['Model' => 'HTC Desire S'], ['Model' => 'HTC Saga']],
+                'd700a' => [['Model' => 'NIKON D700', 'CustomSettingsBank' => '/a/i']],
+                'd700b' => [['Model' => 'NIKON D700', 'CustomSettingsBank' => '/b/i']],
+                'd700c' => [['Model' => 'NIKON D700', 'CustomSettingsBank' => '/c/i']],
+                'd700d' => [['Model' => 'NIKON D700', 'CustomSettingsBank' => '/d/i']],
+                'd700' => [['Model' => 'NIKON D700']],
+            ])
+            ->getMock()
+            ->shouldReceive('tokensConfigure')
+            ->andReturn([
+                'instagram' => [['Software' => 'Instagram']],
+                'snapseed' => [[ 'Software' => '/snapseed/i' ]],
+            ])
+            ->getMock();
     }
 
-    private function realConfigure()
+    private function input($opts = [])
     {
-        return new \Zebooka\PD\Configure(
-            [1 => '-T'],
-            new ArgvInput([1 => '-T'], (new Command())->getDefinition()),
-            json_decode(file_get_contents(__DIR__ . '/../../../res/tokens.json'), true)
-        );
+        $defaults = [
+            Command::PREFER_EXIF_DT => true,
+            Command::TIMEZONE => null,
+            Command::NO_COMPARE_EXIFS => false,
+            Command::PANORAMIC_RATIO => 2,
+
+        ];
+        $mock = \Mockery::mock(InputInterface::class);
+        foreach ($defaults as $option => $defaultValue) {
+            $mock = $mock->shouldReceive('getOption')->with($option)->andReturn($opts[$option] ?? $defaultValue)->getMock();
+        }
+        return $mock;
     }
 
     /**
@@ -48,19 +72,19 @@ class ExifAnalyzerTest extends TestCase
     public function test_datetime_detection()
     {
         $datetime = '2007-04-17 16:00:00';
-        $datetimeProperties = array(
+        $datetimeProperties = [
             'GPSDateTime',
             'DateTimeOriginal',
             'TrackCreateDate',
             'MediaCreateDate',
             'CreateDate',
             'CreationDate',
-        );
+        ];
         foreach ($datetimeProperties as $datetimeProperty) {
             /** @var Exif $exif */
             $exif = \Mockery::mock(Exif::class);
             $exif->{$datetimeProperty} = $datetime;
-            $analyzer = new ExifAnalyzer($this->realConfigure());
+            $analyzer = new ExifAnalyzer($this->configure(), $this->input());
             list($detectedDateTime) = $analyzer->extractDateTimeCameraTokens($this->fileBunch(array($exif)));
             $this->assertEquals(strtotime($datetime), $detectedDateTime);
         }
@@ -68,7 +92,7 @@ class ExifAnalyzerTest extends TestCase
 
     public function test_datetime_priority()
     {
-        $analyzer = new ExifAnalyzer($this->realConfigure());
+        $analyzer = new ExifAnalyzer($this->configure(), $this->input());
 
         // if difference is not large, we use DateTimeOriginal
         $replacedWithGps = false;
@@ -99,39 +123,37 @@ class ExifAnalyzerTest extends TestCase
 
     public function test_cameras_detection()
     {
-        foreach ($this->camerasExifsProperties() as $exifProperiesAndCamera) {
-            list ($camera, $exifProperies) = $exifProperiesAndCamera;
-            /** @var Exif $exif */
-            $exif = \Mockery::mock(Exif::class);
-            foreach ($exifProperies as $property => $value) {
-                $exif->{$property} = $value;
-            }
-            $analyzer = new ExifAnalyzer($this->realConfigure());
-            list(, $detectedCamera) = $analyzer->extractDateTimeCameraTokens($this->fileBunch(array($exif)));
-            $this->assertEquals($camera, $detectedCamera);
+        /** @var Exif $exif */
+        $exif = \Mockery::mock(Exif::class);
+        $camera = '5s';
+        $exifProperies = ['Make' => 'Apple', 'Model' => 'iPhone 5s'];
+        foreach ($exifProperies as $property => $value) {
+            $exif->{$property} = $value;
         }
+        $analyzer = new ExifAnalyzer($this->configure(), $this->input());
+        list(, $detectedCamera) = $analyzer->extractDateTimeCameraTokens($this->fileBunch(array($exif)));
+        $this->assertEquals($camera, $detectedCamera);
     }
 
     public function test_tokens_detection()
     {
-        foreach ($this->tokensExifsProperties() as $exifProperiesAndTokens) {
-            list ($tokens, $exifProperies) = $exifProperiesAndTokens;
-            /** @var Exif $exif */
-            $exif = \Mockery::mock(Exif::class);
-            foreach ($exifProperies as $property => $value) {
-                $exif->{$property} = $value;
-            }
-            $analyzer = new ExifAnalyzer($this->realConfigure());
-            list(, , $detectedTokens) = $analyzer->extractDateTimeCameraTokens($this->fileBunch(array($exif)));
-            $this->assertEquals($tokens, $detectedTokens);
+        $tokens = ['instagram'];
+        $exifProperies =  ['Software' => 'Instagram'];
+        /** @var Exif $exif */
+        $exif = \Mockery::mock(Exif::class);
+        foreach ($exifProperies as $property => $value) {
+            $exif->{$property} = $value;
         }
+        $analyzer = new ExifAnalyzer($this->configure(), $this->input());
+        list(, , $detectedTokens) = $analyzer->extractDateTimeCameraTokens($this->fileBunch(array($exif)));
+        $this->assertEquals($tokens, $detectedTokens);
     }
 
     public function test_detection_array()
     {
         /** @var Exif $exif */
         $exif = \Mockery::mock(Exif::class);
-        $analyzer = new ExifAnalyzer($this->realConfigure());
+        $analyzer = new ExifAnalyzer($this->configure(), $this->input());
         $detected = $analyzer->extractDateTimeCameraTokens($this->fileBunch(array($exif)));
         $this->assertIsArray($detected);
         $this->assertCount(4, $detected);
@@ -146,7 +168,7 @@ class ExifAnalyzerTest extends TestCase
         $exif2 = \Mockery::mock(Exif::class);
         $exif2->DateTimeOriginal = '2007-04-21 23:00:00';
         $exifs = array($exif1, $exif2);
-        $analyzer = new ExifAnalyzer($this->realConfigure());
+        $analyzer = new ExifAnalyzer($this->configure(), $this->input());
         $this->expectExceptionObject(
             new ExifAnalyzerException(
                 'Files have 2 unique date/time values.',
@@ -165,7 +187,7 @@ class ExifAnalyzerTest extends TestCase
         $exif2 = \Mockery::mock(Exif::class);
         $exif2->DateTimeOriginal = '2007-04-17 16:00:00';
         $exifs = array($exif1, $exif2);
-        $analyzer = new ExifAnalyzer($this->realConfigure());
+        $analyzer = new ExifAnalyzer($this->configure(), $this->input());
         list($dt, $c, $t, $g) = $analyzer->extractDateTimeCameraTokens($this->fileBunch($exifs));
         $this->assertEquals(strtotime($exif2->DateTimeOriginal), $dt);
         $this->assertNotEquals(strtotime($exif1->DateTimeOriginal), $dt);
@@ -180,7 +202,7 @@ class ExifAnalyzerTest extends TestCase
         $exif2 = \Mockery::mock(Exif::class);
         $exif2->Model = 'NIKON D700';
         $exifs = array($exif1, $exif2);
-        $analyzer = new ExifAnalyzer($this->realConfigure());
+        $analyzer = new ExifAnalyzer($this->configure(), $this->input());
         $this->expectExceptionObject(
             new ExifAnalyzerException(
                 'Files have 2 unique detected cameras.',
@@ -201,7 +223,7 @@ class ExifAnalyzerTest extends TestCase
             $exif2->Model = 'NIKON D700';
             $exif2->CustomSettingsBank = $customSettingsBank;
             $exifs = array($exif1, $exif2);
-            $analyzer = new ExifAnalyzer($this->realConfigure());
+            $analyzer = new ExifAnalyzer($this->configure(), $this->input());
             list (, $camera) = $analyzer->extractDateTimeCameraTokens($this->fileBunch($exifs));
             $this->assertEquals('d700' . $customSettingsBank, $camera);
         }
@@ -209,8 +231,7 @@ class ExifAnalyzerTest extends TestCase
 
     public function test_no_failure_when_compareExifs_is_false()
     {
-        $configure = $this->realConfigure();
-        $configure->compareExifs = false;
+        $input = $this->input([Command::NO_COMPARE_EXIFS => true]);
         /** @var Exif $exif1 */
         $exif1 = \Mockery::mock(Exif::class);
         $exif1->DateTimeOriginal = '2007-04-17 16:00:00';
@@ -220,7 +241,7 @@ class ExifAnalyzerTest extends TestCase
         $exif2->DateTimeOriginal = '2007-04-21 23:00:00';
         $exif2->Model = 'NIKON D700';
         $exifs = array($exif1, $exif2);
-        $analyzer = new ExifAnalyzer($configure);
+        $analyzer = new ExifAnalyzer($this->configure(), $input);
         list ($detectedDateTime, $detectedCamera) = $analyzer->extractDateTimeCameraTokens($this->fileBunch($exifs));
         $this->assertEquals(strtotime('2007-04-17 16:00:00'), $detectedDateTime);
         $this->assertEquals('htc', $detectedCamera);
@@ -236,46 +257,36 @@ class ExifAnalyzerTest extends TestCase
         $exif2->Model = 'NIKON D700';
         $exif2->Software = 'Snapseed';
         $exifs = array($exif1, $exif2);
-        $analyzer = new ExifAnalyzer($this->realConfigure());
+        $analyzer = new ExifAnalyzer($this->configure(), $this->input());
         list ($detectedDateTime, $detectedCamera, $detectedTokes) = $analyzer->extractDateTimeCameraTokens($this->fileBunch($exifs));
         $this->assertEquals(strtotime('2007-04-21 23:00:00'), $detectedDateTime);
         $this->assertEquals('d700', $detectedCamera);
         $this->assertEquals(array('snapseed'), $detectedTokes);
     }
 
-    public function test_all_detected_cameras_are_known()
+    private function dataProviderCamerasExifs()
     {
-        $configure = $this->realConfigure();
-        $knownCameras = $configure->knownCameras();
-        foreach ($this->camerasExifsProperties() as $exifProperiesAndCamera) {
-            list ($camera, $exifProperies) = $exifProperiesAndCamera;
-            $this->assertContains($camera, $knownCameras);
-        }
-    }
-
-    private function camerasExifsProperties()
-    {
-        return array(
-            array('htc', array('Make' => 'HTC', 'Model' => 'Desire S')),
-            array('htc', array('Model' => 'HTC Desire S')),
-            array('htc', array('Model' => 'HTC Saga')),
-            array('5s', array('Make' => 'Apple', 'Model' => 'iPhone 5s')),
-            array('5c', array('Make' => 'Apple', 'Model' => 'iPhone 5c')),
-            array('4s', array('Make' => 'Apple', 'Model' => 'iPhone 4s')),
-            array('mini', array('Make' => 'Apple', 'Model' => 'iPad mini')),
-            array('d700', array('Model' => 'NIKON D700')),
-            array('d700a', array('Model' => 'NIKON D700', 'CustomSettingsBank' => 'a')),
-            array('d700b', array('Model' => 'NIKON D700', 'CustomSettingsBank' => 'b')),
-            array('d700c', array('Model' => 'NIKON D700', 'CustomSettingsBank' => 'c')),
-            array('d700d', array('Model' => 'NIKON D700', 'CustomSettingsBank' => 'd')),
-            array('lx5', array('InternalSerialNumber' => '(F17) 2010:08:25 no. 0366')),
-            array('k10z', array('InternalSerialNumber' => '4123986')),
-            array('k10g', array('InternalSerialNumber' => '8041881')),
-            array('ds', array('InternalSerialNumber' => '6011443')),
-            array('k100d', array('InternalSerialNumber' => '6374615')),
-            array('k100ds', array('InternalSerialNumber' => '6609148')),
-            array('f5500', array('Make' => 'FUJIFILM', 'Model' => 'FinePix S5500')),
-        );
+        return [
+            ['htc', ['Make' => 'HTC', 'Model' => 'Desire S']],
+            ['htc', ['Model' => 'HTC Desire S']],
+            ['htc', ['Model' => 'HTC Saga']],
+            ['5s', ['Make' => 'Apple', 'Model' => 'iPhone 5s']],
+            ['5c', ['Make' => 'Apple', 'Model' => 'iPhone 5c']],
+            ['4s', ['Make' => 'Apple', 'Model' => 'iPhone 4s']],
+            ['mini', ['Make' => 'Apple', 'Model' => 'iPad mini']],
+            ['d700', ['Model' => 'NIKON D700']],
+            ['d700a', ['Model' => 'NIKON D700', 'CustomSettingsBank' => 'a']],
+            ['d700b', ['Model' => 'NIKON D700', 'CustomSettingsBank' => 'b']],
+            ['d700c', ['Model' => 'NIKON D700', 'CustomSettingsBank' => 'c']],
+            ['d700d', ['Model' => 'NIKON D700', 'CustomSettingsBank' => 'd']],
+            ['lx5', ['InternalSerialNumber' => '(F17] 2010:08:25 no. 0366']],
+            ['k10z', ['InternalSerialNumber' => '4123986']],
+            ['k10g', ['InternalSerialNumber' => '8041881']],
+            ['ds', ['InternalSerialNumber' => '6011443']],
+            ['k100d', ['InternalSerialNumber' => '6374615']],
+            ['k100ds', ['InternalSerialNumber' => '6609148']],
+            ['f5500', ['Make' => 'FUJIFILM', 'Model' => 'FinePix S5500']],
+        ];
     }
 
     private function tokensExifsProperties()
@@ -420,7 +431,7 @@ class ExifAnalyzerTest extends TestCase
             $exif->{$exifTag} = $exifValue;
         }
 
-        $analyzer = new ExifAnalyzer($this->realConfigure());
+        $analyzer = new ExifAnalyzer($this->configure(), $this->input());
         list($detectedDateTime) = $analyzer->extractDateTimeCameraTokens($this->fileBunch(array($exif)));
         $this->assertEquals(date('r', strtotime('2015-11-01 21:00:00 +06:00')), date('r', $detectedDateTime));
     }
@@ -436,20 +447,15 @@ class ExifAnalyzerTest extends TestCase
             ->andReturn(['jpg' => $exif])
             ->getMock();
 
-        $c = $this->realConfigure();
-        $analyzer = new ExifAnalyzer($c);
+        $analyzer = new ExifAnalyzer($this->configure(), $this->input([Command::TIMEZONE => null]));
         list($detectedDateTime) = $analyzer->extractDateTimeCameraTokens($bunch);
         $this->assertEquals(date('r', strtotime('Tue, 23 May 2023 19:26:45')), date('r', $detectedDateTime));
 
-        $c = $this->realConfigure();
-        $c->timezone = '+0100';
-        $analyzer = new ExifAnalyzer($c);
+        $analyzer = new ExifAnalyzer($this->configure(), $this->input([Command::TIMEZONE => '+0100']));
         list($detectedDateTime) = $analyzer->extractDateTimeCameraTokens($bunch);
         $this->assertEquals(date('r', strtotime('Tue, 23 May 2023 18:26:45')), date('r', $detectedDateTime));
 
-        $c = $this->realConfigure();
-        $analyzer = new ExifAnalyzer($c);
-        $c->timezone = '+0200';
+        $analyzer = new ExifAnalyzer($this->configure(), $this->input([Command::TIMEZONE => '+0200']));
         list($detectedDateTime) = $analyzer->extractDateTimeCameraTokens($bunch);
         $this->assertEquals(date('r', strtotime('Tue, 23 May 2023 19:26:45')), date('r', $detectedDateTime));
     }

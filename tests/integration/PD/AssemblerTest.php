@@ -2,7 +2,9 @@
 
 namespace Zebooka\PD;
 
+use Mockery\Mock;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Console\Input\InputInterface;
 
 class AssemblerTest extends TestCase
 {
@@ -16,16 +18,21 @@ class AssemblerTest extends TestCase
         return realpath(__DIR__ . '/../../res/assembler');
     }
 
-    private function configure($to = Configure::KEEP_IN_PLACE, $subDirectoriesStructure = true, $simulate = false)
+    private function configure($isKeepInPlace)
     {
-        $configure = \Mockery::mock(Configure::class);
-        $configure->to = $to;
-        $configure->subDirectoriesStructure = $subDirectoriesStructure;
-        $configure->simulate = $simulate;
-        $configure->shouldReceive('isKeepInPlace')
+        return \Mockery::mock(Configure::class)
+            ->shouldReceive('isKeepInPlace')
             ->withNoArgs()
-            ->andReturn(Configure::KEEP_IN_PLACE === $to);
-        return $configure;
+            ->andReturn($isKeepInPlace)
+            ->getMock();
+    }
+
+    private function input($to = '-', $subDirectoriesStructure = true, $simulate = false)
+    {
+        return \Mockery::mock(InputInterface::class)
+            ->shouldReceive('getOption')->with(Command::TO)->andReturn($to)->getMock()
+            ->shouldReceive('getOption')->with(Command::NO_SUBDIRS)->andReturn(!$subDirectoriesStructure)->getMock()
+            ->shouldReceive('getOption')->with(Command::SIMULATE)->andReturn($simulate)->getMock();
     }
 
     private function hashinator()
@@ -69,7 +76,8 @@ class AssemblerTest extends TestCase
     public function test_assembling_uniqueDir_with_simulation()
     {
         $assembler = new Assembler(
-            $this->configure('unique-dir', true, true),
+            $this->configure(false),
+            $this->input('unique-dir', true, true),
             $this->hashinator()
         );
         $newBunchId = $assembler->assemble($this->tokens(), $this->fileBunch());
@@ -79,7 +87,8 @@ class AssemblerTest extends TestCase
     public function test_assembling_uniqueDir()
     {
         $assembler = new Assembler(
-            $this->configure('unique-dir', true, false),
+            $this->configure(false),
+            $this->input('unique-dir', true, false),
             $this->hashinator()
         );
         $newBunchId = $assembler->assemble($this->tokens(), $this->fileBunch());
@@ -89,7 +98,8 @@ class AssemblerTest extends TestCase
     public function test_assembling_uniqueDir_without_subDirectoriesStructure_with_simulation()
     {
         $assembler = new Assembler(
-            $this->configure('unique-dir', false, true),
+            $this->configure(false),
+            $this->input('unique-dir', false, true),
             $this->hashinator()
         );
         $newBunchId = $assembler->assemble($this->tokens(false), $this->fileBunch());
@@ -99,7 +109,8 @@ class AssemblerTest extends TestCase
     public function test_assembling_uniqueDir_without_subDirectoriesStructure()
     {
         $assembler = new Assembler(
-            $this->configure('unique-dir', false, false),
+            $this->configure(false),
+            $this->input('unique-dir', false, false),
             $this->hashinator()
         );
         $newBunchId = $assembler->assemble($this->tokens(false), $this->fileBunch());
@@ -109,7 +120,8 @@ class AssemblerTest extends TestCase
     public function test_assembling_keepInPlace_with_simulation()
     {
         $assembler = new Assembler(
-            $this->configure(Configure::KEEP_IN_PLACE, true, true),
+            $this->configure(true),
+            $this->input('-', true, true),
             $this->hashinator()
         );
         $newBunchId = $assembler->assemble($this->tokens(false), $this->fileBunch('original-dir'));
@@ -119,7 +131,8 @@ class AssemblerTest extends TestCase
     public function test_assembling_keepInPlace()
     {
         $assembler = new Assembler(
-            $this->configure(Configure::KEEP_IN_PLACE, true, false),
+            $this->configure(true),
+            $this->input('-', true, false),
             $this->hashinator()
         );
         $newBunchId = $assembler->assemble($this->tokens(false), $this->fileBunch('original-dir'));
@@ -129,7 +142,8 @@ class AssemblerTest extends TestCase
     public function test_assembling_with_real_directory()
     {
         $assembler = new Assembler(
-            $this->configure($this->resourceDirectory(), false, true),
+            $this->configure(false),
+            $this->input($this->resourceDirectory(), false, true),
             $this->hashinator()
         );
         $newBunchId = $assembler->assemble($this->tokens(false), $this->fileBunch());
@@ -151,7 +165,8 @@ class AssemblerTest extends TestCase
             ->getMock();
 
         $assembler = new Assembler(
-            $this->configure($this->resourceDirectory(), false, true),
+            $this->configure(false),
+            $this->input($this->resourceDirectory(), false, true),
             $hashinator
         );
 
@@ -195,7 +210,8 @@ class AssemblerTest extends TestCase
             ->getMock();
 
         $assembler = new Assembler(
-            $this->configure($this->resourceDirectory(), false, true),
+            $this->configure(false),
+            $this->input($this->resourceDirectory(), false, true),
             $hashinator
         );
 

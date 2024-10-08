@@ -3,6 +3,7 @@
 namespace Zebooka\PD;
 
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Console\Input\Input;
 
 class TokenizerTest extends TestCase
 {
@@ -11,12 +12,18 @@ class TokenizerTest extends TestCase
         \Mockery::close();
     }
 
-    /**
-     * @return Configure
-     */
-    private function configure()
+    private function input()
     {
-        return \Mockery::mock(Configure::class)
+        return \Mockery::mock(Input::class)
+            ->shouldReceive('getOption')
+            ->with(Command::AUTHOR)
+            ->andReturn(null)
+            ->getMock();
+    }
+
+    private function configure(): Configure
+    {
+        return \Mockery::mock(Configure::class, ['input' => $this->input()])
             ->shouldReceive('knownAuthors')
             ->withNoArgs()
             ->andReturn(array('BOA', 'CHV'))

@@ -14,7 +14,7 @@ class Scanner
         $this->recursive = $recursive;
         $sourcePaths = array_unique($sourcePaths);
         foreach ($sourcePaths as $sourcePath) {
-            if (Configure::PATHS_FROM_STDIN === $sourcePath) {
+            if ('-' === $sourcePath) {
                 $this->listHandler = fopen($listFile ? : 'php://stdin', 'r');
             } elseif (is_dir($sourcePath)) {
                 $this->dirs[] = realpath($sourcePath);
