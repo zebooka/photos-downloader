@@ -205,17 +205,17 @@ class Configure
 
     public static function tokensDropUnknown(InputInterface $input): bool
     {
-        return $input->getOption(Command::TOKENS_DROP_UNKNOWN);
+        return (bool)$input->getOption(Command::TOKENS_DROP_UNKNOWN);
     }
 
     public static function tokensToAdd(InputInterface $input): array
     {
-        return $input->getOption(Command::TOKENS_ADD);
+        return (array)$input->getOption(Command::TOKENS_ADD);
     }
 
     public static function tokensToDrop(InputInterface $input): array
     {
-        return $input->getOption(Command::TOKENS_DROP);
+        return (array)$input->getOption(Command::TOKENS_DROP);
     }
 
     public static function isKeepInPlace(InputInterface $input): bool
@@ -225,12 +225,12 @@ class Configure
 
     public static function to(InputInterface $input): string
     {
-        return $input->getOption(Command::TO);
+        return (string)$input->getOption(Command::TO);
     }
 
     public static function simulate(InputInterface $input): bool
     {
-        return $input->getOption(Command::SIMULATE);
+        return (bool)$input->getOption(Command::SIMULATE);
     }
 
     public static function subDirectoriesStructure(InputInterface $input): bool
@@ -245,11 +245,72 @@ class Configure
 
     public static function panoramicRatio(InputInterface $input): float
     {
-        return $input->getOption(Command::PANORAMIC_RATIO);
+        return (float)$input->getOption(Command::PANORAMIC_RATIO);
     }
 
     public static function compareExifs(InputInterface $input): bool
     {
         return !$input->getOption(Command::NO_COMPARE_EXIFS);
+    }
+
+    public static function subDirectoriesFormat(InputInterface $input): string
+    {
+        return $input->getOption(Command::SUBDIRS_FORMAT);
+    }
+
+    public static function cameras(InputInterface $input): array
+    {
+        return (array)$input->getOption(Command::CAMERAS);
+    }
+
+    public static function regexpExifFilter(InputInterface $input): array
+    {
+        return (array)$input->getOption(Command::REGEXP_EXIF_FILTER);
+    }
+
+    public static function regexpExifNegativeFilter(InputInterface $input): array
+    {
+        return (array)$input->getOption(Command::REGEXP_EXIF_NEGATIVE_FILTER);
+    }
+
+    public static function regexpFilenameFilter(InputInterface $input): ?string
+    {
+        return $input->getOption(Command::REGEXP_FILENAME_FILTER);
+    }
+
+    public static function regexpFilenameNegativeFilter(InputInterface $input): ?string
+    {
+        return $input->getOption(Command::REGEXP_FILENAME_NEGATIVE_FILTER);
+    }
+
+    public static function deleteDuplicates(InputInterface $input): bool
+    {
+        return !$input->getOption(Command::NO_DELETE_DUPLICATES);
+    }
+
+    public static function copy(InputInterface $input): bool
+    {
+        return (bool)$input->getOption(Command::COPY);
+    }
+
+    public static function saveCommandsFile(InputInterface $input): ?string
+    {
+        return $input->getOption(Command::SAVE_COMMANDS_FILE);
+    }
+
+
+    public static function verboseLevel(InputInterface $input): string
+    {
+        return 250;
+    }
+
+    public static function logFile(InputInterface $input): ?string
+    {
+        return null;
+    }
+
+    public static function logLevel(InputInterface $input): string
+    {
+        return 250;
     }
 }

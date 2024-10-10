@@ -4,6 +4,7 @@ namespace Zebooka\PD;
 
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Console\Input\InputInterface;
 
 class LoggerFactoryTest extends TestCase
 {
@@ -14,8 +15,8 @@ class LoggerFactoryTest extends TestCase
 
     public function test_factory()
     {
-        $configure = \Mockery::mock(Configure::class);
-        $logger = LoggerFactory::logger($configure);
+        $input = \Mockery::mock(InputInterface::class);
+        $logger = LoggerFactory::logger($input);
         $this->assertInstanceOf(Logger::class, $logger);
     }
 }

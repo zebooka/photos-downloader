@@ -12,6 +12,8 @@ use Zebooka\Utils\Executor;
 
 class ProcessorTest extends TestCase
 {
+    use InputTrait;
+
     public function tearDown(): void
     {
         \Mockery::close();
@@ -39,10 +41,11 @@ class ProcessorTest extends TestCase
     }
 
     /**
-     * @param MockInterface $fileBunch
+     * @param FileBunch|MockInterface $fileBunch
      * @return mixed
      */
-    private function upgradeWithExifs($fileBunch) {
+    private function upgradeWithExifs($fileBunch)
+    {
         return $fileBunch->shouldReceive('exifs')
             ->withNoArgs()
             ->andReturn($this->exifs())
@@ -94,11 +97,9 @@ class ProcessorTest extends TestCase
     /**
      * @return Configure
      */
-    private function configure(array $cameras = array())
+    private function configure()
     {
-        $configure = \Mockery::mock(Configure::class);
-        $configure->cameras = $cameras;
-        return $configure;
+        return \Mockery::mock(Configure::class);
     }
 
     /**
@@ -202,8 +203,7 @@ class ProcessorTest extends TestCase
      */
     private function logger()
     {
-        return \Mockery::mock('\\Monolog\\Logger')
-            ->shouldIgnoreMissing();
+        return \Mockery::mock(Logger::class)->shouldIgnoreMissing();
     }
 
     /**
@@ -306,9 +306,9 @@ class ProcessorTest extends TestCase
         $fileBunch = $this->fileBunch();
         $tokens = $this->tokens();
         $processor = new Processor(
-            $this->inputInterface(),
+            $this->input([Command::CAMERAS => ['camera-1', 'camera-2']]),
             $this->outputInterface(),
-            $this->configure(array('camera-1', 'camera-2')),
+            $this->configure(),
             $this->tokenizer($fileBunch, $tokens),
             $this->assemblerNeverCalled(),
             $this->bunchCache(),
@@ -363,8 +363,6 @@ class ProcessorTest extends TestCase
 
     public function test_process_skips_by_file_regexp()
     {
-        $configure = $this->configure();
-        $configure->regexpFilenameFilter = '/\\.test$/i';
         $fileBunch = $this->fileBunch();
         $tokens = $this->tokens();
         $translator = $this->translator()
@@ -379,9 +377,9 @@ class ProcessorTest extends TestCase
             ->andReturn('unique-message')
             ->getMock();
         $processor = new Processor(
-            $this->inputInterface(),
+            $this->input([Command::REGEXP_FILENAME_FILTER => '/\\.test$/i']),
             $this->outputInterface(),
-            $configure,
+            $this->configure(),
             $this->tokenizer($fileBunch, $tokens),
             $this->assembler($tokens, $fileBunch, 'unique-bunchId2'),
             $this->bunchCache(),
@@ -395,8 +393,6 @@ class ProcessorTest extends TestCase
 
     public function test_process_skips_by_file_negative_regexp()
     {
-        $configure = $this->configure();
-        $configure->regexpFilenameNegativeFilter = '/\\.ext2?$/i';
         $fileBunch = $this->fileBunch();
         $tokens = $this->tokens();
         $translator = $this->translator()
@@ -411,9 +407,9 @@ class ProcessorTest extends TestCase
             ->andReturn('unique-message')
             ->getMock();
         $processor = new Processor(
-            $this->inputInterface(),
+            $this->input([Command::REGEXP_FILENAME_NEGATIVE_FILTER => '/\\.ext2?$/i']),
             $this->outputInterface(),
-            $configure,
+            $this->configure(),
             $this->tokenizer($fileBunch, $tokens),
             $this->assembler($tokens, $fileBunch, 'unique-bunchId2'),
             $this->bunchCache(),
@@ -425,17 +421,29 @@ class ProcessorTest extends TestCase
         $this->assertGreaterThan(5, $processor->bytesProcessed());
     }
 
-    private function make_test_process_processes_by_exif_regexp($configOptionKey, $optionValue)
+    public function dataProvider_process_processes_by_exif_regexp()
     {
-        $configure = $this->configure();
-        $configure->{$configOptionKey} = $optionValue;
+        return [
+            [Command::REGEXP_EXIF_FILTER, ['Model' => 'Zenit E']],
+            [Command::REGEXP_EXIF_FILTER, ['Model' => '/zenit/i']],
+            [Command::REGEXP_EXIF_NEGATIVE_FILTER, ['Model' => 'Leica']],
+            [Command::REGEXP_EXIF_NEGATIVE_FILTER, ['Model' => '/leica/i']],
+            [Command::REGEXP_EXIF_NEGATIVE_FILTER, ['Model' => '12.4']],
+        ];
+    }
+
+    /**
+     * @dataProvider dataProvider_process_processes_by_exif_regexp
+     */
+    public function test_process_processes_by_exif_regexp($option, $value)
+    {
         $fileBunch = $this->upgradeWithExifs($this->fileBunch());
         $tokens = $this->tokens();
         $translator = $this->translator();
         $processor = new Processor(
-            $this->inputInterface(),
+            $this->input([$option => $value]),
             $this->outputInterface(),
-            $configure,
+            $this->configure(),
             $this->tokenizer($fileBunch, $tokens),
             $this->assembler($tokens, $fileBunch, 'unique-bunchId2'),
             $this->bunchCache(),
@@ -446,19 +454,23 @@ class ProcessorTest extends TestCase
         $this->assertTrue($processor->process($fileBunch));
     }
 
-    public function test_process_processes_by_exif_regexp()
+
+    public function dataProvider_process_skips_by_exif_regex()
     {
-        $this->make_test_process_processes_by_exif_regexp('regexpExifFilter', ['Model' => 'Zenit E']);
-        $this->make_test_process_processes_by_exif_regexp('regexpExifFilter', ['Model' => '/zenit/i']);
-        $this->make_test_process_processes_by_exif_regexp('regexpExifNegativeFilter', ['Model' => 'Leica']);
-        $this->make_test_process_processes_by_exif_regexp('regexpExifNegativeFilter', ['Model' => '/leica/i']);
-        $this->make_test_process_processes_by_exif_regexp('regexpExifNegativeFilter', ['Model' => '12.4']);
+        return [
+            [Command::REGEXP_EXIF_NEGATIVE_FILTER, ['Model' => 'Zenit E']],
+            [Command::REGEXP_EXIF_NEGATIVE_FILTER, ['Model' => '/zenit/i']],
+            [Command::REGEXP_EXIF_FILTER, ['Model' => 'Leica']],
+            [Command::REGEXP_EXIF_FILTER, ['Model' => '/leica/i']],
+            [Command::REGEXP_EXIF_FILTER, ['Model' => '12.4']],
+        ];
     }
 
-    public function make_test_process_skips_by_exif_regexp($configOptionKey, $optionValue)
+    /**
+     * @dataProvider dataProvider_process_skips_by_exif_regex
+     */
+    public function test_process_skips_by_exif_regexp($option, $value)
     {
-        $configure = $this->configure();
-        $configure->{$configOptionKey} = $optionValue;
         $fileBunch = $this->upgradeWithExifs($this->fileBunch());
         $tokens = $this->tokens();
         $translator = $this->translator()
@@ -473,9 +485,9 @@ class ProcessorTest extends TestCase
             ->andReturn('unique-message')
             ->getMock();
         $processor = new Processor(
-            $this->inputInterface(),
+            $this->input([$option => $value]),
             $this->outputInterface(),
-            $configure,
+            $this->configure(),
             $this->tokenizer($fileBunch, $tokens),
             $this->assemblerNeverCalled(),
             $this->bunchCache(),
@@ -484,14 +496,5 @@ class ProcessorTest extends TestCase
             $translator
         );
         $this->assertFalse($processor->process($fileBunch));
-    }
-
-    public function test_process_skips_by_exif_regexp()
-    {
-        $this->make_test_process_skips_by_exif_regexp('regexpExifFilter', ['Model' => 'Leica']);
-        $this->make_test_process_skips_by_exif_regexp('regexpExifFilter', ['Model' => '/leica/i']);
-        $this->make_test_process_skips_by_exif_regexp('regexpExifFilter', ['Model' => '12.4']);
-        $this->make_test_process_skips_by_exif_regexp('regexpExifNegativeFilter', ['Model' => 'Zenit E']);
-        $this->make_test_process_skips_by_exif_regexp('regexpExifNegativeFilter', ['Model' => '/zenit/i']);
     }
 }

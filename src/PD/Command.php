@@ -106,7 +106,7 @@ class Command extends SymfonyCommand
         $configure = $tokensConfigs[0]
             ? Configure::constructFromConfigFilename($tokensConfigs[0])
             : Configure::constructEmpty();
-        $logger = \Zebooka\PD\LoggerFactory::logger($configure);
+        $logger = \Zebooka\PD\LoggerFactory::logger($input);
 
         if (!count($input->getOption(self::FROM))) {
             throw new \UnexpectedValueException($this->t('error/noFromPathSpecified'));

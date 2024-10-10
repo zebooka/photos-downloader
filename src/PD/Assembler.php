@@ -52,10 +52,12 @@ class Assembler
 
     private function assembleNewBunchId(Tokens $tokens, FileBunch $fileBunch)
     {
-        $to = ((!Configure::isKeepInPlace($this->input) && file_exists(Configure::to($this->input))) ? realpath(Configure::to($this->input)) : Configure::to($this->input));
+        $to = (!Configure::isKeepInPlace($this->input) && file_exists(Configure::to($this->input)))
+            ? realpath(Configure::to($this->input))
+            : Configure::to($this->input);
         if (Configure::isKeepInPlace($this->input)) {
             return $fileBunch->directory() . DIRECTORY_SEPARATOR . $tokens->assembleBasename();
-        } elseif (Configure::subDirectoriesStructure($this->input) && $dir = $tokens->assembleDirectory($this->configure)) {
+        } elseif (Configure::subDirectoriesStructure($this->input) && $dir = $tokens->assembleDirectory($this->input)) {
             return $to . DIRECTORY_SEPARATOR . $dir . DIRECTORY_SEPARATOR . $tokens->assembleBasename();
         } else {
             return $to . DIRECTORY_SEPARATOR . $tokens->assembleBasename();

@@ -91,7 +91,7 @@ class Processor
         }
 
         // skip cameras
-        if ($this->configure->cameras && !in_array($tokens->camera, $this->configure->cameras)) {
+        if (Configure::cameras($this->input) && !in_array($tokens->camera, Configure::cameras($this->input))) {
             $this->logger->addNotice(
                 $this->translator->translate(
                     'skipped/CameraNotInList',
@@ -102,10 +102,10 @@ class Processor
         }
 
         // filter by regexps of exif (if any matches, then process)
-        if ($this->configure->regexpExifFilter) {
+        if (Configure::regexpExifFilter($this->input)) {
             $matched = false;
             foreach ($fileBunch->exifs() as $extension => $exif) {
-                foreach ($this->configure->regexpExifFilter as $key => $value) {
+                foreach (Configure::regexpExifFilter($this->input) as $key => $value) {
                     if (@preg_match($value, '') !== false) {
                         if (preg_match($value, (string)$exif->{$key})) {
                             $matched = true;
@@ -126,10 +126,10 @@ class Processor
         }
 
         // filter by  negative regexps of exif (if any matches, then skipped)
-        if ($this->configure->regexpExifNegativeFilter) {
+        if (Configure::regexpExifNegativeFilter($this->input)) {
             $matched = false;
             foreach ($fileBunch->exifs() as $extension => $exif) {
-                foreach ($this->configure->regexpExifNegativeFilter as $key => $value) {
+                foreach (Configure::regexpExifNegativeFilter($this->input) as $key => $value) {
                     if (@preg_match($value, '') !== false) {
                         if (preg_match($value, (string)$exif->{$key})) {
                             $matched = true;
@@ -184,20 +184,20 @@ class Processor
             $this->bytesProcessed += filesize($from);
             // QUESTION: should we lowercase only primary extensions + known ones (xmp, txt) ?
             $to = $newBunchId . '.' . mb_strtolower($extension);
-            if (($this->configure->regexpFilenameFilter && !preg_match($this->configure->regexpFilenameFilter, $to))
-                || ($this->configure->regexpFilenameNegativeFilter && preg_match($this->configure->regexpFilenameNegativeFilter, $to))
+            if ((Configure::regexpFilenameFilter($this->input) && !preg_match(Configure::regexpFilenameFilter($this->input), $to))
+                || (Configure::regexpFilenameNegativeFilter($this->input) && preg_match(Configure::regexpFilenameNegativeFilter($this->input), $to))
             ) {
                 $this->logger->addNotice($this->translator->translate('skipped/filteredByFileRegExp', [$to]));
-            } elseif (is_file($to) && $this->configure->deleteDuplicates && !$this->configure->copy) {
+            } elseif (is_file($to) && Configure::deleteDuplicates($this->input) && !Configure::copy($this->input)) {
                 $queue[] = new Executor\Command(
                     'rm ' . escapeshellarg($from),
                     $this->translator->translate('error/unableToDelete', array($from)),
                     $this->translator->translate('fileDuplicateWasRemoved', array($extension))
                 );
                 $filesTransferred = true;
-            } elseif (is_file($to) && (!$this->configure->deleteDuplicates || $this->configure->copy)) {
+            } elseif (is_file($to) && (!Configure::deleteDuplicates($this->input) || Configure::copy($this->input))) {
                 $this->logger->addNotice($this->translator->translate('skipped/targetAlreadyExists', array($extension)));
-            } elseif ($this->configure->copy) {
+            } elseif (Configure::copy($this->input)) {
                 $queue[] = new Executor\Command(
                     'cp ' . escapeshellarg($from) . ' ' . escapeshellarg($to),
                     $this->translator->translate('error/unableToCopy', array($from, $to)),
@@ -216,10 +216,10 @@ class Processor
         if ($filesTransferred) {
             foreach ($queue as $command) {
                 /** @var Executor\Command $command */
-                if ($this->configure->saveCommandsFile && !$this->configure->simulate) {
-                    file_put_contents($this->configure->saveCommandsFile, $command->command() . PHP_EOL, FILE_APPEND);
+                if (Configure::saveCommandsFile($this->input) && !Configure::simulate($this->input)) {
+                    file_put_contents(Configure::saveCommandsFile($this->input), $command->command() . PHP_EOL, FILE_APPEND);
                 }
-                if ($this->configure->simulate) {
+                if (Configure::simulate($this->input)) {
                     fwrite(STDOUT, $command->command() . PHP_EOL);
                 } elseif (0 !== $this->executor->execute($command->command())) {
                     $this->logger->addError($command->errorMessage());

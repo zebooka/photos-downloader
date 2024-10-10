@@ -6,6 +6,8 @@ use PHPUnit\Framework\TestCase;
 
 class TokensTest extends TestCase
 {
+    use InputTrait;
+
     public function tearDown(): void
     {
         \Mockery::close();
@@ -44,8 +46,8 @@ class TokensTest extends TestCase
         $this->assertEquals(123, $tokens->shot);
         $tokens->increaseShot();
         $this->assertEquals(124, $tokens->shot);
-        $this->assertEquals('2007/04', $tokens->assembleDirectory($this->configure()));
-        $this->assertEquals('2007/070400', $tokens->assembleDirectory($this->configure('%Y/%y%m00')));
+        $this->assertEquals('2007/04', $tokens->assembleDirectory($this->input()));
+        $this->assertEquals('2007/070400', $tokens->assembleDirectory($this->input([Command::SUBDIRS_FORMAT => '%Y/%y%m00'])));
         $this->assertEquals('unique-prefix_070417_210000_124_unique-author_unique-camera_unique-token-1_unique-token-2', $tokens->assembleBasename());
     }
 
@@ -61,8 +63,8 @@ class TokensTest extends TestCase
         $this->assertNull($tokens->camera);
         $this->assertNull($tokens->prefix);
         $this->assertNull($tokens->shot);
-        $this->assertEquals('2007/04', $tokens->assembleDirectory($this->configure()));
-        $this->assertEquals('2007/070400', $tokens->assembleDirectory($this->configure('%Y/%y%m00')));
+        $this->assertEquals('2007/04', $tokens->assembleDirectory($this->input()));
+        $this->assertEquals('2007/070400', $tokens->assembleDirectory($this->input([Command::SUBDIRS_FORMAT => '%Y/%y%m00'])));
         $this->assertEquals('070417_210000', $tokens->assembleBasename());
     }
 
@@ -74,8 +76,8 @@ class TokensTest extends TestCase
         $this->assertEquals('070417', $tokens->date());
         $this->assertEquals('210000', $tokens->time());
         $this->assertEquals($timestamp, $tokens->timestamp());
-        $this->assertEquals('2007/04', $tokens->assembleDirectory($this->configure()));
-        $this->assertEquals('2007/070400', $tokens->assembleDirectory($this->configure('%Y/%y%m00')));
+        $this->assertEquals('2007/04', $tokens->assembleDirectory($this->input()));
+        $this->assertEquals('2007/070400', $tokens->assembleDirectory($this->input([Command::SUBDIRS_FORMAT => '%Y/%y%m00'])));
         $this->assertEquals('070417_210000', $tokens->assembleBasename());
     }
 
@@ -87,8 +89,8 @@ class TokensTest extends TestCase
         $this->assertEquals('070417', $tokens->date());
         $this->assertEquals('160000', $tokens->time());
         $this->assertEquals(strtotime($timestr), $tokens->timestamp());
-        $this->assertEquals('2007/04', $tokens->assembleDirectory($this->configure()));
-        $this->assertEquals('2007/070400', $tokens->assembleDirectory($this->configure('%Y/%y%m00')));
+        $this->assertEquals('2007/04', $tokens->assembleDirectory($this->input()));
+        $this->assertEquals('2007/070400', $tokens->assembleDirectory($this->input([Command::SUBDIRS_FORMAT => '%Y/%y%m00'])));
         $this->assertEquals('070417_160000', $tokens->assembleBasename());
     }
 
@@ -99,8 +101,8 @@ class TokensTest extends TestCase
         $this->assertEquals('unique-date', $tokens->date());
         $this->assertNull($tokens->time());
         $this->assertNull($tokens->timestamp());
-        $this->assertNull($tokens->assembleDirectory($this->configure()));
-        $this->assertNull($tokens->assembleDirectory($this->configure('%Y/%y%m00')));
+        $this->assertNull($tokens->assembleDirectory($this->input()));
+        $this->assertNull($tokens->assembleDirectory($this->input([Command::SUBDIRS_FORMAT => '%Y/%y%m00'])));
         $this->assertEquals('unique-date', $tokens->assembleBasename());
     }
 
@@ -111,8 +113,8 @@ class TokensTest extends TestCase
         $this->assertEquals('unique-date', $tokens->date());
         $this->assertEquals('unique-time', $tokens->time());
         $this->assertNull($tokens->timestamp());
-        $this->assertNull($tokens->assembleDirectory($this->configure()));
-        $this->assertNull($tokens->assembleDirectory($this->configure('%Y/%y%m00')));
+        $this->assertNull($tokens->assembleDirectory($this->input()));
+        $this->assertNull($tokens->assembleDirectory($this->input([Command::SUBDIRS_FORMAT => '%Y/%y%m00'])));
         $this->assertEquals('unique-date_unique-time', $tokens->assembleBasename());
     }
 
@@ -124,8 +126,8 @@ class TokensTest extends TestCase
         $this->assertEquals('070417', $tokens->date());
         $this->assertEquals('160000', $tokens->time());
         $this->assertEquals($datetime->getTimestamp(), $tokens->timestamp());
-        $this->assertEquals('2007/04', $tokens->assembleDirectory($this->configure()));
-        $this->assertEquals('2007/070400', $tokens->assembleDirectory($this->configure('%Y/%y%m00')));
+        $this->assertEquals('2007/04', $tokens->assembleDirectory($this->input()));
+        $this->assertEquals('2007/070400', $tokens->assembleDirectory($this->input([Command::SUBDIRS_FORMAT => '%Y/%y%m00'])));
         $this->assertEquals('070417_160000', $tokens->assembleBasename());
     }
 
@@ -136,8 +138,8 @@ class TokensTest extends TestCase
         $this->assertEquals('1985x', $tokens->date());
         $this->assertNull($tokens->time());
         $this->assertNull($tokens->timestamp());
-        $this->assertEquals('1985x', $tokens->assembleDirectory($this->configure()));
-        $this->assertEquals('1985x', $tokens->assembleDirectory($this->configure('%Y/%y%m00')));
+        $this->assertEquals('1985x', $tokens->assembleDirectory($this->input()));
+        $this->assertEquals('1985x', $tokens->assembleDirectory($this->input([Command::SUBDIRS_FORMAT => '%Y/%y%m00'])));
         $this->assertEquals('1985x_123_test', $tokens->assembleBasename());
     }
 
@@ -145,7 +147,7 @@ class TokensTest extends TestCase
     {
         $tokens = new Tokens(array('201104'));
         $this->assertEquals('201104', $tokens->date());
-        $this->assertEquals('2020/11', $tokens->assembleDirectory($this->configure()));
+        $this->assertEquals('2020/11', $tokens->assembleDirectory($this->input()));
     }
 
     public function test_failure_with_unsupported_date_time_value_type()
