@@ -39,6 +39,8 @@ test: ## Run tests
 	docker-compose run --rm -- php80 /app/tests/run.sh
 	docker-compose run --rm -- php81 /app/tests/run.sh
 	docker-compose run --rm -- php82 /app/tests/run.sh
+	docker-compose run --rm -- php83 /app/tests/run.sh
+	docker-compose run --rm -- php84 /app/tests/run.sh
 
 build: ## Build PHAR
 	docker-compose run --rm -e PHAR_SKELETON_ALIAS="photos-downloader.phar" -e PHAR_SKELETON_NAMESPACE="Zebooka" -- php73 /app/build-phar.php
