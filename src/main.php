@@ -18,6 +18,7 @@
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
 use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Output\OutputInterface;
 use Zebooka\PD\Command;
 
 // get locale

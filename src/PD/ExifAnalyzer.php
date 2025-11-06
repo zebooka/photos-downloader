@@ -81,7 +81,7 @@ class ExifAnalyzer
         }
         $datetimes = array_unique($datetimes);
         sort($datetimes);
-        if (Configure::compareExifs($this->input) && count($datetimes) > 1) {
+        if (!Configure::noCompareExifs($this->input) && count($datetimes) > 1) {
             if (count($datetimes) != 2 || abs($datetimes[0] - $datetimes[1]) > 1) {
                 throw new ExifAnalyzerException(
                     'Files have ' . count($datetimes) . ' unique date/time values.',
@@ -116,7 +116,7 @@ class ExifAnalyzer
                 break;
             }
         }
-        if (Configure::compareExifs($this->input) && count($cameras) > 1) {
+        if (!Configure::noCompareExifs($this->input) && count($cameras) > 1) {
             throw new ExifAnalyzerException(
                 'Files have ' . count($cameras) . ' unique detected cameras.',
                 ExifAnalyzerException::DIFFERENT_CAMERAS

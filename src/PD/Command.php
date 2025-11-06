@@ -15,31 +15,30 @@ use Zebooka\Utils\Size;
 
 class Command extends SymfonyCommand
 {
-    const SIMULATE = 'simulate';
-    const SAVE_COMMANDS_FILE = 'save-commands';
-    const LIMIT = 'limit';
-    const NO_RECURSIVE = 'no-recursive';
-
-    const FROM = 'from';
-    const LIST_FILE = 'list-file';
-    const TO = 'to';
-    const NO_SUBDIRS = 'no-subdirs';
-    const SUBDIRS_FORMAT = 'subdirs-format';
-    const COPY = 'copy';
-    const NO_DELETE_DUPLICATES = 'no-delete-duplicates';
     const AUTHOR = 'author';
     const CAMERAS = 'cameras';
-    const PREFER_EXIF_DT = 'prefer-exif-datetime';
-    const TIMEZONE = 'timezone';
-    const TOKENS_ADD = 'add-token';
-    const TOKENS_DROP = 'drop-token';
-    const TOKENS_DROP_UNKNOWN = 'drop-unknown-tokens';
+    const COPY = 'copy';
+    const FROM = 'from';
+    const LIMIT = 'limit';
+    const LIST_FILE = 'list-file';
     const NO_COMPARE_EXIFS = 'no-exif-compare';
+    const NO_DELETE_DUPLICATES = 'no-delete-duplicates';
+    const NO_RECURSIVE = 'no-recursive';
+    const NO_SUBDIRS = 'no-subdirs';
+    const PANORAMIC_RATIO = 'panoramic-ratio';
+    const PREFER_EXIF_DT = 'prefer-exif-datetime';
     const REGEXP_EXIF_FILTER = 'exif-filter';
     const REGEXP_EXIF_NEGATIVE_FILTER = 'exif-negative-filter';
     const REGEXP_FILENAME_FILTER = 'filename-filter';
     const REGEXP_FILENAME_NEGATIVE_FILTER = 'filename-negative-filter';
-    const PANORAMIC_RATIO = 'panoramic-ratio';
+    const SAVE_COMMANDS_FILE = 'save-commands';
+    const SIMULATE = 'simulate';
+    const SUBDIRS_FORMAT = 'subdirs-format';
+    const TIMEZONE = 'timezone';
+    const TO = 'to';
+    const TOKENS_ADD = 'add-token';
+    const TOKENS_DROP = 'drop-token';
+    const TOKENS_DROP_UNKNOWN = 'drop-unknown-tokens';
 
     /** @var string */
     private $locale;
@@ -68,47 +67,49 @@ class Command extends SymfonyCommand
         parent::configure();
         $this->translator = TranslatorFactory::translator(__DIR__ . '/../../res', $this->locale);
 
-        $this->addOption(self::SIMULATE, 's', InputOption::VALUE_NONE, $this->td('P_SIMULATE'));
-        $this->addOption(self::SAVE_COMMANDS_FILE, 'S', InputOption::VALUE_REQUIRED, $this->td('P_SAVE_COMMANDS_FILE'));
-        $this->addOption(self::LIMIT, 'l', InputOption::VALUE_REQUIRED, $this->td('P_LIMIT'));
-        $this->addOption(self::NO_RECURSIVE, 'R', InputOption::VALUE_NONE, $this->td('P_NO_RECURSIVE'));
-        $this->addOption(self::FROM, 'f', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, $this->td('P_FROM'));
-        $this->addOption(self::LIST_FILE, 'F', InputOption::VALUE_REQUIRED, $this->td('P_LIST_FILE'));
-        $this->addOption(self::TO, 't', InputOption::VALUE_REQUIRED, $this->td('P_TO'));
-        $this->addOption(self::NO_SUBDIRS, 'D', InputOption::VALUE_NONE, $this->td('P_NO_SUBDIRS'));
-        $this->addOption(self::SUBDIRS_FORMAT, 'k', InputOption::VALUE_REQUIRED, $this->td('P_SUBDIRS_FORMAT'));
-        $this->addOption(self::COPY, 'c', InputOption::VALUE_NONE, $this->td('P_COPY'));
-        $this->addOption(self::NO_DELETE_DUPLICATES, 'Z', InputOption::VALUE_NONE, $this->td('P_NO_DELETE_DUPLICATES'));
         $this->addOption(self::AUTHOR, 'a', InputOption::VALUE_REQUIRED, $this->td('P_AUTHOR'));
         $this->addOption(self::CAMERAS, 'd', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, $this->td('P_CAMERAS'));
-        $this->addOption(self::PREFER_EXIF_DT, 'T', InputOption::VALUE_NONE, $this->td('P_PREFER_EXIF_DT'));
-        $this->addOption(self::TIMEZONE, 'z', InputOption::VALUE_REQUIRED, $this->td('P_TIMEZONE'));
-        $this->addOption(self::TOKENS_ADD, 'x', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, $this->td('P_TOKENS_ADD'));
-        $this->addOption(self::TOKENS_DROP, 'y', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, $this->td('P_TOKENS_DROP'));
-        $this->addOption(self::TOKENS_DROP_UNKNOWN, 'Y', InputOption::VALUE_NONE, $this->td('P_TOKENS_DROP_UNKNOWN'));
+        $this->addOption(self::COPY, 'c', InputOption::VALUE_NONE, $this->td('P_COPY'));
+        $this->addOption(self::FROM, 'f', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, $this->td('P_FROM'));
+        $this->addOption(self::LIMIT, 'l', InputOption::VALUE_REQUIRED, $this->td('P_LIMIT'));
+        $this->addOption(self::LIST_FILE, 'F', InputOption::VALUE_REQUIRED, $this->td('P_LIST_FILE'));
         $this->addOption(self::NO_COMPARE_EXIFS, 'B', InputOption::VALUE_NONE, $this->td('P_NO_COMPARE_EXIFS'));
+        $this->addOption(self::NO_DELETE_DUPLICATES, 'Z', InputOption::VALUE_NONE, $this->td('P_NO_DELETE_DUPLICATES'));
+        $this->addOption(self::NO_RECURSIVE, 'R', InputOption::VALUE_NONE, $this->td('P_NO_RECURSIVE'));
+        $this->addOption(self::NO_SUBDIRS, 'D', InputOption::VALUE_NONE, $this->td('P_NO_SUBDIRS'));
+        $this->addOption(self::PANORAMIC_RATIO, 'p', InputOption::VALUE_REQUIRED, $this->td('P_PANORAMIC_RATIO'));
+        $this->addOption(self::PREFER_EXIF_DT, 'T', InputOption::VALUE_NONE, $this->td('P_PREFER_EXIF_DT'));
         $this->addOption(self::REGEXP_EXIF_FILTER, 'i', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, $this->td('P_REGEXP_EXIF_FILTER'));
         $this->addOption(self::REGEXP_EXIF_NEGATIVE_FILTER, 'I', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, $this->td('P_REGEXP_EXIF_NEGATIVE_FILTER'));
         $this->addOption(self::REGEXP_FILENAME_FILTER, 'g', InputOption::VALUE_REQUIRED, $this->td('P_REGEXP_FILENAME_FILTER'));
         $this->addOption(self::REGEXP_FILENAME_NEGATIVE_FILTER, 'G', InputOption::VALUE_REQUIRED, $this->td('P_REGEXP_FILENAME_NEGATIVE_FILTER'));
-        $this->addOption(self::PANORAMIC_RATIO, 'p', InputOption::VALUE_REQUIRED, $this->td('P_PANORAMIC_RATIO'));
+        $this->addOption(self::SAVE_COMMANDS_FILE, 'S', InputOption::VALUE_REQUIRED, $this->td('P_SAVE_COMMANDS_FILE'));
+        $this->addOption(self::SIMULATE, 's', InputOption::VALUE_NONE, $this->td('P_SIMULATE'));
+        $this->addOption(self::SUBDIRS_FORMAT, 'k', InputOption::VALUE_REQUIRED, $this->td('P_SUBDIRS_FORMAT'));
+        $this->addOption(self::TIMEZONE, 'z', InputOption::VALUE_REQUIRED, $this->td('P_TIMEZONE'));
+        $this->addOption(self::TO, 't', InputOption::VALUE_REQUIRED, $this->td('P_TO'));
+        $this->addOption(self::TOKENS_ADD, 'x', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, $this->td('P_TOKENS_ADD'));
+        $this->addOption(self::TOKENS_DROP, 'y', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, $this->td('P_TOKENS_DROP'));
+        $this->addOption(self::TOKENS_DROP_UNKNOWN, 'Y', InputOption::VALUE_NONE, $this->td('P_TOKENS_DROP_UNKNOWN'));
     }
 
     public function execute(InputInterface $input, OutputInterface $output)
     {
         $tokensConfigs = [
+            // TODO custom config url
             getcwd() . '/.photos-downloader-rc.json',
             ($_SERVER['HOME'] ?? getcwd()) . '/.photos-downloader-rc.json',
-            ($_SERVER['HOME'] ?? getcwd()) . '/.config/photos-downloader/rc.json',
+            ($_SERVER['HOME'] ?? getcwd()) . '/.config/photos-downloader-rc.json',
+            ($_SERVER['HOME'] ?? getcwd()) . '/.local/photos-downloader-rc.json',
         ];
         $tokensConfigs = array_values(array_filter($tokensConfigs, 'is_file'));
 
-        $configure = $tokensConfigs[0]
+        $configure = isset($tokensConfigs[0])
             ? Configure::constructFromConfigFilename($tokensConfigs[0])
             : Configure::constructEmpty();
-        $logger = \Zebooka\PD\LoggerFactory::logger($input);
+        $logger = LoggerFactory::logger($input);
 
-        if (!count($input->getOption(self::FROM))) {
+        if (!count(Configure::from($input))) {
             throw new \UnexpectedValueException($this->t('error/noFromPathSpecified'));
         }
 
@@ -141,6 +142,7 @@ class Command extends SymfonyCommand
             $input,
             $output,
             $configure,
+            Scanner::factoryFromInput($input),
             new Tokenizer($configure, $input, new ExifAnalyzer($configure)),
             new Assembler($configure, $input, new Hashinator()),
             new BunchCache(),

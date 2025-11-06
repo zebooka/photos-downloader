@@ -4,6 +4,8 @@ namespace Zebooka\PD;
 
 use Monolog\Logger;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\ConsoleOutputInterface;
+use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
 use Zebooka\Translator\Translator;
 use Zebooka\Utils\Executor;
@@ -16,7 +18,14 @@ class Processor
     /** @var OutputInterface */
     private $output;
 
+    /** @var OutputInterface */
+    private $stderr;
+
+    /** @var Configure */
     private $configure;
+
+    /** @var ScannerIterator */
+    private $scannerIterator;
 
     /** @var Tokenizer */
     private $tokenizer;
@@ -52,7 +61,9 @@ class Processor
     ) {
         $this->input = $input;
         $this->output = $output;
+        $this->stderr = ($output instanceof ConsoleOutputInterface ? $output->getErrorOutput() : $output);
         $this->configure = $configure;
+//        $this->scannerIterator = $scannerIterator;
         $this->tokenizer = $tokenizer;
         $this->assembler = $assembler;
         $this->bunchCache = $bunchCache;
@@ -70,33 +81,32 @@ class Processor
             $tokens = $this->tokenizer->tokenize($fileBunch);
         } catch (TokenizerException $e) {
             if (TokenizerException::NO_DATE_TIME_DETECTED == $e->getCode()) {
-                $tokenizeErrorMessage = $this->translator->translate('error/tokenize/datetime');
+                $message = $this->translator->translate('error/tokenize/datetime');
             } else {
                 throw $e;
             }
-            $this->logger->addError($tokenizeErrorMessage);
+
+            $this->stderr->writeln("<error>{$message}</error>");
             return false;
         } catch (ExifAnalyzerException $e) {
             if (ExifAnalyzerException::DIFFERENT_DATES == $e->getCode()) {
-                $tokenizeErrorMessage = $this->translator->translate('error/exifAnalyzer/differentDates');
+                $message = $this->translator->translate('error/exifAnalyzer/differentDates');
             } elseif (ExifAnalyzerException::DIFFERENT_CAMERAS == $e->getCode()) {
-                $tokenizeErrorMessage = $this->translator->translate('error/exifAnalyzer/differentCameras');
+                $message = $this->translator->translate('error/exifAnalyzer/differentCameras');
             } elseif (ExifAnalyzerException::EXIF_EXCEPTION == $e->getCode()) {
-                $tokenizeErrorMessage = $this->translator->translate('error/exifAnalyzer/exifException');
+                $message = $this->translator->translate('error/exifAnalyzer/exifException');
             } else {
                 throw $e;
             }
-            $this->logger->addError($tokenizeErrorMessage);
+            $this->stderr->writeln("<error>{$message}</error>");
             return false;
         }
 
         // skip cameras
         if (Configure::cameras($this->input) && !in_array($tokens->camera, Configure::cameras($this->input))) {
-            $this->logger->addNotice(
-                $this->translator->translate(
-                    'skipped/CameraNotInList',
-                    array($tokens->camera, $fileBunch)
-                )
+            $this->output->writeln(
+                $this->translator->translate('skipped/CameraNotInList', [$tokens->camera, $fileBunch]),
+                Output::VERBOSITY_VERBOSE
             );
             return false;
         }
@@ -118,8 +128,9 @@ class Processor
                 }
             }
             if (!$matched) {
-                $this->logger->addNotice(
-                    $this->translator->translate('skipped/filteredByExifRegExp', [$fileBunch])
+                $this->output->writeln(
+                    $this->translator->translate('skipped/filteredByExifRegExp', [$fileBunch]),
+                    Output::VERBOSITY_VERBOSE
                 );
                 return false;
             }
@@ -142,8 +153,9 @@ class Processor
                 }
             }
             if ($matched) {
-                $this->logger->addNotice(
-                    $this->translator->translate('skipped/filteredByExifRegExp', [$fileBunch])
+                $this->output->writeln(
+                    $this->translator->translate('skipped/filteredByExifRegExp', [$fileBunch]),
+                    Output::VERBOSITY_VERBOSE
                 );
                 return false;
             }
@@ -153,14 +165,15 @@ class Processor
         try {
             $newBunchId = $this->assembler->assemble($tokens, $fileBunch);
         } catch (AssemblerException $e) {
-            $this->logger->addError($this->translator->translate('error/unableToAssembleTokens', array($fileBunch)));
+            $this->stderr->writeln("<error>{$this->translator->translate('error/unableToAssembleTokens', [$fileBunch])}</error>");
             return false;
         }
 
         // skip not changed
         if ($fileBunch->bunchId() === $newBunchId) {
-            $this->logger->addNotice(
-                $this->translator->translate('skipped/sourceEqualsDestination', array(count($fileBunch->extensions()), $fileBunch))
+            $this->output->writeln(
+                $this->translator->translate('skipped/sourceEqualsDestination', [count($fileBunch->extensions()), $fileBunch]),
+                Output::VERBOSITY_VERBOSE
             );
             return false;
         }
@@ -188,14 +201,14 @@ class Processor
                 || (Configure::regexpFilenameNegativeFilter($this->input) && preg_match(Configure::regexpFilenameNegativeFilter($this->input), $to))
             ) {
                 $this->logger->addNotice($this->translator->translate('skipped/filteredByFileRegExp', [$to]));
-            } elseif (is_file($to) && Configure::deleteDuplicates($this->input) && !Configure::copy($this->input)) {
+            } elseif (is_file($to) && !Configure::noDeleteDuplicates($this->input) && !Configure::copy($this->input)) {
                 $queue[] = new Executor\Command(
                     'rm ' . escapeshellarg($from),
                     $this->translator->translate('error/unableToDelete', array($from)),
                     $this->translator->translate('fileDuplicateWasRemoved', array($extension))
                 );
                 $filesTransferred = true;
-            } elseif (is_file($to) && (!Configure::deleteDuplicates($this->input) || Configure::copy($this->input))) {
+            } elseif (is_file($to) && (Configure::noDeleteDuplicates($this->input) || Configure::copy($this->input))) {
                 $this->logger->addNotice($this->translator->translate('skipped/targetAlreadyExists', array($extension)));
             } elseif (Configure::copy($this->input)) {
                 $queue[] = new Executor\Command(

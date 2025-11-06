@@ -50,8 +50,8 @@ class Tokenizer
             $tokens = array_intersect($tokens, $this->configure->knownTokens());
         }
         $tokens = array_merge($tokens, $exifTokens);
-        $tokens = array_diff($tokens, Configure::tokensToDrop($this->input));
-        $tokens = array_merge($tokens, Configure::tokensToAdd($this->input));
+        $tokens = array_diff($tokens, Configure::tokensDrop($this->input));
+        $tokens = array_merge($tokens, Configure::tokensAdd($this->input));
         $tokens = array_values(array_unique($tokens));
         $tokens = array_merge(
             array_intersect($tokens, $this->configure->knownTokens()),

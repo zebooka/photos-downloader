@@ -17,9 +17,9 @@ class ScannerTest extends TestCase
     {
         $scanner = new Scanner(array($this->resourceDirectory() . '/0.jpg', $this->resourceDirectory()), true);
         $i = 0;
-        while ($fileBunch = $scanner->searchForNextFile()) {
+        foreach ($scanner as $fileBunch)  {
             $i++;
-            $this->assertInstanceOf('\\Zebooka\\PD\\FileBunch', $fileBunch);
+            $this->assertInstanceOf(FileBunch::class, $fileBunch);
             if (array_intersect($fileBunch->primaryExtensions(), Scanner::supportedPhotoExtensions())) {
                 $this->assertCount(0, array_intersect($fileBunch->primaryExtensions(), Scanner::supportedVideoExtensions()));
             }
@@ -34,9 +34,9 @@ class ScannerTest extends TestCase
     {
         $scanner = new Scanner(array($this->resourceDirectory() . '/0.jpg', $this->resourceDirectory()), false);
         $i = 0;
-        while ($fileBunch = $scanner->searchForNextFile()) {
+        foreach ($scanner as $fileBunch)  {
             $i++;
-            $this->assertInstanceOf('\\Zebooka\\PD\\FileBunch', $fileBunch);
+            $this->assertInstanceOf(FileBunch::class, $fileBunch);
         }
         $this->assertEquals(2, $i);
     }
@@ -54,7 +54,7 @@ class ScannerTest extends TestCase
     {
         $scanner = new Scanner(array('-'), false, $this->resourceDirectory() . '/list.txt');
 
-        $fileBunch = $scanner->searchForNextFile();
+        $fileBunch = $scanner->getFileBunchGenerator();
         $this->assertInstanceOf('\\Zebooka\\PD\\FileBunch', $fileBunch);
         $this->assertEquals(realpath($this->resourceDirectory()), $fileBunch->directory());
 

@@ -2,6 +2,9 @@
 
 namespace Zebooka\PD;
 
+use Symfony\Component\Console\Input\InputInterface;
+
+/** @deprecated */
 class ScannerIterator implements \Iterator
 {
     private $originalSourcePaths;
@@ -13,10 +16,11 @@ class ScannerIterator implements \Iterator
     private $value;
     private $recursive;
 
-    public function __construct(array $sourcePaths, $recursive)
+    public function __construct(InputInterface $input, array $sourcePaths, $recursive)
     {
-        $this->originalSourcePaths = $sourcePaths;
-        $this->recursive = $recursive;
+
+        $this->originalSourcePaths = Configure::from($input);
+        $this->recursive = Configure::recursive($input);
     }
 
     #[\ReturnTypeWillChange]

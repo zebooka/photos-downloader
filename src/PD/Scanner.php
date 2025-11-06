@@ -2,114 +2,122 @@
 
 namespace Zebooka\PD;
 
-class Scanner
+use Symfony\Component\Console\Input\InputInterface;
+
+class Scanner implements \IteratorAggregate, \Countable
 {
-    private $files = array();
-    private $dirs = array();
-    private $listHandler;
+    /** @var iterable */
+    private $sourcePaths;
+
+    /** @var FileBunch[] */
+    private $files = [];
+
+    /** @var bool */
     private $recursive;
 
-    public function __construct(array $sourcePaths, $recursive, $listFile = null)
+    /** @var bool */
+    private $scanInstantly;
+
+    public function __construct(iterable $sourcePaths, bool $recursive = true, bool $scanInstantly = false)
     {
+        $this->sourcePaths = $sourcePaths;
         $this->recursive = $recursive;
-        $sourcePaths = array_unique($sourcePaths);
-        foreach ($sourcePaths as $sourcePath) {
-            if ('-' === $sourcePath) {
-                $this->listHandler = fopen($listFile ? : 'php://stdin', 'r');
-            } elseif (is_dir($sourcePath)) {
-                $this->dirs[] = realpath($sourcePath);
-            } elseif (is_file($sourcePath)) {
-                $this->addPathAsFileBunch(realpath($sourcePath));
+        $this->scanInstantly = $scanInstantly;
+
+        if ($this->scanInstantly) {
+            foreach ($this->getFileBunchGenerator() as $fileBunch)
+            {
+                $this->files[] = $fileBunch;
             }
         }
     }
 
-    public function __destruct()
+    public static function factoryFromInput(InputInterface $input): self
     {
-        if ($this->listHandler) {
-            fclose($this->listHandler);
+        return new self(
+            new \ArrayIterator(Configure::from($input)),
+            !Configure::noRecursive($input),
+        );
+    }
+
+    public function count(): int
+    {
+        return count($this->files);
+    }
+
+    public function getIterator(): \Traversable
+    {
+        if ($this->scanInstantly) {
+            foreach ($this->files as $fileBunch) {
+                yield $fileBunch;
+            }
+        } else {
+            foreach ($this->getFileBunchGenerator() as $fileBunch) {
+                yield $fileBunch;
+            }
         }
     }
 
-    private function addPathAsFileBunch($sourcePath)
+    public function getFileBunchGenerator(): \Generator
     {
-        $path = new \SplFileInfo($sourcePath);
-        if (!in_array(mb_strtolower($path->getExtension()), self::supportedExtensions())) {
-            return;
+        $dirs = [];
+        foreach ($this->sourcePaths as $sourcePath) {
+            if (is_file($sourcePath)) {
+                $path = new \SplFileInfo($sourcePath);
+                if (!in_array(mb_strtolower($path->getExtension()), self::supportedExtensions())) {
+                    continue;
+                }
+                $basename = $path->getBasename('.' . $path->getExtension());
+                if ('' === $basename) {
+                    continue;
+                }
+                $bunchId = $path->getPathInfo()->getRealPath() . DIRECTORY_SEPARATOR . $basename;
+                yield new FileBunch($bunchId, [$path->getExtension()]);
+            } elseif (is_dir($sourcePath)) {
+                $dirs[] = ($this->recursive
+                    ? new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($sourcePath))
+                    : new \DirectoryIterator($sourcePath)
+                );
+            }
         }
-        $basename = $path->getBasename('.' . $path->getExtension());
-        if ('' === $basename) {
-            return;
+
+        foreach ($dirs as $dir) {
+            $files = [];
+            foreach ($dir as $spl) {
+                /** @var \SplFileInfo $spl */
+
+                if ($spl->isFile()) {
+                    $basename = $spl->getBasename('.' . $spl->getExtension());
+                    if ('' === $basename) {
+                        // skip hidden files
+                        continue;
+                    }
+                    $bunchId = $spl->getPath() . DIRECTORY_SEPARATOR . $basename;
+                    if (!isset($files[$bunchId])) {
+                        $files[$bunchId] = [];
+                    }
+                    $files[$bunchId][] = $spl->getExtension();
+                }
+            }
+
+            foreach ($files as $bunchId => $extensions) {
+                $supportedVideo = self::filterBySupportedExtensions($extensions, self::supportedVideoExtensions());
+                $supportedPhoto = self::filterBySupportedExtensions($extensions, self::supportedPhotoExtensions());
+                if (count($supportedVideo) > 0) {
+                    yield new FileBunch($bunchId, $supportedVideo, array_diff($extensions, $supportedVideo));
+                } elseif (count($supportedPhoto) > 0) {
+                    yield new FileBunch($bunchId, $supportedPhoto, array_diff($extensions, $supportedPhoto));
+                }
+            }
         }
-        $bunchId = $path->getPathInfo()->getRealPath() . DIRECTORY_SEPARATOR . $basename;
-        $this->files[] = new FileBunch($bunchId, array($path->getExtension()));
     }
 
     /**
-     * @return false|FileBunch
+     * @param string[] $extensions
+     * @param string[] $supportedExtensions
+     * @return string[]
      */
-    public function searchForNextFile()
-    {
-        if ($this->listHandler && !feof($this->listHandler)) {
-            while (!count($this->files) && !count($this->dirs) && !feof($this->listHandler)) {
-                $sourcePath = rtrim(fgets($this->listHandler));
-                if (is_dir($sourcePath)) {
-                    $this->dirs[] = $sourcePath;
-                } elseif (is_file($sourcePath)) {
-                    $this->addPathAsFileBunch($sourcePath);
-                }
-            }
-        }
-        if (!count($this->files) && count($this->dirs) > 0) {
-            while (!count($this->files) && count($this->dirs) > 0) {
-                $this->scanDirectory(array_shift($this->dirs));
-            }
-        }
-        if (count($this->files) > 0) {
-            return array_shift($this->files);
-        } else {
-            return false;
-        }
-    }
-
-    private function scanDirectory($dir)
-    {
-        $files = array();
-        $dirs = array();
-        foreach (new \DirectoryIterator($dir) as $path) {
-            /** @var \DirectoryIterator $path */
-            if ($path->isDot()) {
-                continue;
-            } elseif ($path->isDir() && $this->recursive) {
-                $dirs[] = $path->getPathname();
-            } elseif ($path->isFile()) {
-                $basename = $path->getBasename('.' . $path->getExtension());
-                if ('' === $basename) {
-                    // skip hidden files
-                    continue;
-                }
-                $bunchId = $path->getPath() . DIRECTORY_SEPARATOR . $basename;
-                if (!isset($files[$bunchId])) {
-                    $files[$bunchId] = array();
-                }
-                $files[$bunchId][] = $path->getExtension();
-            }
-        }
-        while (count($dirs) > 0) {
-            array_unshift($this->dirs, array_pop($dirs));
-        }
-        foreach ($files as $bunchId => $extensions) {
-            $supportedVideo = self::filterBySupportedExtensions($extensions, self::supportedVideoExtensions());
-            $supportedPhoto = self::filterBySupportedExtensions($extensions, self::supportedPhotoExtensions());
-            if (count($supportedVideo) > 0) {
-                $this->files[] = new FileBunch($bunchId, $supportedVideo, array_diff($extensions, $supportedVideo));
-            } elseif (count($supportedPhoto) > 0) {
-                $this->files[] = new FileBunch($bunchId, $supportedPhoto, array_diff($extensions, $supportedPhoto));
-            }
-        }
-    }
-
-    public static function filterBySupportedExtensions(array $extensions, array $supportedExtensions)
+    public static function filterBySupportedExtensions(array $extensions, array $supportedExtensions): array
     {
         $supportedExtensions = array_map(
             function ($extension) {
@@ -125,7 +133,11 @@ class Scanner
         );
     }
 
-    public static function sortExtensions(array $extensions)
+    /**
+     * @param string[] $extensions
+     * @return string[]
+     */
+    public static function sortExtensions(array $extensions): array
     {
         $sorted = $tail = array();
         $ranks = array_flip(self::supportedExtensions());
@@ -141,71 +153,30 @@ class Scanner
         return array_values(array_merge($sorted, $tail));
     }
 
-    public static function supportedExtensions()
+    /**
+     * @deprecated
+     * @return string[]
+     */
+    public static function supportedExtensions(): array
     {
         return array_merge(self::supportedVideoExtensions(), self::supportedPhotoExtensions());
     }
 
-    public static function supportedPhotoExtensions()
+    /**
+     * @deprecated
+     * @return string[]
+     */
+    public static function supportedPhotoExtensions(): array
     {
-        return array(
-            '3fr', // Hasselblad
-            'arw', // Sony
-            'bay', // Casio
-            'cr2', // Canon
-            'crw', // Canon
-            'dcr', // Kodak
-            'erf', // Epson
-            'kdc', // Kodak
-            'mef', // Mamiya
-            'mrw', // Minolta
-            'nef', // Nikon
-            'nrw', // Nikon
-            'orf', // Olympus
-            'pef', // Pentax
-            'ptx', // Pentax
-            'r3d', // Red One
-            'raf', // Fujifilm
-            'raw', // Leica & Panasonic
-            'rw2', // Panasonic
-            'rwl', // Leica
-            'sr2', // Sony
-            'srf', // Sony
-            'srw', // Samsung
-            'x3f', // Sigma
-
-            'dng', // Adobe & Leica & Pentax
-
-            'heic', // Apple
-
-            'jpg',
-            'jpeg',
-            'tiff',
-            'tif',
-            'png',
-        );
+        return ScannerFactory::supportedPhotoExtensions();
     }
 
-    public static function supportedVideoExtensions()
+    /**
+     * @deprecated
+     * @return string[]
+     */
+    public static function supportedVideoExtensions(): array
     {
-        return array(
-            'mkv',
-            'mov',
-            'avi',
-            'mpg',
-            'mp4',
-            'mts',
-            '3gp',
-        );
-    }
-
-    public function dirsLeft(): int
-    {
-        return count($this->dirs);
-    }
-
-    public function filesLeft(): int
-    {
-        return count($this->files);
+        return ScannerFactory::supportedVideoExtensions();
     }
 }

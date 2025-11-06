@@ -18,34 +18,34 @@ all: docker-images composer test build ## Setup, test & build phar
 install: docker-images composer ## Install all required infrastructure for development
 
 docker-images: ## Create docker images
-	docker-compose up --no-start --build
+	docker compose up --no-start --build
 
 composer: ## Install composer dependencies
-	docker-compose run --rm -e COMPOSER_NO_DEV=1 -- php73 composer install -v -n -d /app
-	docker-compose run --rm -e COMPOSER_VENDOR_DIR=vendor-dev -- php73 composer install -v -n -d /app
+	docker compose run --rm -e COMPOSER_NO_DEV=1 -- php73 composer install -v -n -d /app
+	docker compose run --rm -e COMPOSER_VENDOR_DIR=vendor-dev -- php73 composer install -v -n -d /app
 
 start: ## Start services in background
-	docker-compose start
+	docker compose start
 
 stop: ## Stop services
-	docker-compose stop
+	docker compose stop
 
 sh: ## Open shell in container
-	docker-compose exec -- php73 /bin/sh
+	docker compose exec -- php73 /bin/sh
 
 test: ## Run tests
-	docker-compose run --rm -- php73 /app/tests/run.sh
-	docker-compose run --rm -- php74 /app/tests/run.sh
-	docker-compose run --rm -- php80 /app/tests/run.sh
-	docker-compose run --rm -- php81 /app/tests/run.sh
-	docker-compose run --rm -- php82 /app/tests/run.sh
+	docker compose run --rm -- php73 /app/tests/run.sh
+	docker compose run --rm -- php74 /app/tests/run.sh
+	docker compose run --rm -- php80 /app/tests/run.sh
+	docker compose run --rm -- php81 /app/tests/run.sh
+	docker compose run --rm -- php82 /app/tests/run.sh
 
 build: ## Build PHAR
-	docker-compose run --rm -e PHAR_SKELETON_ALIAS="photos-downloader.phar" -e PHAR_SKELETON_NAMESPACE="Zebooka" -- php73 /app/build-phar.php
+	docker compose run --rm -e PHAR_SKELETON_ALIAS="photos-downloader.phar" -e PHAR_SKELETON_NAMESPACE="Zebooka" -- php73 /app/build-phar.php
 
 clean: ## Clean built PHAR
 	cd "${CURRENT_DIR}" && rm -fv ./build/photos-downloader.phar
 
 purge: stop clean ## Stop, clean and remove all docker-images/logs/vendor files
-	docker-compose down --rmi local
+	docker compose down --rmi local
 	cd "${CURRENT_DIR}" && rm -rfv ./log ./vendor ./vendor-dev

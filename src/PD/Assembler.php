@@ -57,7 +57,7 @@ class Assembler
             : Configure::to($this->input);
         if (Configure::isKeepInPlace($this->input)) {
             return $fileBunch->directory() . DIRECTORY_SEPARATOR . $tokens->assembleBasename();
-        } elseif (Configure::subDirectoriesStructure($this->input) && $dir = $tokens->assembleDirectory($this->input)) {
+        } elseif (!Configure::noSubdirectoriesStructure($this->input) && $dir = $tokens->assembleDirectory($this->input)) {
             return $to . DIRECTORY_SEPARATOR . $dir . DIRECTORY_SEPARATOR . $tokens->assembleBasename();
         } else {
             return $to . DIRECTORY_SEPARATOR . $tokens->assembleBasename();

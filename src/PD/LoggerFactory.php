@@ -7,6 +7,13 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Symfony\Component\Console\Input\InputInterface;
 
+/**
+ * @deprecated
+ * Manifest:
+ * commands are printed with color codes with quiet level
+ * errors go to STDERR
+ * header + footer go to normal output
+ */
 class LoggerFactory
 {
     public static function logger(InputInterface $input)
