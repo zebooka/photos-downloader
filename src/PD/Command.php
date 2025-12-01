@@ -142,7 +142,6 @@ class Command extends SymfonyCommand
             $input,
             $output,
             $configure,
-            Scanner::factoryFromInput($input),
             new Tokenizer($configure, $input, new ExifAnalyzer($configure)),
             new Assembler($configure, $input, new Hashinator()),
             new BunchCache(),
@@ -150,15 +149,37 @@ class Command extends SymfonyCommand
             $logger,
             $this->translator
         );
-        $i = 0;
         $limit = $input->getOption(self::LIMIT);
-        $scannerIterator = new \Zebooka\PD\ScannerIterator($configure->from, $configure->recursive);
-        foreach ($scannerIterator as $fileBunch) {
-            $i++;
-            $processor->process(
-                $fileBunch,
-                "{$i} >> {$scannerIterator->getScanner()->dirsLeft()}:{$scannerIterator->getScanner()->filesLeft()}"
-            );
+
+        $scanner = scannerFactory($input);
+        if (!isFromStdin($input) && !isPipelineForced($input)) {
+            $scanner = iterator_to_array($scanner);
+            $c = count($scanner);
+        }
+
+        foreach ($scanner as $i => $bunch) {
+            if (isset($c)) {
+                // write percentage
+                $progress = sprintf("% 3d%%", $i / $c);
+                $pad = str_repeat(' ', strlen($progress));
+            } else {
+                $progress = $pad = '';
+            }
+
+            // processor generates command
+            foreach ($processor->process($bunch) as $j => $cmd) {
+                $args = implode(' ', array_slice($cmd, 1));
+
+                $output->writeln(
+                    ($j ? $pad : "<fg=white>{$progress}</>") . ' '
+                        . ('mkdir' === $cmd[0] ? "<fg=bright-blue;options=bold>{$cmd[0]}</><fg=gray>{$args}</>" : '')
+                        . ('cp' === $cmd[0] ? "<fg=green;options=bold>{$cmd[0]}</><fg=gray>{$args}</>" : '')
+                        . ('mv' === $cmd[0] ? "<fg=cyan;options=bold>{$cmd[0]}</><fg=gray>{$args}</>" : '')
+                        . ('rm' === $cmd[0] ? "<bg=red;fg=white;options=bold>{$cmd[0]}</><fg=red>{$args}</>" : '')
+                        . (!in_array($cmd[0], ['mkdir', 'cp', 'mv', 'rm']) ? "<fg=white;options=bold,reverse>{$cmd[0]}</><fg=gray>{$args}</>" : '')
+                );
+                passthru(implode(' ', $cmd). ' >&2');
+            }
 
             if ($limit && $i >= $limit) {
                 $output->writeln($this->t('processedFilesLimitWasReached', [$limit]));

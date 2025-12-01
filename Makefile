@@ -1,4 +1,4 @@
-.PHONY: help all install docker-images composer start stop sh test build clean purge
+.PHONY: help all install images composer start stop sh test build clean purge
 .DEFAULT := help
 
 MAKEFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
@@ -13,11 +13,11 @@ help:
 
 ##@ Development
 
-all: docker-images composer test build ## Setup, test & build phar
+all: images composer test build ## Setup, test & build phar
 
-install: docker-images composer ## Install all required infrastructure for development
+install: images composer ## Install all required infrastructure for development
 
-docker-images: ## Create docker images
+images: ## Create docker images
 	docker compose up --no-start --build
 
 composer: ## Install composer dependencies

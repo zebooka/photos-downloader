@@ -4,35 +4,35 @@ namespace Zebooka\PD;
 
 use Symfony\Component\Console\Input\InputInterface;
 
-/** @deprecated */
-class ScannerIterator implements \Iterator
+class ScannerIterator implements ScannerInterface, \Iterator, \Countable
 {
-    private $originalSourcePaths;
-    /**
-     * @var Scanner
-     */
-    private $scanner;
+    /** @var InputInterface */
+    private $input;
+
+    /** @var FileBunch[] */
+    private $bunches;
+
+    /** @var int */
     private $key;
+
+    /** @var FileBunch */
     private $value;
-    private $recursive;
 
-    public function __construct(InputInterface $input, array $sourcePaths, $recursive)
+    public function __construct(InputInterface $input)
     {
-
-        $this->originalSourcePaths = Configure::from($input);
-        $this->recursive = Configure::recursive($input);
+        $this->input = $input;
     }
 
     #[\ReturnTypeWillChange]
     public function rewind()
     {
-        $this->scanner = new Scanner($this->originalSourcePaths, $this->recursive);
+        $this->bunches = iterator_to_array(new ScannerTwo($this->input));
         $this->key = 0;
-        $this->value = $this->scanner->searchForNextFile();
+        $this->value = reset($this->bunches);
     }
 
     #[\ReturnTypeWillChange]
-    public function valid()
+    public function valid(): bool
     {
         return (false !== $this->value);
     }
@@ -41,26 +41,26 @@ class ScannerIterator implements \Iterator
      * @return false|FileBunch
      */
     #[\ReturnTypeWillChange]
-    public function current()
+    public function current(): FileBunch
     {
         return $this->value;
     }
 
     #[\ReturnTypeWillChange]
-    public function key()
+    public function key(): int
     {
         return $this->key;
     }
 
     #[\ReturnTypeWillChange]
-    public function next()
+    public function next(): void
     {
         $this->key++;
-        $this->value = $this->scanner->searchForNextFile();
+        $this->value = next($this->bunches);
     }
 
-    public function getScanner(): Scanner
+    public function count(): int
     {
-        return $this->scanner;
+        return count($this->bunches);
     }
 }

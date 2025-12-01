@@ -168,7 +168,6 @@ class Scanner implements \IteratorAggregate, \Countable
      */
     public static function supportedPhotoExtensions(): array
     {
-        return ScannerFactory::supportedPhotoExtensions();
     }
 
     /**
@@ -177,6 +176,5 @@ class Scanner implements \IteratorAggregate, \Countable
      */
     public static function supportedVideoExtensions(): array
     {
-        return ScannerFactory::supportedVideoExtensions();
     }
 }
