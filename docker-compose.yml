@@ -44,3 +44,30 @@ services:
       - "./log/php82/:/var/log/"
       - "~/.ssh:/root/.ssh/"
       - "./docker/php82/php.ini:/usr/local/etc/php/php.ini"
+  php83:
+    build:
+      context: .
+      dockerfile: docker/php83/Dockerfile
+    volumes:
+      - "./:/app/"
+      - "./log/php83/:/var/log/"
+      - "~/.ssh:/root/.ssh/"
+      - "./docker/php83/php.ini:/usr/local/etc/php/php.ini"
+  php84:
+    build:
+      context: .
+      dockerfile: docker/php84/Dockerfile
+    volumes:
+      - "./:/app/"
+      - "./log/php84/:/var/log/"
+      - "~/.ssh:/root/.ssh/"
+      - "./docker/php84/php.ini:/usr/local/etc/php/php.ini"
+  php85:
+    build:
+      context: .
+      dockerfile: docker/php85/Dockerfile
+    volumes:
+      - "./:/app/"
+      - "./log/php85/:/var/log/"
+      - "~/.ssh:/root/.ssh/"
+      - "./docker/php85/php.ini:/usr/local/etc/php/php.ini"
